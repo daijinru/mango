@@ -1,0 +1,19 @@
+version: "2.1"
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Beijing
+      - PASSWORD=thisismypassword
+      - HASHED_PASSWORD=1da9133ab9dbd11d2937ec8d312e1e2569857059e73cc72df92e670928983ab5
+      - SUDO_PASSWORD=thisismypassword
+      - SUDO_PASSWORD_HASH=1da9133ab9dbd11d2937ec8d312e1e2569857059e73cc72df92e670928983ab5
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+    volumes:
+      - $HOME/datas/code-server:/config
+    ports:
+      - 8443:8443
+    restart: unless-stopped
