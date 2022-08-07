@@ -13,19 +13,9 @@ $ docker pull gitlab/gitlab-ce:latest
 ```
 
 ## container
-```bash
-$ sudo docker run --detach \
-  --hostname gitlab.daijinru.com \
-  --publish 443:443 --publish 80:80 --publish 22:22 \
-  --name gitlab \
-  --restart always \
-  --volume $GITLAB_HOME/config:/etc/gitlab \
-  --volume $GITLAB_HOME/logs:/var/log/gitlab \
-  --volume $GITLAB_HOME/data:/var/opt/gitlab \
-  --shm-size 256m \
-  gitlab/gitlab-ce:latest
-```
+see [docker-compose](./docker-compose.yml)
 
+after `docker-componse up -d` can try the commands below:
 ```bash
 # track container starting
 $ sudo docker logs -f gitlab
