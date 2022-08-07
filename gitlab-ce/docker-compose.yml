@@ -3,6 +3,7 @@ services:
   web:
     image: 'gitlab/gitlab-ce:latest'
     restart: always
+    privileged: true
     container_name: gitlab
     hostname: 'gitlab.daijinru.com'
     ports:
