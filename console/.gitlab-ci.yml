@@ -1,0 +1,10 @@
+image: maven:3.8.6-openjdk-8
+
+stages:
+  - package
+
+job-package:
+  stage: package
+  script:
+    - echo "mvn package skip test"
+    - mvn package -DskipTests
