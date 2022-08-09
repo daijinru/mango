@@ -8,3 +8,6 @@ job-package:
   script:
     - echo "mvn package skip test"
     - mvn package -DskipTests
+  only:
+    - api
+    - trigger
