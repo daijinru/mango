@@ -1,7 +1,14 @@
 package main
 
-import cmd "github.com/daijinru/mango/gitlab-cli/commands"
+import (
+	"fmt"
+	cmd "github.com/daijinru/mango/gitlab-cli/commands"
+	"os"
+)
 
 func main() {
-	cmd.Execute()
+	if err := cmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
