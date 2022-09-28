@@ -39,6 +39,7 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(NewCmdConfig())
 	rootCmd.AddCommand(NewCmdLogin())
+	rootCmd.AddCommand(NewCmdPipelines())
 }
 
 func initConfig() {
