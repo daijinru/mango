@@ -24,7 +24,7 @@ func NewCmdConfigGetToken() *cobra.Command {
 		Example: "$ gitlab-cli config token",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			tokenArr := utils.GetLocalToken()
-			fmt.Println(mergeStrArray(tokenArr))
+			fmt.Println(utils.ConvertArrayToStr(tokenArr))
 			return nil
 		},
 	}
@@ -42,12 +42,4 @@ func NewCmdConfigGetUser() *cobra.Command {
 		},
 	}
 	return cmd
-}
-
-func mergeStrArray(arr []string) string {
-	merged := ""
-	for i := 0; i < len(arr); i++ {
-		merged += arr[i]
-	}
-	return merged
 }

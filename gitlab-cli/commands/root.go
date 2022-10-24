@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/daijinru/mango/gitlab-cli/utils"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -9,7 +10,8 @@ import (
 )
 
 var (
-	cfgFile string
+	cfgFile    string
+	localToken string
 
 	rootCmd = &cobra.Command{
 		Use:   "mango gitlab cli",
@@ -27,6 +29,8 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	localToken = utils.ConvertArrayToStr(utils.GetLocalToken())
 
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.PersistentFlags().StringP("author", "a", "daiijnru", "")
