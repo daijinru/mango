@@ -18,7 +18,9 @@ func NewCmdProjects() *cobra.Command {
 			}
 			opt := &gitlab.ListProjectsOptions{}
 			projects, _, err := git.Projects.ListProjects(opt)
-
+			log.Fatal(projects)
+			return nil
 		},
 	}
+	return cmd
 }
