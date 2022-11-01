@@ -1,0 +1,102 @@
+{
+  "name": "mango-vscode-helper",
+  "displayName": "mango-vscode-helper",
+  "description": "mango helper use by ziroom developer",
+  "publisher": "daijinru",
+  "version": "0.0.3",
+  "engines": {
+    "vscode": "^1.66.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "workspaceContains:"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "mango-vscode-helper.run",
+        "title": "mango run",
+        "icon": "$(notebook-execute)"
+      },
+      {
+        "command": "mango-vscode-helper.refresh",
+        "title": "mango refresh",
+        "icon": "$(refresh)"
+      }
+    ],
+    "viewsContainers": {},
+    "views": {
+      "explorer": [
+        {
+          "id": "mangoHelper",
+          "name": "mango microapp helper",
+          "when": "mango.enable"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "mango-vscode-helper.refresh",
+          "when": "view == mangoHelper",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "mango-vscode-helper.run",
+          "group": "inline",
+          "when": "view == mangoHelper && viewItem == run"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.1",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.66.0",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "@vscode/test-electron": "^2.1.5",
+    "chalk": "^4.1.0",
+    "commander": "^6.1.0",
+    "dayjs": "^1.9.0",
+    "esbuild": "^0.6.28",
+    "eslint": "^8.20.0",
+    "fs-extra": "^9.0.1",
+    "glob": "^8.0.3",
+    "json-templater": "^1.2.0",
+    "mocha": "^10.0.0",
+    "ts-loader": "^9.3.1",
+    "typescript": "^4.7.4",
+    "uppercamelcase": "^3.0.0",
+    "vsce": "^2.9.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "node-stream-zip": "^1.15.0",
+    "nodejs-file-downloader": "^4.10.2",
+    "package-json": "^7.0.0",
+    "yaml": "^1.10.2"
+  },
+  "optionalDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
