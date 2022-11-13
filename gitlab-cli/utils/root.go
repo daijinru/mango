@@ -2,30 +2,33 @@ package utils
 
 import (
 	"bufio"
+	"gopkg.in/yaml.v2"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
-// GetLocalToken 从项目根目录 token.local 文件获取 token
-func GetLocalToken() []string {
-	wd, e := os.Getwd()
-	if e != nil {
-		log.Fatal(e)
-	}
-
-	return readFile(filepath.Join(wd, "./token.local"))
+type Config struct {
+	Token    string `yaml:"token"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
-// GetLocalUser 从项目根目录 user.local 文件获取用户配置信息
-func GetLocalUser() []string {
+func ReadLocalConfig() *Config {
 	wd, e := os.Getwd()
 	if e != nil {
 		log.Fatal(e)
 	}
-	return readFile(filepath.Join(wd, "./user.local"))
+
+	yamlFile := readFile(filepath.Join(wd, "./config.yaml"))
+	var config *Config
+	// unmarshal([]byte(in), out interface{})
+	err := yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return config
 }
 
 // ConvertArrayToStr 拼接字符串数组 []string 返回单一 string
@@ -37,26 +40,22 @@ func ConvertArrayToStr(arr []string) string {
 	return merged
 }
 
-func readFile(path string) []string {
+func readFile(path string) []byte {
 	file, e := os.OpenFile(filepath.Join(path), os.O_RDONLY, 0)
 	if e != nil {
 		log.Fatal(e)
 	}
 
-	//if err := file.Close(); err != nil {
-	//	log.Fatal(err)
-	//}
 	defer file.Close()
 
 	reader := bufio.NewReader(file)
-	res := make([]string, 0, 64)
+	var res []byte
 	for {
-		line, _, err := reader.ReadLine()
+		line, err := reader.ReadByte()
 		if err == io.EOF {
 			break
 		}
-		res = append(res, strings.Trim(string(line), ""))
+		res = append(res, line)
 	}
-
 	return res
 }

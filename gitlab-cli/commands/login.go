@@ -20,13 +20,10 @@ func NewCmdLogin() *cobra.Command {
 }
 
 func basicAuth() {
-	token := utils.GetLocalToken()
-	if token == nil {
-		log.Fatal("token is not exist")
-	}
+	token := utils.ReadLocalConfig().Token
 
 	git, err := gitlab.NewClient(
-		token[0],
+		token,
 		gitlab.WithBaseURL("https://gitlab.com/api/v4"),
 	)
 	if err != nil {
@@ -39,11 +36,11 @@ func basicAuth() {
 	for _, user := range users {
 		log.Printf("Fouund user: %v", user)
 	}
-	//opt := &gitlab.ListProjectsOptions{Search: gitlab.String("daijinru")}
-	//projects, _, err := git.Projects.ListProjects(opt)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	////log.Println(projects)
-	//log.Printf("Found %d projects", len(projects))
+	opt := &gitlab.ListProjectsOptions{Search: gitlab.String("daijinru")}
+	projects, _, err := git.Projects.ListProjects(opt)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//log.Println(projects)
+	log.Printf("Found %d projects", len(projects))
 }

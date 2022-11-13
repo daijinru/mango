@@ -13,20 +13,21 @@ func NewCmdPipelines() *cobra.Command {
 		Args:  cobra.ExactArgs(0),
 		Short: "pipelines",
 		Run: func(cmd *cobra.Command, args []string) {
-			token := utils.ConvertArrayToStr(utils.GetLocalToken())
+			config := utils.ReadLocalConfig()
+			token := config.Token
 			git, err := gitlab.NewClient(token)
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			userinfo := utils.GetLocalUser()
+			username := config.Username
 
 			opt := &gitlab.ListProjectPipelinesOptions{
 				Scope: gitlab.String("branches"),
 				//Status:     gitlab.BuildState(gitlab.Success),
 				Ref:        gitlab.String("main"),
 				YamlErrors: gitlab.Bool(true),
-				Username:   gitlab.String(userinfo[0]),
+				Username:   gitlab.String(username),
 				//UpdatedAfter:  gitlab.Time(time.Now().Add(-24 * 365 * time.Hour)),
 				//UpdatedBefore: gitlab.Time(time.Now().Add(-7 * 24 * time.Hour)),
 				OrderBy: gitlab.String("status"),

@@ -30,7 +30,7 @@ func Execute() error {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	localToken = utils.ConvertArrayToStr(utils.GetLocalToken())
+	localToken = utils.ReadLocalConfig().Token
 
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.PersistentFlags().StringP("author", "a", "daiijnru", "")

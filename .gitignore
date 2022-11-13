@@ -4,3 +4,6 @@
 
 # JS
 node_modules
+
+# yaml
+*.yaml

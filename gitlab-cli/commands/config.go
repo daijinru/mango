@@ -23,8 +23,8 @@ func NewCmdConfigGetToken() *cobra.Command {
 		Short:   "get the value of token local",
 		Example: "$ gitlab-cli config token",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			tokenArr := utils.GetLocalToken()
-			fmt.Println(utils.ConvertArrayToStr(tokenArr))
+			config := utils.ReadLocalConfig()
+			fmt.Println(config.Token)
 			return nil
 		},
 	}
@@ -37,7 +37,6 @@ func NewCmdConfigGetUser() *cobra.Command {
 		Short:   "get the value of user local",
 		Example: "$ gitlab-cli config user",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println(utils.GetLocalUser())
 			return nil
 		},
 	}
