@@ -15,6 +15,12 @@ type Config struct {
 	Password string `yaml:"password"`
 }
 
+func ReportErr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func ReadLocalConfig() *Config {
 	wd, e := os.Getwd()
 	if e != nil {
@@ -23,7 +29,7 @@ func ReadLocalConfig() *Config {
 
 	yamlFile := readFile(filepath.Join(wd, "./config.yaml"))
 	var config *Config
-	// unmarshal([]byte(in), out interface{})
+	// unmarshal(in []byte, out interface{})
 	err := yaml.Unmarshal(yamlFile, &config)
 	if err != nil {
 		log.Fatal(err)

@@ -1,10 +1,7 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/daijinru/mango/gitlab-cli/utils"
-	"os"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -28,8 +25,6 @@ func Execute() error {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
 	localToken = utils.ReadLocalConfig().Token
 
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
@@ -42,28 +37,6 @@ func init() {
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(NewCmdConfig())
-	rootCmd.AddCommand(NewCmdLogin())
 	rootCmd.AddCommand(NewCmdPipelines())
-}
-
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".cobra" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".cobra")
-	}
-
-	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
+	rootCmd.AddCommand(NewCmdProjects())
 }
