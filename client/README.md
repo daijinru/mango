@@ -1,1 +1,0 @@
-Core Service for mango.
