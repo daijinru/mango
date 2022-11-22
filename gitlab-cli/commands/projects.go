@@ -25,7 +25,7 @@ func NewCmdProjects() *cobra.Command {
 			utils.ReportErr(err)
 			log.Printf("Found repos: %v", len(projects))
 			for _, project := range projects {
-				log.Printf("Found repo: %v", project.Name)
+				log.Printf("Found repo: %v, %v, %v", project.ID, project.Name, project.Owner.Username)
 			}
 			return nil
 		},

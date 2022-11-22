@@ -7,7 +7,6 @@ import (
 )
 
 var (
-	cfgFile    string
 	localToken string
 
 	rootCmd = &cobra.Command{

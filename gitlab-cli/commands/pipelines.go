@@ -9,36 +9,27 @@ import (
 
 func NewCmdPipelines() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pipeline",
-		Args:  cobra.ExactArgs(0),
+		Use:   "pipelines",
+		Args:  cobra.ExactArgs(1),
 		Short: "pipelines",
 		Run: func(cmd *cobra.Command, args []string) {
 			config := utils.ReadLocalConfig()
 			token := config.Token
 			git, err := gitlab.NewClient(token)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			username := config.Username
-
+			utils.ReportErr(err)
 			opt := &gitlab.ListProjectPipelinesOptions{
-				Scope: gitlab.String("branches"),
-				//Status:     gitlab.BuildState(gitlab.Success),
-				Ref:        gitlab.String("main"),
-				YamlErrors: gitlab.Bool(true),
-				Username:   gitlab.String(username),
+				//Scope: gitlab.String("finished"),
+				//Status:     gitlab.BuildState(gitlab.Failed),
+				//Ref:        gitlab.String("main"),
+				//YamlErrors: gitlab.Bool(true),
+				Username: gitlab.String(config.Username),
 				//UpdatedAfter:  gitlab.Time(time.Now().Add(-24 * 365 * time.Hour)),
 				//UpdatedBefore: gitlab.Time(time.Now().Add(-7 * 24 * time.Hour)),
 				OrderBy: gitlab.String("status"),
 				Sort:    gitlab.String("asc"),
 			}
-
-			pipelines, _, err := git.Pipelines.ListProjectPipelines(38427578, opt)
-			if err != nil {
-				log.Fatal(err)
-			}
-
+			pipelines, _, err := git.Pipelines.ListProjectPipelines(args[0], opt)
+			utils.ReportErr(err)
 			for _, pipeline := range pipelines {
 				log.Printf("Found pipeline: %v", pipeline)
 			}
