@@ -14,18 +14,13 @@ func NewCmdProjects() *cobra.Command {
 		Short: "list projects",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config := utils.ReadLocalConfig()
-			//git, err := gitlab.NewBasicAuthClient(
-			//	config.Username,
-			//	config.Password,
-			//	gitlab.WithBaseURL("https://gitlab.com/api/v4"),
-			//)
 			git, err := gitlab.NewClient(localToken)
 			utils.ReportErr(err)
 			projects, _, err := git.Projects.ListUserProjects(config.Username, nil)
 			utils.ReportErr(err)
-			log.Printf("Found repos: %v", len(projects))
-			for _, project := range projects {
-				log.Printf("Found repo: %v, %v, %v", project.ID, project.Name, project.Owner.Username)
+			for _, p := range projects {
+				log.Printf("<mango tell>id:%v,description:%v,SSHURLToRepo:%v,webUrl:%v,username:%v,userId:%v",
+					p.ID, p.Description, p.SSHURLToRepo, p.WebURL, p.Owner.Username, p.Owner.ID)
 			}
 			return nil
 		},
