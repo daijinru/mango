@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>console</name>
-	<description>console for mago ci/cd</description>
+	<description>console for mango ci/cd</description>
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
