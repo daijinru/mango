@@ -39,7 +39,7 @@ public class GitlabCliCmder {
             e.printStackTrace();
         }
         if (exit != 0) {
-            res.add("<mango error>");
+            throw new RuntimeException("[Mango CLI] Runtime Exception: " + res);
         }
         return res;
     }
