@@ -19,7 +19,7 @@ func NewCmdProjects() *cobra.Command {
 			projects, _, err := git.Projects.ListUserProjects(config.Username, nil)
 			utils.ReportErr(err)
 			for _, p := range projects {
-				log.Printf("<mango tell>id:%v,description:%v,SSHURLToRepo:%v,webUrl:%v,username:%v,userId:%v",
+				log.Printf("<mango>id:%v,description:%v,SSHURLToRepo:%v,webUrl:%v,username:%v,userId:%v</mango>",
 					p.ID, p.Description, p.SSHURLToRepo, p.WebURL, p.Owner.Username, p.Owner.ID)
 			}
 			return nil

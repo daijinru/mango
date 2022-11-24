@@ -31,7 +31,7 @@ func NewCmdPipelines() *cobra.Command {
 			pipelines, _, err := git.Pipelines.ListProjectPipelines(args[0], opt)
 			utils.ReportErr(err)
 			for _, p := range pipelines {
-				log.Printf("<mango tell>id:%v,status:%v,source:%v,ref:%v,webUrl:%v",
+				log.Printf("<mango>id:%v,status:%v,source:%v,ref:%v,webUrl:%v</mango>",
 					p.ID, p.Status, p.Source, p.Ref, p.WebURL)
 			}
 		},
