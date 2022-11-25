@@ -4,20 +4,20 @@
   <title>ManoSys</title>
 </head>
 <body th:replace="layout/body :: body(~{this :: .h1-title}, ~{this :: .sub-title}, ~{this :: .main-content})">
-  <span class="h1-title">Mano</span>
+  <span class="h1-title">Mango</span>
   <span class="sub-title">User Projects</span>
   <div class="main-content">
     <div id="root"></div>
     <script type="text/babel">
       function DataTableHeadObject() {
-        const heads = ['id', 'username', 'description', 'webUrl'];
+        const data = ['id', 'username', 'description', 'webUrl'];
         return {
-          heads,
-          jsx: () => {
+          data,
+          render: () => {
             return (
               <thead>
                 <tr>
-                  {heads.map((h, k) => (<th key={k} scope="col">{h}</th>))}
+                  {data.map((h, k) => (<th key={k} scope="col">{h}</th>))}
                 </tr>
               </thead>
             )
@@ -27,15 +27,15 @@
       function DataTableListObject(props) {
         const {list} = props;
         if (!list || !Array.isArray(list)) return (<h2>No data.</h2>);
-        const {heads} = DataTableHeadObject();
+        const {data} = DataTableHeadObject();
         return {
-          jsx: () => {
+          render: () => {
             return (
               <tbody>
                 {list.map((v, k) => {
                   return (
                     <tr key={k}>
-                      {heads.map((h, i) => {
+                      {data.map((h, i) => {
                         return (<td key={i} data-key={h}>{v[h]}</td>)
                       })}
                     </tr>
@@ -69,8 +69,8 @@
         // root.render(<h1>Hello, world!</h1>);
         root.render(
            <table className="table table-bordered table-hover table-sm">
-             {DataTableHeadObject().jsx()}
-             {DataTableListObject({list: data}).jsx()}
+             {DataTableHeadObject().render()}
+             {DataTableListObject({list: data}).render()}
            </table>
         )
       })
