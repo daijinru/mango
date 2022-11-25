@@ -23,10 +23,10 @@ public class PipelineController {
         modelAndView.setViewName("pipeline");
         return modelAndView;
     }
-    @RequestMapping("/repo")
+    @RequestMapping("/projects")
     public ModelAndView getRepos() {
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("repos");
+        modelAndView.setViewName("projects");
         return modelAndView;
     }
 

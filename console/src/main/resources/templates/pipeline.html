@@ -6,41 +6,48 @@
 <body th:replace="layout/body :: body(~{this :: .h1-title}, ~{this :: .sub-title}, ~{this :: .main-content})">
   <span class="h1-title">Mano.Pipeline</span>
   <span class="sub-title">sub title</span>
-  <table class="table table-bordered table-hover table-sm  main-content">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">repo</th>
-        <th scope="col">description</th>
-        <th scope="col">Handle</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td>Larry the Bird</td>
-        <td>Example</td>
-        <td>
-          <div class="btn-group btn-group-sm" role="group" aria-label="Basic mixed styles example">
-            <button type="button" class="btn btn-danger">Left</button>
-            <button type="button" class="btn btn-warning">Middle</button>
-            <button type="button" class="btn btn-success">Right</button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="main-content">
+    <table class="table table-bordered table-hover table-sm">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">repo</th>
+          <th scope="col">description</th>
+          <th scope="col">Handle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td>Mark</td>
+          <td>Otto</td>
+          <td>@mdo</td>
+        </tr>
+        <tr>
+          <th scope="row">2</th>
+          <td>Jacob</td>
+          <td>Thornton</td>
+          <td>@fat</td>
+        </tr>
+        <tr>
+          <th scope="row">3</th>
+          <td>Larry the Bird</td>
+          <td>Example</td>
+          <td>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Basic mixed styles example">
+              <button type="button" class="btn btn-danger">Left</button>
+              <button type="button" class="btn btn-warning">Middle</button>
+              <button type="button" class="btn btn-success">Right</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="root"></div>
+    <script type="text/babel">
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<h1>Hello, world!</h1>);
+    </script>
+  </div>
 </body>
 </html>
