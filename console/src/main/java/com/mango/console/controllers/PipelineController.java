@@ -7,9 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.thymeleaf.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RestController
@@ -17,7 +21,7 @@ public class PipelineController {
     @Resource
     GitlabCliCmder gitlabCliCmder;
 
-    @RequestMapping("/pipeline")
+    @RequestMapping("/pipelines")
     public ModelAndView getPipeline() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("pipeline");
@@ -36,7 +40,10 @@ public class PipelineController {
     }
 
     @GetMapping("/api/v1/user/{pid}/pipelines")
-    public List<String> getPipelines(@PathVariable("pid") String repoId) {
+    public List<String> getPipelines(@PathVariable("pid") String repoId) throws Exception  {
+        if (Objects.isNull(repoId) || StringUtils.equals(repoId, "undefined")) {
+            throw new Exception("No empty pid");
+        }
         return gitlabCliCmder.listUserPipelinesByProjectId(repoId);
     }
  }

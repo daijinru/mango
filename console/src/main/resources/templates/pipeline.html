@@ -1,52 +1,80 @@
 <!doctype html>
 <html lang="en" class="h-100">
 <head th:replace="layout/head :: head(~{this :: title})">
-  <title>Mano>Pipeline</title>
+  <title>Mano Console</title>
 </head>
 <body th:replace="layout/body :: body(~{this :: .h1-title}, ~{this :: .sub-title}, ~{this :: .main-content})">
-  <span class="h1-title">Mano.Pipeline</span>
-  <span class="sub-title">sub title</span>
+  <span class="h1-title">Mango</span>
+  <span class="sub-title">Project Pipelines</span>
   <div class="main-content">
-    <table class="table table-bordered table-hover table-sm">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">repo</th>
-          <th scope="col">description</th>
-          <th scope="col">Handle</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-        </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>Larry the Bird</td>
-          <td>Example</td>
-          <td>
-            <div class="btn-group btn-group-sm" role="group" aria-label="Basic mixed styles example">
-              <button type="button" class="btn btn-danger">Left</button>
-              <button type="button" class="btn btn-warning">Middle</button>
-              <button type="button" class="btn btn-success">Right</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
     <div id="root"></div>
+    <script th:src="@{/querystringify.js}"></script>
     <script type="text/babel">
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<h1>Hello, world!</h1>);
+      function DataTableHeadObject() {
+        const data = ['id', 'status', 'source', 'ref', 'webUrl'];
+        return {
+          data,
+          render: () => {
+            return (
+              <thead>
+                <tr>
+                  {data.map((h, k) => (<th key={k} scope="col">{h}</th>))}
+                </tr>
+              </thead>
+            )
+          }
+        }
+      }
+      function DataTableListObject(props) {
+        const {list} = props;
+        if (!list || !Array.isArray(list)) return (<em>No data.</em>);
+        const {data} = DataTableHeadObject();
+        return {
+          render: () => {
+            return (
+              <tbody>
+                {list.map((v, k) => {
+                  return (
+                    <tr key={k}>
+                      {data.map((h, i) => {
+                        return (<td key={i} data-key={h}>{v[h]}</td>)
+                      })}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            )
+          }
+        }
+      }
+
+      const search = window.querystringify.parse(location.search);
+      window.fetch(`http://localhost:8080/api/v1/user/${search.id}/pipelines`).then(res => {
+        return res.json();
+      }).then(res => {
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        if (res.status !== 1000) return root.render(<em>{res.message || res.status}</em>);
+
+        const data = [];
+        res.data.forEach(d => {
+          let result = d.match(/(?<=<mango>).*(?=<\/mango>)/ig);
+          if (!result) return;
+          result = result[0].split(',');
+          const dataItem = {};
+
+          result.forEach(r => {
+            const r1 = r.split('$$&');
+            if (r1) dataItem[r1[0]] = r1[1];
+          })
+          data.push(dataItem);
+        });
+        root.render(
+           <table className="table table-bordered table-hover table-sm">
+             {DataTableHeadObject().render()}
+             {DataTableListObject({list: data}).render()}
+           </table>
+        )
+      })
     </script>
   </div>
 </body>
