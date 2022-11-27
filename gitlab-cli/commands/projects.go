@@ -14,7 +14,7 @@ func NewCmdProjects() *cobra.Command {
 		Short: "list projects",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config := utils.ReadLocalConfig()
-			git, err := gitlab.NewClient(localToken)
+			git, err := gitlab.NewClient(config.Token)
 			utils.ReportErr(err)
 			projects, _, err := git.Projects.ListUserProjects(config.Username, nil)
 			utils.ReportErr(err)
