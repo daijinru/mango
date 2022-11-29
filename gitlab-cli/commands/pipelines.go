@@ -5,8 +5,21 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xanzy/go-gitlab"
 	"log"
+	"os"
 	"strconv"
+	"time"
 )
+
+type PipelineInfo struct {
+	ID        int        `json:"id"`
+	ProjectID int        `json:"project_id"`
+	Status    string     `json:"status"`
+	Source    string     `json:"source"`
+	Ref       string     `json:"ref"`
+	WebURL    string     `json:"web_url"`
+	UpdatedAt *time.Time `json:"updated-at"`
+	CreatedAt *time.Time `json:"created-at"`
+}
 
 func NewCmdPipelines() *cobra.Command {
 	cmd := &cobra.Command{
@@ -25,9 +38,13 @@ func NewCmdPipelines() *cobra.Command {
 			}
 			pipelines, _, err := git.Pipelines.ListProjectPipelines(args[0], opt)
 			utils.ReportErr(err)
+
 			for _, p := range pipelines {
-				log.Printf("<mango>id$$&%v,status$$&%v,source$$&%v,ref$$&%v,webUrl$$&%v</mango>",
-					p.ID, p.Status, p.Source, p.Ref, p.WebURL)
+				m := utils.ExpandMapToString(utils.StructToMap(p))
+				s := os.Expand(utils.MangoPrintTemplate(PipelineInfo{}), func(k string) string {
+					return m[k]
+				})
+				log.Print(s)
 			}
 		},
 	}
@@ -47,6 +64,24 @@ func NewCmdPipeline() *cobra.Command {
 	return cmd
 }
 
+type Pipeline struct {
+	ID          int        `json:"id"`
+	ProjectID   int        `json:"project_id"`
+	Status      string     `json:"status"`
+	Source      string     `json:"source"`
+	Ref         string     `json:"ref"`
+	Tag         bool       `json:"tag"`
+	YamlErrors  string     `json:"yaml_errors"`
+	CommittedAt *time.Time `json:"committed_at"`
+	Duration    int        `json:"duration"`
+	Coverage    string     `json:"coverage"`
+	WebURL      string     `json:"web_url"`
+	UpdatedAt   *time.Time `json:"updated-at"`
+	StartedAt   *time.Time `json:"started-at"`
+	CreatedAt   *time.Time `json:"created-at"`
+	FinishedAt  *time.Time `json:"finished-at"`
+}
+
 func GetSinglePipeline() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
@@ -60,8 +95,12 @@ func GetSinglePipeline() *cobra.Command {
 			utils.ReportErr(err)
 			p, _, err := git.Pipelines.GetPipeline(args[0], id)
 			utils.ReportErr(err)
-			log.Printf("<mango>id$$&%v,projectId$$&%v,status$$&%v,source$$&%v,ref$$&%v,user$$&%v,webUrl$$&%v,tag$$&%v,duration$$&%v</mango>",
-				p.ID, p.ProjectID, p.Status, p.Source, p.Ref, p.User, p.WebURL, p.Tag, p.Duration)
+
+			m := utils.ExpandMapToString(utils.StructToMap(p))
+			s := os.Expand(utils.MangoPrintTemplate(Pipeline{}), func(k string) string {
+				return m[k]
+			})
+			log.Print(s)
 		},
 	}
 	return cmd
@@ -73,7 +112,6 @@ func CreatePipeline() *cobra.Command {
 		Short: "Create a pipeline for the project",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-
 		},
 	}
 	return cmd

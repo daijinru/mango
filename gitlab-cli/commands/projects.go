@@ -5,7 +5,20 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xanzy/go-gitlab"
 	"log"
+	"os"
 )
+
+type Project struct {
+	ID            int          `json:"id"`
+	Name          string       `json:"name"`
+	Description   string       `json:"description"`
+	AvatarURL     string       `json:"avatar_url"`
+	SSHURLToRepo  string       `json:"ssh_url_to_repo"`
+	HTTPURLToRepo string       `json:"http_url_to_repo"`
+	WebURL        string       `json:"web_url"`
+	DefaultBranch string       `json:"default_branch"`
+	Owner         *gitlab.User `json:"owner"`
+}
 
 func NewCmdProjects() *cobra.Command {
 	cmd := &cobra.Command{
@@ -19,8 +32,11 @@ func NewCmdProjects() *cobra.Command {
 			projects, _, err := git.Projects.ListUserProjects(config.Username, nil)
 			utils.ReportErr(err)
 			for _, p := range projects {
-				log.Printf("<mango>id$$&%v,description$$&%v,SSHURLToRepo$$&%v,webUrl$$&%v,username$$&%v,userId$$&%v</mango>",
-					p.ID, p.Description, p.SSHURLToRepo, p.WebURL, p.Owner.Username, p.Owner.ID)
+				m := utils.ExpandMapToString(utils.StructToMap(p))
+				s := os.Expand(utils.MangoPrintTemplate(Project{}), func(k string) string {
+					return m[k]
+				})
+				log.Print(s)
 			}
 			return nil
 		},
