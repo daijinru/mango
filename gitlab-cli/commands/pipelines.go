@@ -56,11 +56,11 @@ func NewCmdPipeline() *cobra.Command {
 		Use:   "pipeline",
 		Short: "To operate a pipeline",
 		Run: func(cmd *cobra.Command, args []string) {
-
 		},
 	}
 	cmd.AddCommand(GetSinglePipeline())
 	cmd.AddCommand(CreatePipeline())
+	cmd.AddCommand(DeletePipeline())
 	return cmd
 }
 
@@ -110,9 +110,41 @@ func CreatePipeline() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create",
 		Short: "Create a pipeline for the project",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.MinimumNArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
+			config := utils.ReadLocalConfig()
+			git, err := gitlab.NewClient(config.Token)
+			utils.ReportErr(err)
+			opts := &gitlab.CreatePipelineOptions{
+				// todo: ?? why use ptr here, probably for memory shared.
+				Ref: gitlab.String(args[1]),
+			}
+			r, _, err := git.Pipelines.CreatePipeline(args[0], opts)
+			utils.ReportErr(err)
+			m := utils.ExpandMapToString(utils.StructToMap(r))
+			s := os.Expand(utils.MangoPrintTemplate(Pipeline{}), func(k string) string {
+				return m[k]
+			})
+			log.Print(s)
 		},
 	}
 	return cmd
+}
+
+func DeletePipeline() *cobra.Command {
+	return &cobra.Command{
+		Use:   "delete",
+		Short: "Delete a pipeline for the project",
+		Args:  cobra.MinimumNArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			config := utils.ReadLocalConfig()
+			git, err := gitlab.NewClient(config.Token)
+			utils.ReportErr(err)
+			id, err := strconv.Atoi(args[1])
+			utils.ReportErr(err)
+			res, err := git.Pipelines.DeletePipeline(args[0], id)
+			utils.ReportErr(err)
+			log.Print(res.Response.Status)
+		},
+	}
 }

@@ -6,8 +6,6 @@ import (
 )
 
 var (
-	localToken string
-
 	rootCmd = &cobra.Command{
 		Use:   "mango gitlab cli",
 		Short: "a cli for gitlab",
