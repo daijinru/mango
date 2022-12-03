@@ -25,7 +25,7 @@ func NewCmdPipelines() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pipelines",
 		Args:  cobra.ExactArgs(1),
-		Short: "pipelines",
+		Short: "List pipelines of the project",
 		Run: func(cmd *cobra.Command, args []string) {
 			config := utils.ReadLocalConfig()
 			token := config.Token

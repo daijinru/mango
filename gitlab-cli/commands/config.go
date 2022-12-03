@@ -9,7 +9,7 @@ import (
 func NewCmdConfig() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "config [flags]",
-		Short:   "Initial config",
+		Short:   "Get the local config",
 		Aliases: []string{"conf"},
 	}
 	cmd.AddCommand(NewCmdConfigGetToken())
