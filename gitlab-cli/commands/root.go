@@ -30,4 +30,5 @@ func init() {
 	rootCmd.AddCommand(NewCmdPipelines())
 	rootCmd.AddCommand(NewCmdPipeline())
 	rootCmd.AddCommand(NewCmdProjects())
+	rootCmd.AddCommand(NewCmdProject())
 }

@@ -43,3 +43,71 @@ func NewCmdProjects() *cobra.Command {
 	}
 	return cmd
 }
+
+func NewCmdProject() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "project",
+		Args:  cobra.MinimumNArgs(1),
+		Short: "To operate a project",
+		Run: func(cmd *cobra.Command, args []string) {
+		},
+	}
+	cmd.AddCommand(NewCmdGetProject())
+	cmd.AddCommand(NewCmdGetBranches())
+	return cmd
+}
+
+func NewCmdGetProject() *cobra.Command {
+	return &cobra.Command{
+		Use:   "get",
+		Args:  cobra.MinimumNArgs(1),
+		Short: "Get a project info",
+		Run: func(cmd *cobra.Command, args []string) {
+			config := utils.ReadLocalConfig()
+			git, err := gitlab.NewClient(config.Token)
+			utils.ReportErr(err)
+			p, _, err := git.Projects.GetProject(args[0], nil)
+			utils.ReportErr(err)
+
+			m := utils.ExpandMapToString(utils.StructToMap(p))
+			s := os.Expand(utils.MangoPrintTemplate(Project{}), func(k string) string {
+				return m[k]
+			})
+			log.Print(s)
+		},
+	}
+}
+
+type Branch struct {
+	Commit             gitlab.Commit `json:"commit"`
+	Name               string        `json:"name"`
+	Protected          bool          `json:"protected"`
+	Merged             bool          `json:"merged"`
+	Default            bool          `json:"default"`
+	CanPush            bool          `json:"can_push"`
+	DevelopersCanPush  bool          `json:"developers_can_push"`
+	DevelopersCanMerge bool          `json:"developers_can_merge"`
+	WebURL             string        `json:"web_url"`
+}
+
+func NewCmdGetBranches() *cobra.Command {
+	return &cobra.Command{
+		Use:   "branches",
+		Short: "Get branches of the project",
+		Args:  cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			config := utils.ReadLocalConfig()
+			git, err := gitlab.NewClient(config.Token)
+			utils.ReportErr(err)
+			branches, _, err := git.Branches.ListBranches(args[0], nil)
+			utils.ReportErr(err)
+			for _, b := range branches {
+				m := utils.ExpandMapToString(utils.StructToMap(b))
+				s := os.Expand(utils.MangoPrintTemplate(Branch{}), func(k string) string {
+					return m[k]
+				})
+				log.Print(s)
+			}
+		},
+	}
+}
