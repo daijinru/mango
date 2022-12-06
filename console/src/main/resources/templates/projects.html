@@ -59,7 +59,7 @@
         }
       }
 
-      window.fetch('http://localhost:8080/api/v1/user/projects').then(res => {
+      window.fetch(`${location.protocol}//${location.host}/api/v1/user/projects`).then(res => {
         return res.json();
       }).then(res => {
         const root = ReactDOM.createRoot(document.getElementById('root'));
