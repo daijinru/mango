@@ -69,6 +69,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>mango_console</finalName>
 	</build>
 
 </project>
