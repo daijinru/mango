@@ -34,3 +34,6 @@ build/
 
 ### config.yaml ###
 config.yaml
+
+### logger ###
+*.log

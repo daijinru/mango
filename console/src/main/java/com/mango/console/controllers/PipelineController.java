@@ -1,6 +1,8 @@
 package com.mango.console.controllers;
 
+import com.mango.console.annotations.LoggerMg;
 import com.mango.console.components.GitlabCliPipeline;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,6 +19,7 @@ public class PipelineController {
     GitlabCliPipeline gitlabCliPipeline;
 
     @RequestMapping("/pipelines")
+    @LoggerMg(description = "访问流水线列表页面")
     public ModelAndView getPipeline() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("pipeline");
@@ -24,6 +27,7 @@ public class PipelineController {
     }
 
     @GetMapping("/api/v1/user/{pid}/pipelines")
+    @LoggerMg(description = "请求指定项目的流水线列表")
     public List<String> getPipelines(@PathVariable("pid") String repoId) throws Exception  {
         if (Objects.isNull(repoId) || StringUtils.equals(repoId, "undefined")) {
             throw new Exception("No empty pid");
@@ -32,6 +36,7 @@ public class PipelineController {
     }
 
     @PostMapping("/api/v1/user/pipeline")
+    @LoggerMg(description = "创建指定项目的流水线")
     public List<String> createPipeline(@RequestBody CreatePipelineOption option) throws Exception {
         if (Objects.isNull(option.getRef()) || Objects.isNull(option.getPid())) {
             throw new Exception("No empty ref or pid");
