@@ -10,9 +10,9 @@ import java.util.List;
 
 @Component
 public class GitlabCliCmder {
-    public static String cmder;
+    public static String CLI;
     static {
-        cmder = "gitlab-cli";
+        CLI = "gitlab-cli";
     }
     public List<String> execCmd(String[] cmd) {
         List<String> res = new ArrayList<>();
@@ -42,15 +42,5 @@ public class GitlabCliCmder {
             throw new RuntimeException("[Mango CLI] Runtime Exception: " + res);
         }
         return res;
-    }
-
-    public List<String> listUserProjects() {
-        String[] cmd = new String[]{cmder, "projects"};
-        return execCmd(cmd);
-    }
-
-    public List<String> listUserPipelinesByProjectId(String pid) {
-        String[] cmd = new String[]{cmder, "pipelines", pid};
-        return execCmd(cmd);
     }
 }
