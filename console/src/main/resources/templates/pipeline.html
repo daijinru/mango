@@ -11,7 +11,7 @@
     <script th:src="@{/querystringify.js}"></script>
     <script type="text/babel">
       function DataTableHeadObject() {
-        const data = ['ID', 'Status', 'Source', 'Ref', 'WebURL'];
+        const data = ['ID', 'Status', 'Source', 'Ref', 'WebURL', 'Actions'];
         return {
           data,
           render: () => {
@@ -29,6 +29,10 @@
         const {list} = props;
         if (!list || !Array.isArray(list)) return (<em>No data.</em>);
         const {data} = DataTableHeadObject();
+
+        function createPipeline(pid, ref) {
+
+        }
         return {
           render: () => {
             return (
@@ -39,6 +43,15 @@
                       {data.map((h, i) => {
                         return (<td key={i} data-key={h}>{v[h]}</td>)
                       })}
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-success"
+
+                        >
+                          Create a pipeline
+                        </button>
+                      </td>
                     </tr>
                   )
                 })}
@@ -57,16 +70,7 @@
 
         const data = [];
         res.data.forEach(d => {
-          let result = d.match(/(?<=<mango>).*(?=<\/mango>)/ig);
-          if (!result) return;
-          result = result[0].split(',');
-          const dataItem = {};
-
-          result.forEach(r => {
-            const r1 = r.split('&&');
-            if (r1) dataItem[r1[0]] = r1[1];
-          })
-          data.push(dataItem);
+          data.push(mango.dataCharsToObj(d));
         });
         root.render(
            <table className="table table-bordered table-hover table-sm">
