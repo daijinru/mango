@@ -1,3 +1,4 @@
+It is recommended to build it because of unstable network.
 
 ## pre
 ```bash
