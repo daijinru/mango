@@ -13,6 +13,14 @@ Broswer to https://gitlab.com/<user_name>/test-ci/-/settings/ci_cd.
 And open `Show runner installation instruction` then follow it to register a runner in the local container.
 After that to the edit page of the runner to check `indicates whether this runner can pick jobs without tags`.
 
+### Tips
+
+**If Existing Runner**
+Copy to config/config.toml and uncomment? the docker-compose.yml:
+```
+./config:/etc/gitlab-runner
+```
+
 ### ERROR: Failed to load config stat /etc/gitlab-runner/config.toml: no such file or directory  builds=0
 
 The prompt will disappear after registration.

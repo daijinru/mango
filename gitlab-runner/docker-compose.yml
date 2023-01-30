@@ -9,3 +9,4 @@ services:
     volumes:
       - '$HOME/gitlab-runner/config:/etc/gitlab-runner' # On macOS, use /Users/Shared instead of /srv.
       - '/var/run/docker.sock:/var/run/docker.sock'
+      # - './config:/etc/gitlab-runner'
