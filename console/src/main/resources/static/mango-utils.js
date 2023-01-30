@@ -1,8 +1,4 @@
-(function (window){
-    const MODULE_NAME = 'mango';
-
-    if (window[MODULE_NAME]) return window[MODULE_NAME];
-
+(function (window) {
     function dataCharsToObj(chars) {
         let matched = chars.match(/(?<=<mango>).*(?=<\/mango>)/ig);
         if (!matched) return '';
@@ -14,7 +10,37 @@
         })
         return result
     }
+
+    const requestOptionDefaults = {
+        method: 'get',
+        baseUrl: location.protocol + '//' + location.host,
+        body: null,
+        url: '',
+    }
+    function request(option = {}) {
+        option = Object.assign({}, requestOptionDefaults, option)
+        return new Promise((resolve, reject) => {
+            switch (option.method) {
+                case 'get':
+                    window.fetch(option.baseUrl + option.url).then(res => {
+                        return res.json();
+                    }).then(res => {
+                        if (res.status !== 1000) return reject(res.message || res.status);
+                        return resolve(res.data)
+                    })
+
+            }
+        })
+    }
+
+
+    const MODULE_NAME = 'mango';
     window[MODULE_NAME] = {
-        dataCharsToObj,
+        utils: {
+            dataCharsToObj,
+        },
+        api: {
+            request
+        }
     }
 }(this))

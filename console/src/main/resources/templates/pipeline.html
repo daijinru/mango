@@ -7,11 +7,12 @@
   <span class="h1-title">Mango</span>
   <span class="sub-title">Project Pipelines</span>
   <div class="main-content">
+    <div th:replace="blocks/project_info"></div>
     <div id="root"></div>
     <script th:src="@{/querystringify.js}"></script>
     <script type="text/babel">
       function DataTableHeadObject() {
-        const data = ['ID', 'Status', 'Source', 'Ref', 'WebURL', 'Actions'];
+        const data = ['ID', 'Status', 'Source', 'Ref', 'WebURL'];
         return {
           data,
           render: () => {
@@ -19,6 +20,7 @@
               <thead>
                 <tr>
                   {data.map((h, k) => (<th key={k} scope="col">{h}</th>))}
+                  <th>Actions</th>
                 </tr>
               </thead>
             )
@@ -30,9 +32,6 @@
         if (!list || !Array.isArray(list)) return (<em>No data.</em>);
         const {data} = DataTableHeadObject();
 
-        function createPipeline(pid, ref) {
-
-        }
         return {
           render: () => {
             return (
@@ -46,10 +45,9 @@
                       <td>
                         <button
                           type="button"
-                          className="btn btn-sm btn-success"
-
+                          className="btn btn-sm btn-primary text-nowrap"
                         >
-                          Create a pipeline
+                          nothing now
                         </button>
                       </td>
                     </tr>
@@ -62,18 +60,16 @@
       }
 
       const search = window.querystringify.parse(location.search);
-      window.fetch(`${location.protocol}//${location.host}/api/v1/user/${search.id}/pipelines`).then(res => {
-        return res.json();
-      }).then(res => {
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        if (res.status !== 1000) return root.render(<em>{res.message || res.status}</em>);
 
+      mango.api.request({url: `/api/v1/user/${search.id}/pipelines`}).then(res => {
+        const root = ReactDOM.createRoot(document.getElementById('root'));
         const data = [];
-        res.data.forEach(d => {
-          data.push(mango.dataCharsToObj(d));
+        res.forEach(d => {
+          data.push(mango.utils.dataCharsToObj(d));
         });
         root.render(
            <table className="table table-bordered table-hover table-sm">
+             <caption>Project Pipelines</caption>
              {DataTableHeadObject().render()}
              {DataTableListObject({list: data}).render()}
            </table>

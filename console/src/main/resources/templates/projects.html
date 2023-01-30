@@ -18,7 +18,7 @@
               <thead>
                 <tr>
                   {data.map((h, k) => (<th key={k} scope="col">{h}</th>))}
-                  <th>actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
             )
@@ -46,7 +46,7 @@
                       <td>
                         <button
                           type="button"
-                          className="btn btn-sm btn-success"
+                          className="btn btn-sm btn-primary"
                           onClick={gotoPipelines.bind(this, k)}
                         >Pipelines</button>
                       </td>
@@ -59,18 +59,15 @@
         }
       }
 
-      window.fetch(`${location.protocol}//${location.host}/api/v1/user/projects`).then(res => {
-        return res.json();
-      }).then(res => {
+      mango.api.request({url: '/api/v1/user/projects'}).then(res => {
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        if (res.status !== 1000) return root.render(<em>{res.message || res.status}</em>);
         const data = [];
-        res.data.forEach(d => {
-          data.push(mango.dataCharsToObj(d));
+        res.forEach(d => {
+          data.push(mango.utils.dataCharsToObj(d));
         });
-        // root.render(<h1>Hello, world!</h1>);
         root.render(
            <table className="table table-bordered table-hover table-sm">
+             <caption>User Projects</caption>
              {DataTableHeadObject().render()}
              {DataTableListObject({list: data}).render()}
            </table>

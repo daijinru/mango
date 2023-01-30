@@ -10,4 +10,9 @@ public class GitlabCliProject extends GitlabCliCmder {
         String[] cmd = new String[]{CLI, "projects"};
         return execCmd(cmd);
     }
+
+    public List<String> getProject(String id) {
+        String[] cmd = new String[]{CLI, "project", "get", id};
+        return execCmd(cmd);
+    }
 }
