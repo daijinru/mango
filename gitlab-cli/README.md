@@ -18,6 +18,7 @@ Plz manually create a config.yaml in the User Root directory and contain the fol
 username: <your_gitlab_username>
 password: <your_gitlab_pwd>
 token: <your_gitlab-token>
+baseUrl: <your_gitlab_instance_web_url>
 ```
 
 ## projects

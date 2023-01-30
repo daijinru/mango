@@ -36,17 +36,13 @@ func NewCmdCommits() *cobra.Command {
 		Short: "List commits of the project",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			config := utils.ReadLocalConfig()
-			git, err := gitlab.NewClient(config.Token)
-			utils.ReportErr(err)
-
 			now := time.Now()
 			since := now.AddDate(0, 0, -150)
 			listCommitsOptions := gitlab.ListCommitsOptions{
 				Since: &since,
 			}
 
-			commits, _, err := git.Commits.ListCommits(args[0], &listCommitsOptions)
+			commits, _, err := customGit.Commits.ListCommits(args[0], &listCommitsOptions)
 			utils.ReportErr(err)
 			for _, c := range commits {
 				m := utils.ExpandMapToString(utils.StructToMap(c))

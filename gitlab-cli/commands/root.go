@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"github.com/daijinru/mango/gitlab-cli/utils"
 	"github.com/spf13/cobra"
+	"github.com/xanzy/go-gitlab"
 )
 
 var (
@@ -12,10 +14,20 @@ var (
 			return nil
 		},
 	}
+	customGit = initGit()
 )
 
 func Execute() error {
 	return rootCmd.Execute()
+}
+
+func initGit() *gitlab.Client {
+	config := utils.ReadLocalConfig()
+	token := config.Token
+	url := config.BaseUrl
+	customGit, err := gitlab.NewClient(token, gitlab.WithBaseURL(url))
+	utils.ReportErr(err)
+	return customGit
 }
 
 func init() {

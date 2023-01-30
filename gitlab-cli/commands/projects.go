@@ -27,9 +27,7 @@ func NewCmdProjects() *cobra.Command {
 		Short: "list projects",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config := utils.ReadLocalConfig()
-			git, err := gitlab.NewClient(config.Token)
-			utils.ReportErr(err)
-			projects, _, err := git.Projects.ListUserProjects(config.Username, nil)
+			projects, _, err := customGit.Projects.ListUserProjects(config.Username, nil)
 			utils.ReportErr(err)
 			for _, p := range projects {
 				m := utils.ExpandMapToString(utils.StructToMap(p))
@@ -63,10 +61,7 @@ func NewCmdGetProject() *cobra.Command {
 		Args:  cobra.MinimumNArgs(1),
 		Short: "Get a project info",
 		Run: func(cmd *cobra.Command, args []string) {
-			config := utils.ReadLocalConfig()
-			git, err := gitlab.NewClient(config.Token)
-			utils.ReportErr(err)
-			p, _, err := git.Projects.GetProject(args[0], nil)
+			p, _, err := customGit.Projects.GetProject(args[0], nil)
 			utils.ReportErr(err)
 
 			m := utils.ExpandMapToString(utils.StructToMap(p))
@@ -96,10 +91,7 @@ func NewCmdGetBranches() *cobra.Command {
 		Short: "Get branches of the project",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			config := utils.ReadLocalConfig()
-			git, err := gitlab.NewClient(config.Token)
-			utils.ReportErr(err)
-			branches, _, err := git.Branches.ListBranches(args[0], nil)
+			branches, _, err := customGit.Branches.ListBranches(args[0], nil)
 			utils.ReportErr(err)
 			for _, b := range branches {
 				m := utils.ExpandMapToString(utils.StructToMap(b))

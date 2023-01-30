@@ -15,6 +15,7 @@ type Config struct {
 	Token    string `yaml:"token"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+	BaseUrl  string `yaml:"baseUrl"`
 }
 
 func ReportErr(err error) {
