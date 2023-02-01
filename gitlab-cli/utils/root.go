@@ -2,13 +2,15 @@ package utils
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"reflect"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
@@ -24,10 +26,47 @@ func ReportErr(err error) {
 	}
 }
 
+func CheckType(args ...interface{}) {
+	var argType string = reflect.TypeOf(args[0]).Kind().String()
+	var argName string = "unknown variable name"
+
+	if len(args) > 1 && args[1] != nil {
+		argName = args[1].(string)
+	}
+
+	switch argType {
+		case "int":
+			if args[0] == 0 {
+				ReportErr(errors.New(argName + ": type is int but it is 0"))
+			}
+		case "string":
+			if (args[0] == "") {
+				ReportErr(errors.New(argName + ": type is string but it is empty"))
+			}
+		default:
+			return
+	}
+}
+
+func PathExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
+		return false
+	}
+	return false
+}
+
 func ReadLocalConfig() *Config {
 	wd, e := os.Getwd()
 	if e != nil {
 		log.Fatal(e)
+	}
+	
+	if !PathExists("./config.yaml") {
+		log.Fatal("The config.yaml does not exist, plz add it to the root directory of the project which executing the Mango CLI.")
 	}
 
 	yamlFile := readFile(filepath.Join(wd, "./config.yaml"))

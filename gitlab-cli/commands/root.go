@@ -25,6 +25,8 @@ func initGit() *gitlab.Client {
 	config := utils.ReadLocalConfig()
 	token := config.Token
 	url := config.BaseUrl
+	utils.CheckType(token, "Token")
+	utils.CheckType(url, "BaseUrl")
 	customGit, err := gitlab.NewClient(token, gitlab.WithBaseURL(url))
 	utils.ReportErr(err)
 	return customGit

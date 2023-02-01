@@ -27,6 +27,7 @@ func NewCmdProjects() *cobra.Command {
 		Short: "list projects",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config := utils.ReadLocalConfig()
+			utils.CheckType(config.Username, "Username")
 			projects, _, err := customGit.Projects.ListUserProjects(config.Username, nil)
 			utils.ReportErr(err)
 			for _, p := range projects {
