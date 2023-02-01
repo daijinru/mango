@@ -59,8 +59,8 @@
         }
       }
 
+      const root = ReactDOM.createRoot(document.getElementById('root'));
       mango.api.request({url: '/api/v1/user/projects'}).then(res => {
-        const root = ReactDOM.createRoot(document.getElementById('root'));
         const data = [];
         res.forEach(d => {
           data.push(mango.utils.dataCharsToObj(d));
@@ -72,6 +72,8 @@
              {DataTableListObject({list: data}).render()}
            </table>
         )
+      }).catch(error => {
+        root.render(<p>{error}</p>)
       })
     </script>
   </div>

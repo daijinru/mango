@@ -2,8 +2,6 @@
 </section>
 
 <script type="text/babel">
-    const root = ReactDOM.createRoot(document.getElementById('projectInfo'));
-    const search = window.querystringify.parse(location.search);
     function ProjectInfoTableHead() {
         const data = ['ID', 'Name', 'SSHURLToRepo', 'WebURL', 'DefaultBranch'];
         return {
@@ -36,9 +34,9 @@
                             return (<td key={i} data-key={h}>{v[h]}</td>)
                         })}
                         <td>
-                            <div class="btn-group" role="group">
-                              <button type="button" class="btn btn-sm btn-info">Create Pipeline</button>
-                              <button type="button" class="btn btn-sm btn-success">WebIDE</button>
+                            <div className="btn-group" role="group">
+                              <button type="button" className="btn btn-sm btn-info">Create Pipeline</button>
+                              <button type="button" className="btn btn-sm btn-success">WebIDE</button>
                             </div>
                         </td>
                     </tr>
@@ -50,10 +48,10 @@
         }
     }
 
+    const projectInfo = ReactDOM.createRoot(document.getElementById('projectInfo'));
+    const search = window.querystringify.parse(location.search);
     mango.api.request({url: `/api/v1/project/${search.id}`}).then(res => {
-        console.info(res.map(d => mango.utils.dataCharsToObj(d)));
-
-        root.render(
+        projectInfo.render(
             <table className="table table-bordered table-hover table-sm">
                 <caption>Project Information</caption>
                 {ProjectInfoTableHead().render()}
@@ -61,7 +59,7 @@
             </table>
         )
     }).catch(error => {
-        root.render(
+        projectInfo.render(
             <p>{error}</p>
         )
     })
