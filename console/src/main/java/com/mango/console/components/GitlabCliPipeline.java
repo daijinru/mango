@@ -15,4 +15,9 @@ public class GitlabCliPipeline extends GitlabCliCmder{
         String[] cmd = new String[]{CLI, "pipeline", "create", pid, ref};
         return execCmd(cmd);
     }
+
+    public List<String> getUserProjectPipeline(String pid, String id) {
+        String[] cmd = new String[]{CLI, "pipeline", "get", pid, id};
+        return execCmd(cmd);
+    }
 }
