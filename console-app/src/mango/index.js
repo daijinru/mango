@@ -22,13 +22,33 @@ function request(option = {}) {
   return new Promise((resolve, reject) => {
       switch (option.method) {
           case 'get':
-              window.fetch(option.baseUrl + option.url).then(res => {
-                  return res.json();
-              }).then(res => {
-                  if (res.status !== 1000) return reject(res.message || res.status);
-                  return resolve(res.data);
-              })
-              break;
+            window.fetch(option.baseUrl + option.url).then(res => {
+                return res.json();
+            }).then(res => {
+                if (res.status !== 1000) return reject(res.message || res.status);
+                resolve(res.data)
+            }).catch(error => {
+              console.error(error)
+              reject(error)
+            })
+            break
+          case 'post':
+            window.fetch(option.baseUrl + option.url, {
+              method: option.method,
+              body: JSON.stringify(option.body),
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }).then(res => {
+              return res.json()
+            }).then(res => {
+              if (res.status !== 1000) return reject(res.message || res.status);
+              resolve(res.data)
+            }).catch(error => {
+              console.error(error)
+              reject(error)
+            })
+            break
           default:
               return;
 
