@@ -2,8 +2,6 @@
 import './App.css';
 import {ProjectsColumnList} from './components/projects';
 import { PipelinesColumnList } from './components/pipelines';
-import { getState } from './hooks/useSP';
-import { useEffect } from 'react';
 
 function App() {
   return (
