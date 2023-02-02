@@ -3,12 +3,12 @@
         let matched = chars.match(/(?<=<mango>).*(?=<\/mango>)/ig);
         if (!matched) return '';
         matched = matched[0].split(',');
-        const result = {}
+        const result = {};
         matched.forEach(r => {
             const r1 = r.split('&&');
             if (r1) result[r1[0]] = r1[1];
         })
-        return result
+        return result;
     }
 
     const requestOptionDefaults = {
@@ -27,13 +27,15 @@
                         return res.json();
                     }).then(res => {
                         if (res.status !== 1000) return reject(res.message || res.status);
-                        return resolve(res.data)
+                        return resolve(res.data);
                     })
+                    break;
+                default:
+                    return;
 
             }
         })
     }
-
 
     const MODULE_NAME = 'mango';
     window[MODULE_NAME] = {

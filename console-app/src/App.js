@@ -1,6 +1,9 @@
 
 import './App.css';
 import {ProjectsColumnList} from './components/projects';
+import { PipelinesColumnList } from './components/pipelines';
+import { getState } from './hooks/useSP';
+import { useEffect } from 'react';
 
 function App() {
   return (
@@ -14,24 +17,7 @@ function App() {
             <span className="sub-title">Developing...</span>
           </p>
            {ProjectsColumnList().render()}
-        </div>
-
-        <div className="modal">
-          <div className="modal-dialog modal-xl">
-            <div className="modal-conent">
-              <div className="modal-header">
-                <h5 className="modal-title">Modal title</h5>
-                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div className="modal-body">
-                pacman
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-primary">Save changes</button>
-              </div>
-            </div>
-          </div>
+           {PipelinesColumnList().render()}
         </div>
       </main>
       <footer className="footer mt-auto py-3 bg-light" >

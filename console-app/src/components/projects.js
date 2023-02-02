@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import {loader} from './loader.js';
-import { useProjectId } from "../hooks/project.js";
+import useSP, {broadcast} from "../hooks/useSP.js";
 
 export function ProjectsColumnHead() {
-    const data = ['ID', 'Name', 'Description', 'WebURL'];
+    const data = ['ID', 'Name', 'WebURL', 'DefaultBranch'];
     return {
       data,
       render: () => {
@@ -22,27 +22,28 @@ export function ProjectsColumnHead() {
 export function ProjectsColumnList() {
   const [loading, setLoading] = useState(true)
   const [list, setList] = useState([])
-  const [pid, setPid] = useProjectId()
-  function gotoPipelines(k) {
-    console.info(list, k)
+  const {data, render: projectsColumnRender} = ProjectsColumnHead();
+  const [,] = useSP('projectID', null);
+
+  const gotoPipelines = async k => {
+    broadcast('projectID', list[k].ID);
   }
   useEffect(() => {
     mango.api.request({url: '/api/v1/user/projects'}).then(res => {
-      const data = [];
-      res.forEach(d => {
-        data.push(mango.utils.dataCharsToObj(d));
-      });
-      setList(data);
+      setList(res.map(d => mango.utils.dataCharsToObj(d)));
       setLoading(false);
     }).catch(error => {
       console.error(error)
     })
-  })
-  const {data, render: projectsColumnRender} = ProjectsColumnHead();
+  }, [])
+
+  const onCreatePipeline = () => {
+    
+  }
   return {
     render: () => {
       return (
-        loading ?  loader() :
+        loading ? loader() :
         <table className="table table-bordered table-hover table-sm">
           <caption>User Projects</caption>
           {projectsColumnRender()}
@@ -54,11 +55,17 @@ export function ProjectsColumnList() {
                     return (<td key={i} data-key={h}>{v[h]}</td>)
                   })}
                   <td>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-primary"
-                      onClick={gotoPipelines.bind(this, k)}
-                    >Pipelines</button>
+                    <div className="btn-group" role="group">
+                      <button
+                        type="button" className="btn btn-sm btn-info"
+                        onClick={onCreatePipeline.bind(this)}>Create Pipeline</button>
+                      <button type="button" className="btn btn-sm btn-success">WebIDE</button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-primary"
+                        onClick={gotoPipelines.bind(this, k)}
+                      >Pipelines</button>
+                    </div>
                   </td>
                 </tr>
               )
