@@ -1,81 +1,9 @@
 <!doctype html>
 <html lang="en" class="h-100">
-<head th:replace="layout/head :: head(~{this :: title})">
-  <title>Mano Console</title>
+<head>
+  <title>Mango Console</title>
 </head>
-<body th:replace="layout/body :: body(~{this :: .h1-title}, ~{this :: .sub-title}, ~{this :: .main-content})">
-  <span class="h1-title">Mango</span>
-  <span class="sub-title">Your Projects</span>
-  <div class="main-content">
-    <div id="root"></div>
-    <script type="text/babel">
-      function DataTableHeadObject() {
-        const data = ['ID', 'Name', 'Description', 'WebURL'];
-        return {
-          data,
-          render: () => {
-            return (
-              <thead>
-                <tr>
-                  {data.map((h, k) => (<th key={k} scope="col">{h}</th>))}
-                  <th>Actions</th>
-                </tr>
-              </thead>
-            )
-          }
-        }
-      }
-      function DataTableListObject(props) {
-        const {list} = props;
-        if (!list || !Array.isArray(list)) return (<em>No data.</em>);
-        const {data} = DataTableHeadObject();
-        function gotoPipelines(k) {
-          const pid = list[k].ID;
-          location.href = '/pipelines?id=' + pid;
-        }
-        return {
-          render: () => {
-            return (
-              <tbody>
-                {list.map((v, k) => {
-                  return (
-                    <tr key={k}>
-                      {data.map((h, i) => {
-                        return (<td key={i} data-key={h}>{v[h]}</td>)
-                      })}
-                      <td>
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-primary"
-                          onClick={gotoPipelines.bind(this, k)}
-                        >Pipelines</button>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            )
-          }
-        }
-      }
-
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      mango.api.request({url: '/api/v1/user/projects'}).then(res => {
-        const data = [];
-        res.forEach(d => {
-          data.push(mango.utils.dataCharsToObj(d));
-        });
-        root.render(
-           <table className="table table-bordered table-hover table-sm">
-             <caption>User Projects</caption>
-             {DataTableHeadObject().render()}
-             {DataTableListObject({list: data}).render()}
-           </table>
-        )
-      }).catch(error => {
-        root.render(<p>{error}</p>)
-      })
-    </script>
-  </div>
+<body>
+  <h1>Migrating...</h1>
 </body>
 </html>
