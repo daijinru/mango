@@ -1,3 +1,3 @@
 # README
 
-![installcation](/files/mango_guider.png)
+![installcation](/docs/static/mango_guider.png)
