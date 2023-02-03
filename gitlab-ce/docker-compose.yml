@@ -6,10 +6,13 @@ services:
     privileged: true
     container_name: gitlab
     environment:
+      TZ: 'Asia/Shanghai'
       GITLAB_OMNIBUS_CONFIG: |
         gitlab_rails['gitlab_shell_ssh_port'] = 4022
+        gitlab_rails['gitlab_ssh_host'] = '192.168.1.11'
+        external_url 'http://192.168.1.11:8082'
     ports:
-      - '8082:80'
+      - '8082:8082' # for external_url
       - '443:443'
       - '4022:22' # port 22 used by SSH
     volumes:
