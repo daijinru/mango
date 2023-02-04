@@ -6,7 +6,7 @@ import { PipelinesColumnList } from './components/pipelines';
 function App() {
   return (
     <div className="d-flex flex-column h-100">
-      <main className="flex-shrink-0" style={{height: "calc(100vh - 56px)", "overflow-y": "auto"}}>
+      <main className="flex-shrink-0" style={{height: "calc(100vh - 56px)", "overflow": "auto"}}>
         <div className="container">
           <h1 className="mt-5">
             <span className="h1-title">🥭 Mango</span>

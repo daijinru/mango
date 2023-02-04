@@ -1,6 +1,6 @@
 import {loader} from './loader';
 import {useState, useEffect} from 'react';
-import { getState } from '../hooks/useSP';
+import useSP from '../hooks/useSP';
 import mango from '../mango'
 
 export function PipelinesColumnHead() {
@@ -22,7 +22,8 @@ export function PipelinesColumnHead() {
 export function PipelinesColumnList() {
   const [loading, setLoading] = useState(false)
   const {data, render: pipelinesColumnRender} = PipelinesColumnHead();
-  const projectID = getState("projectID")
+  const projectID = useSP('projectID', null)
+  // const projectID = getState("projectID")
   const [list, setList] = useState([])
   useEffect(() => {
     setLoading(true)
@@ -40,7 +41,7 @@ export function PipelinesColumnList() {
           <caption>Project Pipelines</caption>
           {pipelinesColumnRender()}
           <tbody>
-            {list.reverse().map((v, k) => {
+            {list.map((v, k) => {
               return (
                 <tr key={k}>
                   {data.map((h, i) => {

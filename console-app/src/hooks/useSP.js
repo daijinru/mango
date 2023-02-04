@@ -1,37 +1,34 @@
 import { useState, useEffect, useRef } from "react";
 
-const states = {};
 /**
- * The state can be shared with diff components,
- * and it's listener need to useEffect.
+ * Shared hook implemented by pub-sub.
+ * @param name id of the subscription
+ * @param initial initial state
+ * @return initial state
  */
-export default (name, value) => {
-  const [state, setState] = useState(value);
-  subscribe(name, (nextVal) => {
-    setState(nextVal);
-    states[name] = nextVal;
-  })
-  return [state, () => {
-    return states[name];
-  }, () => {
-    unsubscribe(name)
-  }];
-}
+export default (name, initial) => {
+  const [state, setState] = useState(initial);
 
-export const getState = name => {
-  if (!states[name]) return;
-  return states[name];
+  useEffect(() => {
+    subscribe(name, (nextState) => {
+      setState(nextState)
+    })
+    return unsubscribe(name)
+  })
+  return state
 }
 
 const queue = {};
-export const broadcast = (name, state) => {
+export const broadcast = (name, nextState) => {
   if (!queue[name]) return;
-  queue[name](state);
+  queue[name](nextState);
 };
 export const subscribe = (name, cb) => {
   queue[name] = cb;
 };
 export const unsubscribe = (name) => {
-  if (!queue[name]) return;
-  queue[name] = null;
+  return name => {
+    if (!queue[name]) return;
+    queue[name] = null;
+  }
 };

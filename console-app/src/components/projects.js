@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {loader} from './loader.js';
-import useSP, {broadcast, getState} from "../hooks/useSP.js";
+import useSP, {broadcast} from "../hooks/useSP.js";
 import mango from '../mango'
 import {PipelinesColumnHead} from './pipelines.js'
 
@@ -24,9 +24,10 @@ export function ProjectsColumnHead() {
 export function ProjectsColumnList() {
   const [loading, setLoading] = useState(true)
   const [list, setList] = useState([])
-  const [,] = useSP('projectID', null);
+  
+  useSP('projectID', null);
+  const isRunningPip = useSP('runningPipeline', false)
 
-  const [isRunningPip, ] = useSP('runningPipeline', false)
   const [runningPip, setRunningPip] = useState([])
 
   const {data, render: projectsColumnRender} = ProjectsColumnHead()
