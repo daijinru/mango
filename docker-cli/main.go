@@ -29,5 +29,12 @@ func main() {
 			return nil
 		},
 	})
+	rootCommand.AddCommand(&command.Command{
+		Use:  "image",
+		Args: command.ExactArgs(1),
+		RunE: func(cmd *command.Command, args []string) error {
+			return nil
+		},
+	})
 	rootCommand.Execute()
 }

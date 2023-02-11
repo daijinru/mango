@@ -7,12 +7,31 @@ import (
 	"strings"
 )
 
+type PositionalArgs func(cmd *Command, args []string) error
+
+func ExactArgs(n int) PositionalArgs {
+	return func(cmd *Command, args []string) error {
+		if len(args) != n {
+			log.Fatalf("accepts %d arg(s), received %d", n, len(args))
+		}
+		return nil
+	}
+}
+
 type Command struct {
 	Use      string                                  `json:"use"`
 	RunE     func(cmd *Command, args []string) error `json:"runE"`
-	commands []*Command                              `json:"commands"`
-	parent   *Command                                `json:"parent"`
-	args     []string                                `json:"args"`
+	Args     PositionalArgs
+	commands []*Command `json:"commands"`
+	parent   *Command   `json:"parent"`
+	args     []string   `json:"args"`
+}
+
+func (c *Command) ValidateArgs(args []string) error {
+	if c.Args == nil {
+		return nil
+	}
+	return c.Args(c, args)
 }
 
 func (c *Command) LogFatal(err error) {
@@ -42,7 +61,7 @@ func (c *Command) ExecuteC() error {
 	}
 	c.args = flags
 	if cmd != nil {
-		err = cmd.execute(flags)
+		err = cmd.execute(flags[1:])
 		c.LogFatal(err)
 	} else {
 		c.LogFatal(errors.New(c.args[0] + " flag not exist: " + c.FlagsString()))
@@ -55,7 +74,10 @@ func (c *Command) execute(a []string) error {
 	if c.RunE == nil {
 		c.LogFatal(errors.New("RunE does not exist"))
 	}
-	err := c.RunE(c, a)
+	if err := c.ValidateArgs(a); err != nil {
+		return err
+	}
+	err := c.RunE(c, a[1:])
 	c.LogFatal(err)
 	return nil
 }
