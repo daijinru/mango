@@ -2,8 +2,7 @@ package main
 
 import (
 	"docker-cli/command"
-	"fmt"
-	docker "github.com/fsouza/go-dockerclient"
+	"docker-cli/docker"
 	"log"
 )
 
@@ -17,18 +16,15 @@ func main() {
 	rootCommand.AddCommand(&command.Command{
 		Use: "images",
 		RunE: func(cmd *command.Command, args []string) error {
-			log.Println(args)
-			client, err := docker.NewClientFromEnv()
-			cmd.LogFatal(err)
-			imgs, err := client.ListImages(docker.ListImagesOptions{All: false})
-			cmd.LogFatal(err)
-			for _, img := range imgs {
-				fmt.Println("ID: ", img.ID)
-				fmt.Println("RepoTags: ", img.RepoTags)
-				fmt.Println("Created: ", img.Created)
-				fmt.Println("Size: ", img.Size)
-				fmt.Println("VirtualSize: ", img.VirtualSize)
-				fmt.Println("ParentId: ", img.ParentID)
+			c := &docker.Client{}
+			c.NewClient()
+			var images = c.ListImages()
+			log.Print(images.Size)
+			for _, unit := range images.List {
+				log.Println(unit.ID)
+				log.Println(unit.Labels)
+				log.Println(unit.Created)
+				log.Println(unit.RepoTags)
 			}
 			return nil
 		},
