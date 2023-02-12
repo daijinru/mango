@@ -53,7 +53,7 @@ func (c *Command) FlagsString() string {
 	return out
 }
 
-func (c *Command) ExecuteC() error {
+func (c *Command) ExecuteC() (err error) {
 	args := os.Args[1:]
 	cmd, flags, err := c.Find(args)
 	if err != nil {
@@ -61,7 +61,7 @@ func (c *Command) ExecuteC() error {
 	}
 	c.args = flags
 	if cmd != nil {
-		err = cmd.execute(flags[1:])
+		err = cmd.execute(flags)
 		c.LogFatal(err)
 	} else {
 		c.LogFatal(errors.New(c.args[0] + " flag not exist: " + c.FlagsString()))
@@ -77,7 +77,7 @@ func (c *Command) execute(a []string) error {
 	if err := c.ValidateArgs(a); err != nil {
 		return err
 	}
-	err := c.RunE(c, a[1:])
+	err := c.RunE(c, a)
 	c.LogFatal(err)
 	return nil
 }
@@ -114,8 +114,24 @@ Loop:
 }
 
 func (c *Command) Find(args []string) (*Command, []string, error) {
-	flags := stripFlags(args)
-	commandFound := c.findSubCommand(flags[0])
+	// error: "Unresolved reference 'recFind'"
+	// requires declaring a recursive func first
+	var recFind func(*Command, []string) (*Command, []string)
+
+	recFind = func(inC *Command, inArgs []string) (*Command, []string) {
+		striped := stripFlags(inArgs)
+		if len(striped) == 0 {
+			return inC, inArgs
+		}
+		nextSubFlag := striped[0]
+		cmd := findSub(nextSubFlag, inC)
+		if cmd != nil {
+			return recFind(cmd, striped[1:])
+		}
+		return inC, inArgs
+	}
+
+	commandFound, flags := recFind(c, args)
 	return commandFound, flags, nil
 }
 
@@ -128,8 +144,8 @@ func (c *Command) Name() string {
 	return name
 }
 
-func (c *Command) findSubCommand(next string) *Command {
-	for _, cmd := range c.commands {
+func findSub(next string, parent *Command) *Command {
+	for _, cmd := range parent.commands {
 		if cmd.Name() == next {
 			return cmd
 		}
