@@ -2,27 +2,26 @@ package cmd
 
 import (
 	"fmt"
+	command "github.com/daijinru/mango-packages-command"
 	"github.com/daijinru/mango/gitlab-cli/utils"
-	"github.com/spf13/cobra"
 )
 
-func NewCmdConfig() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "config [flags]",
-		Short:   "Get the local config",
-		Aliases: []string{"conf"},
+func NewCmdConfig() *command.Command {
+	cmd := &command.Command{
+		Use: "config",
+		RunE: func(cmd *command.Command, args []string) error {
+			return nil
+		},
 	}
 	cmd.AddCommand(NewCmdConfigGetToken())
 	cmd.AddCommand(NewCmdConfigGetUser())
 	return cmd
 }
 
-func NewCmdConfigGetToken() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "token",
-		Short:   "get the value of token local",
-		Example: "$ gitlab-cli config token",
-		RunE: func(cmd *cobra.Command, args []string) error {
+func NewCmdConfigGetToken() *command.Command {
+	cmd := &command.Command{
+		Use: "token",
+		RunE: func(cmd *command.Command, args []string) error {
 			config := utils.ReadLocalConfig()
 			fmt.Println(config.Token)
 			return nil
@@ -31,12 +30,10 @@ func NewCmdConfigGetToken() *cobra.Command {
 	return cmd
 }
 
-func NewCmdConfigGetUser() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "user",
-		Short:   "get the value of user local",
-		Example: "$ gitlab-cli config user",
-		RunE: func(cmd *cobra.Command, args []string) error {
+func NewCmdConfigGetUser() *command.Command {
+	cmd := &command.Command{
+		Use: "user",
+		RunE: func(cmd *command.Command, args []string) error {
 			return nil
 		},
 	}

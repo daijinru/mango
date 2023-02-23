@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	command "github.com/daijinru/mango-packages-command"
 	"github.com/daijinru/mango/gitlab-cli/utils"
-	"github.com/spf13/cobra"
 	"github.com/xanzy/go-gitlab"
 	"log"
 	"os"
@@ -30,12 +30,11 @@ type Commit struct {
 	WebURL         string                 `json:"web_url"`
 }
 
-func NewCmdCommits() *cobra.Command {
-	return &cobra.Command{
-		Use:   "commits",
-		Short: "List commits of the project",
-		Args:  cobra.MinimumNArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+func NewCmdCommits() *command.Command {
+	return &command.Command{
+		Use:  "commits",
+		Args: command.ExactArgs(1),
+		RunE: func(cmd *command.Command, args []string) error {
 			now := time.Now()
 			since := now.AddDate(0, 0, -150)
 			listCommitsOptions := gitlab.ListCommitsOptions{
@@ -51,6 +50,7 @@ func NewCmdCommits() *cobra.Command {
 				})
 				log.Print(s)
 			}
+			return nil
 		},
 	}
 }

@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	command "github.com/daijinru/mango-packages-command"
 	"github.com/daijinru/mango/gitlab-cli/utils"
-	"github.com/spf13/cobra"
 	"github.com/xanzy/go-gitlab"
 	"log"
 	"os"
@@ -21,12 +21,11 @@ type PipelineInfo struct {
 	CreatedAt *time.Time `json:"created-at"`
 }
 
-func NewCmdPipelines() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "pipelines",
-		Args:  cobra.ExactArgs(1),
-		Short: "List pipelines of the project",
-		Run: func(cmd *cobra.Command, args []string) {
+func NewCmdPipelines() *command.Command {
+	cmd := &command.Command{
+		Use:  "pipelines",
+		Args: command.ExactArgs(1),
+		RunE: func(cmd *command.Command, args []string) error {
 			config := utils.ReadLocalConfig()
 			opt := &gitlab.ListProjectPipelinesOptions{
 				Username: gitlab.String(config.Username),
@@ -43,16 +42,18 @@ func NewCmdPipelines() *cobra.Command {
 				})
 				log.Print(s)
 			}
+
+			return nil
 		},
 	}
 	return cmd
 }
 
-func NewCmdPipeline() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "pipeline",
-		Short: "To operate a pipeline",
-		Run: func(cmd *cobra.Command, args []string) {
+func NewCmdPipeline() *command.Command {
+	cmd := &command.Command{
+		Use: "pipeline",
+		RunE: func(cmd *command.Command, args []string) error {
+			return nil
 		},
 	}
 	cmd.AddCommand(GetSinglePipeline())
@@ -79,12 +80,11 @@ type Pipeline struct {
 	FinishedAt  *time.Time `json:"finished-at"`
 }
 
-func GetSinglePipeline() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "get",
-		Short: "Get a single pipeline with pid and its id",
-		Args:  cobra.MinimumNArgs(2),
-		Run: func(cmd *cobra.Command, args []string) {
+func GetSinglePipeline() *command.Command {
+	cmd := &command.Command{
+		Use:  "get",
+		Args: command.ExactArgs(2),
+		RunE: func(cmd *command.Command, args []string) error {
 			id, err := strconv.Atoi(args[1])
 			utils.ReportErr(err)
 			p, _, err := customGit.Pipelines.GetPipeline(args[0], id)
@@ -95,17 +95,17 @@ func GetSinglePipeline() *cobra.Command {
 				return m[k]
 			})
 			log.Print(s)
+			return nil
 		},
 	}
 	return cmd
 }
 
-func CreatePipeline() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "create",
-		Short: "Create a pipeline for the project",
-		Args:  cobra.MinimumNArgs(2),
-		Run: func(cmd *cobra.Command, args []string) {
+func CreatePipeline() *command.Command {
+	cmd := &command.Command{
+		Use:  "create",
+		Args: command.ExactArgs(2),
+		RunE: func(cmd *command.Command, args []string) error {
 			opts := &gitlab.CreatePipelineOptions{
 				// todo: ?? why use ptr here, probably for memory shared.
 				Ref: gitlab.String(args[1]),
@@ -117,22 +117,23 @@ func CreatePipeline() *cobra.Command {
 				return m[k]
 			})
 			log.Print(s)
+			return nil
 		},
 	}
 	return cmd
 }
 
-func DeletePipeline() *cobra.Command {
-	return &cobra.Command{
-		Use:   "delete",
-		Short: "Delete a pipeline for the project",
-		Args:  cobra.MinimumNArgs(2),
-		Run: func(cmd *cobra.Command, args []string) {
+func DeletePipeline() *command.Command {
+	return &command.Command{
+		Use:  "delete",
+		Args: command.ExactArgs(2),
+		RunE: func(cmd *command.Command, args []string) error {
 			id, err := strconv.Atoi(args[1])
 			utils.ReportErr(err)
 			res, err := customGit.Pipelines.DeletePipeline(args[0], id)
 			utils.ReportErr(err)
 			log.Print(res.Response.Status)
+			return nil
 		},
 	}
 }

@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	command "github.com/daijinru/mango-packages-command"
 	"github.com/daijinru/mango/gitlab-cli/utils"
-	"github.com/spf13/cobra"
 	"github.com/xanzy/go-gitlab"
 	"log"
 	"os"
@@ -20,12 +20,11 @@ type Project struct {
 	Owner         *gitlab.User `json:"owner"`
 }
 
-func NewCmdProjects() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "projects",
-		Args:  cobra.ExactArgs(0),
-		Short: "list projects",
-		RunE: func(cmd *cobra.Command, args []string) error {
+func NewCmdProjects() *command.Command {
+	cmd := &command.Command{
+		Use:  "projects",
+		Args: command.ExactArgs(0),
+		RunE: func(cmd *command.Command, args []string) error {
 			config := utils.ReadLocalConfig()
 			utils.CheckType(config.Username, "Username")
 			projects, _, err := customGit.Projects.ListUserProjects(config.Username, nil)
@@ -43,12 +42,12 @@ func NewCmdProjects() *cobra.Command {
 	return cmd
 }
 
-func NewCmdProject() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "project",
-		Args:  cobra.MinimumNArgs(1),
-		Short: "To operate a project",
-		Run: func(cmd *cobra.Command, args []string) {
+func NewCmdProject() *command.Command {
+	cmd := &command.Command{
+		Use:  "project",
+		Args: command.ExactArgs(1),
+		RunE: func(cmd *command.Command, args []string) error {
+			return nil
 		},
 	}
 	cmd.AddCommand(NewCmdGetProject())
@@ -56,12 +55,11 @@ func NewCmdProject() *cobra.Command {
 	return cmd
 }
 
-func NewCmdGetProject() *cobra.Command {
-	return &cobra.Command{
-		Use:   "get",
-		Args:  cobra.MinimumNArgs(1),
-		Short: "Get a project info",
-		Run: func(cmd *cobra.Command, args []string) {
+func NewCmdGetProject() *command.Command {
+	return &command.Command{
+		Use:  "get",
+		Args: command.ExactArgs(1),
+		RunE: func(cmd *command.Command, args []string) error {
 			p, _, err := customGit.Projects.GetProject(args[0], nil)
 			utils.ReportErr(err)
 
@@ -70,6 +68,7 @@ func NewCmdGetProject() *cobra.Command {
 				return m[k]
 			})
 			log.Print(s)
+			return nil
 		},
 	}
 }
@@ -86,12 +85,11 @@ type Branch struct {
 	WebURL             string        `json:"web_url"`
 }
 
-func NewCmdGetBranches() *cobra.Command {
-	return &cobra.Command{
-		Use:   "branches",
-		Short: "Get branches of the project",
-		Args:  cobra.MinimumNArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
+func NewCmdGetBranches() *command.Command {
+	return &command.Command{
+		Use:  "branches",
+		Args: command.ExactArgs(1),
+		RunE: func(cmd *command.Command, args []string) error {
 			branches, _, err := customGit.Branches.ListBranches(args[0], nil)
 			utils.ReportErr(err)
 			for _, b := range branches {
@@ -101,6 +99,7 @@ func NewCmdGetBranches() *cobra.Command {
 				})
 				log.Print(s)
 			}
+			return nil
 		},
 	}
 }

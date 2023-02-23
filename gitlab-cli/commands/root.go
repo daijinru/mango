@@ -1,16 +1,15 @@
 package cmd
 
 import (
+	command "github.com/daijinru/mango-packages-command"
 	"github.com/daijinru/mango/gitlab-cli/utils"
-	"github.com/spf13/cobra"
 	"github.com/xanzy/go-gitlab"
 )
 
 var (
-	rootCmd = &cobra.Command{
-		Use:   "gitlab-ci",
-		Short: "a cli for gitlab",
-		RunE: func(cmd *cobra.Command, args []string) error {
+	rootCmd = &command.Command{
+		Use: "gitlab-ci",
+		RunE: func(cmd *command.Command, args []string) error {
 			return nil
 		},
 	}
@@ -33,7 +32,6 @@ func initGit() *gitlab.Client {
 }
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(NewCmdConfig())
 	rootCmd.AddCommand(NewCmdPipelines())
 	rootCmd.AddCommand(NewCmdPipeline())

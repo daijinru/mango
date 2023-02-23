@@ -1,15 +1,5 @@
 # Mango Gitlab CLI
 
-Learn all the commands:
-```bash
-$ gitlab-cli help
-```
-
-List the subcommands within a single command:
-```bash
-$ gitlab-cli <subcommand> --help/-h
-```
-
 ## config
 
 Plz manually create a config.yaml in the User Root directory and contain the following:
