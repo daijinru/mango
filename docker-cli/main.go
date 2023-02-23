@@ -1,7 +1,7 @@
 package main
 
 import (
-	"docker-cli/command"
+	command "github.com/daijinru/mango-packages-command"
 )
 
 func main() {

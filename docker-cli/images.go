@@ -1,8 +1,8 @@
 package main
 
 import (
-	"docker-cli/command"
 	"docker-cli/docker"
+	command "github.com/daijinru/mango-packages-command"
 	"log"
 )
 

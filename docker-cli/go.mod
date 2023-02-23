@@ -3,13 +3,17 @@ module docker-cli
 go 1.19
 
 require (
+	github.com/daijinru/mango-packages-command v0.0.1
+	github.com/fsouza/go-dockerclient v1.9.4
+)
+
+require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/containerd/containerd v1.6.14 // indirect
 	github.com/docker/docker v23.0.0+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/fsouza/go-dockerclient v1.9.4 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/klauspost/compress v1.11.13 // indirect
 	github.com/moby/patternmatcher v0.5.0 // indirect
