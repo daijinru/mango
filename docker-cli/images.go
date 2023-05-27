@@ -3,7 +3,6 @@ package main
 import (
 	"docker-cli/docker"
 	command "github.com/daijinru/mango-packages-command"
-	"log"
 )
 
 func NewCmdImages() *command.Command {
@@ -12,14 +11,14 @@ func NewCmdImages() *command.Command {
 		Args: command.ExactArgs(0),
 		RunE: func(cmd *command.Command, args []string) error {
 			c := &docker.Client{}
-			c.NewClient()
 			var images = c.ListImages()
+			out := ""
 			//log.Print(images.Size)
 			for _, unit := range images.List {
-				log.Println(unit.ID)
-				//log.Println(unit.Labels)
-				//log.Println(unit.Created)
-				//log.Println(unit.RepoTags)
+				for k, v := range unit.Labels {
+					out += " " + k + ": " + v
+				}
+				Lime(out)
 			}
 			return nil
 		},
@@ -33,7 +32,10 @@ func newCmdImageGet() *command.Command {
 		Use:  "get",
 		Args: command.ExactArgs(1),
 		RunE: func(cmd *command.Command, args []string) error {
-			log.Println(args)
+			c := &docker.Client{}
+			c.NewClient()
+			var img = c.InspectImage(args[0])
+			println(img.Item.Container)
 			return nil
 		},
 	}

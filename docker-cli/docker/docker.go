@@ -22,10 +22,9 @@ func (c *Client) NewClient() *Client {
 	return c
 }
 
-// Image image.go
 type Images struct {
 	Size int                 `json:"Size"`
-	List []*docker.APIImages `json:"Content"`
+	List []*docker.APIImages `json:"List"`
 	//ID          string            `json:"Id" yaml:"Id" toml:"Id"`
 	//RepoTags    []string          `json:"RepoTags,omitempty" yaml:"RepoTags,omitempty" toml:"RepoTags,omitempty"`
 	//Created     int64             `json:"Created,omitempty" yaml:"Created,omitempty" toml:"Created,omitempty"`
@@ -53,5 +52,24 @@ func (c *Client) ListImages() *Images {
 		out.List = append(out.List, unit)
 	}
 	out.Size = len(out.List)
+	return out
+}
+
+type Image struct {
+	Item *docker.Image `json:"Item"`
+}
+
+func (c *Client) InspectImage(in string) *Image {
+	var out = &Image{}
+	img, err := c.client.InspectImage(in)
+	var item = &docker.Image{}
+	c.logFatal(err)
+	item.ID = img.ID
+	item.Created = img.Created
+	item.RepoTags = img.RepoTags
+	item.Parent = img.Parent
+	item.Container = img.Container
+	item.Author = img.Author
+	out.Item = item
 	return out
 }
