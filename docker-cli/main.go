@@ -2,6 +2,7 @@ package main
 
 import (
 	command "github.com/daijinru/mango-packages-command"
+	tasks "docker-cli/tasks"
 )
 
 func main() {
@@ -12,6 +13,7 @@ func main() {
 		},
 	}
 
-	rootCommand.AddCommand(NewCmdImages())
+	rootCommand.AddCommand(tasks.NewCmdImages())
+	rootCommand.AddCommand(tasks.NewCmdVersion())
 	rootCommand.Execute()
 }
