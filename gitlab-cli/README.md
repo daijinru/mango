@@ -1,6 +1,12 @@
 # Mango Gitlab CLI
 
-## config
+## Build
+
+```bash
+$ go build -o mango
+```
+
+## Config
 
 Plz manually create a config.yaml in the User Root directory and contain the following:
 
@@ -11,7 +17,9 @@ token: <your_gitlab-token>
 baseUrl: <your_gitlab_instance_web_url>
 ```
 
-## projects
+## Usage
+
+### Projects
 
 A few examples:
 
@@ -30,7 +38,7 @@ Get branches of the project:
 $ gitlab-cli branches <pid> 
 ```
 
-## pipelines
+## Pipelines
 
 List pipelines:
 ```bash
@@ -48,7 +56,7 @@ Create a pipeline:
 $ gitlab-cli pipeline create <pid> <ref>
 ```
 
-## commits
+## Commits
 
 List commits of the project since 150 days(default) before:
 ```bash

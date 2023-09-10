@@ -1,0 +1,10 @@
+stages:
+  - test
+
+job-test:
+  stage: test
+  script:
+    - echo "✅ test success!"
+  only:
+    - api
+    - trigger

@@ -27,7 +27,7 @@ $ sudo docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
 ### If SSH or HTTP addr is incorrect while Recreating Gitlab
 
 ```bash
-$ docker exec -it gitlab
+$ docker exec -it gitlab /bin/bash
 $ vi /etc/gitlab/gitlab.rb
 ```
 

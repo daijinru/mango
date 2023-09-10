@@ -14,7 +14,14 @@ var (
 		},
 	}
 	customGit = initGit()
+	docker = initDocker()
 )
+
+func initDocker() *utils.Docker {
+	docker := &utils.Docker{}
+	client := docker.NewClient()
+	return client
+}
 
 func Execute() error {
 	return rootCmd.Execute()
@@ -38,4 +45,7 @@ func init() {
 	rootCmd.AddCommand(NewCmdProjects())
 	rootCmd.AddCommand(NewCmdProject())
 	rootCmd.AddCommand(NewCmdCommits())
+	rootCmd.AddCommand(NewCmdVersion())
+	
+	rootCmd.AddCommand(NewDockerConfig())
 }
