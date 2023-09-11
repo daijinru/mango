@@ -3,7 +3,9 @@
 ## Build
 
 ```bash
-$ go build -o mango
+$ go build
+# or
+$ go build -o path/mango-cli
 ```
 
 ## Config
