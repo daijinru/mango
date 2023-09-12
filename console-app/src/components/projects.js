@@ -84,10 +84,12 @@ export function ProjectsColumnList() {
                 return (
                   <tr key={k}>
                     {data.map((h, i) => {
-                      return (<td key={i} data-key={h}>{v[h]}</td>)
+                      return (<td key={i} data-key={h}>{
+                        h === 'WebURL' ? <a href={v[h]} target="_blank">{v[h]}</a> : v[h]
+                      }</td>)
                     })}
-                    <td>
-                      <div className="btn-group" role="group">
+                    <td width="300">
+                      <div className="btn-group btn-group-sm" role="group">
                         <button
                           type="button" className="btn btn-sm btn-info"
                           onClick={onCreatePipeline.bind(this, v['ID'], v['DefaultBranch'])}>Create Pipeline</button>

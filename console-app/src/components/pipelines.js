@@ -33,6 +33,19 @@ export function PipelinesColumnList() {
       setLoading(false)
     })
   }, [projectID])
+  const tdRender = (v, h) => {
+    if (h ==='Status') {
+      return (
+        v[h] !== 'success' ?
+        <div className="spinner-border text-primary" role="status"></div>
+        : <button type="button" className="btn btn-success btn-sm">Success</button>
+      )
+    }
+    if (h === 'WebURL') {
+      return <a href={v[h]} target="_blank">{v[h]}</a>
+    }
+    return v[h]
+  }
   return {
     render() {
       return (
@@ -45,13 +58,7 @@ export function PipelinesColumnList() {
               return (
                 <tr key={k}>
                   {data.map((h, i) => {
-                    return (<td key={i} data-key={h}>{
-                      h === 'Status' ?
-                        v[h] !== 'success' ?
-                        <div className="spinner-border text-primary" role="status"></div>
-                        : <button type="button" className="btn btn-success btn-sm">Success</button>
-                      : v[h]
-                    }</td>)
+                    return (<td key={i} data-key={h}>{tdRender(v, h)}</td>)
                   })}
                 </tr>
               )

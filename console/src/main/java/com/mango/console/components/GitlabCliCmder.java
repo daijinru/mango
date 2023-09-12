@@ -12,7 +12,7 @@ import java.util.List;
 public class GitlabCliCmder {
     public static String CLI;
     static {
-        CLI = "gitlab-cli";
+        CLI = "mango-cli";
     }
     public List<String> execCmd(String[] cmd) {
         List<String> res = new ArrayList<>();
