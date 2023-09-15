@@ -9,3 +9,15 @@ $ ln -sf mango-cli /usr/local/bin/mango-cli
 # Add here: config.yaml of mango-cli
 $ cp mango-cli/config.yaml console/
 ```
+
+## Build
+
+```bash
+$ mvn clean package
+```
+
+## Start
+
+```bash
+$ nohup java -jar target/mango_console.war &
+```

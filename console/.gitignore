@@ -37,3 +37,4 @@ config.yaml
 
 ### logger ###
 logs/*
+nohup.out
