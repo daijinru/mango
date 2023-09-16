@@ -4,7 +4,6 @@ import com.mango.console.annotations.LoggerMg;
 import com.mango.console.components.GitlabCliProject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -14,14 +13,6 @@ import java.util.List;
 public class ProjectController {
     @Resource
     GitlabCliProject gitlabCliProject;
-
-    @RequestMapping("/projects")
-    @LoggerMg(description = "访问项目列表页面")
-    public ModelAndView getProjects() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("projects");
-        return modelAndView;
-    }
 
     @GetMapping("/api/v1/user/projects")
     @LoggerMg(description = "请求项目列表")

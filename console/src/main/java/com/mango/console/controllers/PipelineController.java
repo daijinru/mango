@@ -2,12 +2,10 @@ package com.mango.console.controllers;
 
 import com.mango.console.annotations.LoggerMg;
 import com.mango.console.components.GitlabCliPipeline;
-import jdk.nashorn.internal.runtime.logging.Logger;
-import lombok.extern.java.Log;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.thymeleaf.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -18,14 +16,6 @@ import java.util.Objects;
 public class PipelineController {
     @Resource
     GitlabCliPipeline gitlabCliPipeline;
-
-    @RequestMapping("/pipelines")
-    @LoggerMg(description = "访问流水线列表页面")
-    public ModelAndView getPipelinePage() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("pipeline");
-        return modelAndView;
-    }
 
     @GetMapping("/api/v1/user/{pid}/pipelines")
     @LoggerMg(description = "请求指定项目的流水线列表")
