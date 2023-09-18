@@ -74,7 +74,7 @@ function App() {
             <Image size='mini' src='/mango.png' />
           </Menu.Item>
           <Menu.Item header>Mango Console</Menu.Item>
-          <Menu.Item as='a'>Index</Menu.Item>
+          <Menu.Item as='a' active>Console</Menu.Item>
           <Menu.Item as='a'>Statistic</Menu.Item>
         </Container>
       </Menu>
