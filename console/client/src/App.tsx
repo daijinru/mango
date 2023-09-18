@@ -9,6 +9,7 @@ import {
   Header,
   Icon,
   Container,
+  Image,
 } from 'semantic-ui-react'
 
 import Projects from './components/Projects';
@@ -62,12 +63,27 @@ function App() {
   }, [projects])
   return (
     <>
-    <div className='appWrapper'>
+    <div>
+      <Menu
+        borderless
+        style={{marginBottom: '36px'}}
+        className='header-wrapper-shadow'
+      >
+        <Container>
+          <Menu.Item>
+            <Image size='mini' src='/mango.png' />
+          </Menu.Item>
+          <Menu.Item header>Mango Console</Menu.Item>
+          <Menu.Item as='a'>Index</Menu.Item>
+          <Menu.Item as='a'>Statistic</Menu.Item>
+        </Container>
+      </Menu>
+
     <Container>
-        <Header as="h2">
+        {/* <Header as="h2">
           <Icon name='plug'></Icon>
           <Header.Content>Mango Console</Header.Content>
-        </Header>
+        </Header> */}
         <Grid>
           <Grid.Column width={4}>
             <Menu
