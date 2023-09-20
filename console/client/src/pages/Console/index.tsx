@@ -7,8 +7,8 @@ import {
   Container,
 } from 'semantic-ui-react'
 
-import Projects from '../../components/Projects';
-import Pipelines from '../../components/Pipelines';
+import Projects from './components/Projects';
+import Pipelines from './components/Pipelines';
 import mango from '../../libs/mango';
 
 const getAsyncProjects: () => Promise<any> = async () => {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Icon, Table, Label } from 'semantic-ui-react'
-import Loader from './Loader/Loader'
+import Loader from '../../../components/Loader/Loader'
 
 export type Props = {
   list: any[]
