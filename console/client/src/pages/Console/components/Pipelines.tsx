@@ -1,20 +1,21 @@
 import React from 'react'
 import { Icon, Table, Label } from 'semantic-ui-react'
 import Loader from '../../../components/Loader/Loader'
-
+import PipelineStatusLabel from './PipelineStatusLabel'
+import type { Pipeline } from '../../../types'
 export type Props = {
-  list: any[]
+  list: Pipeline[]
 }
 const Pipelines: React.FC<Props> = (props: Props) => {
   const [loading, setLoading] = React.useState<boolean>(true)
-  const [data, setData] = React.useState<any[]>([])
+  const [data, setData] = React.useState<Pipeline[]>([])
   React.useEffect(() => {
     if (props.list && props.list.length > 0) {
       setLoading(false)
       const out = props.list.reduce((acc, curr) => {
         acc = acc.concat(curr)
         return acc
-      }, [])
+      }, [] as Pipeline[])
       setData(out)
     }
   }, [props.list])
@@ -46,9 +47,7 @@ const Pipelines: React.FC<Props> = (props: Props) => {
                     </Table.Cell>
                     <Table.Cell collapsing>
                       {
-                        item.Status === 'failed'
-                        ? <Label as='a' color='red' tag>failed</Label>
-                        : <Label as='a' color='teal' tag>success</Label>
+                        PipelineStatusLabel(item.Status)
                       }
                     </Table.Cell>
                 </Table.Row>
