@@ -6,12 +6,13 @@ import {
 import qs from 'query-string'
 import mango from '../../libs/mango'
 import PipelineCards from './components/PipelineCards'
+import type { Project as ProjectType } from '../../types'
 
-// const getAsyncProjectById: (id: string) => Promise<any> = async (id) => {
-//   const response = await mango.api.request({url: '/api/v1/project/' + id})  
-//   const out = response.map((d: any) => mango.utils.dataCharsToObj(d))
-//   return Promise.resolve(out)
-// }
+const getAsyncProjectById: (id: string) => Promise<ProjectType[]> = async (id) => {
+  const response = await mango.api.request({url: '/api/v1/project/' + id})  
+  const out = response.map((d: any) => mango.utils.dataCharsToObj(d))
+  return Promise.resolve(out)
+}
 
 const Project: () => React.ReactNode = () => {
   const panes = [
@@ -28,21 +29,23 @@ const Project: () => React.ReactNode = () => {
       render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane>,
     },
   ]
+
+  const [projectInfo, setProjectInfo] = React.useState<ProjectType>()
   React.useEffect(() => {
     (async function fn() {
-      // const queries = qs.parse(location.search)
-      // if (!queries.id) 
-      // await getAsyncProjectById()
+      const queries = qs.parse(window.location.search)
+      if (queries.id) {
+        const result = await getAsyncProjectById(queries.id as string)
+        setProjectInfo(result[0])
+      }
     })()
-  })
+  }, [])
   return (
     <>
       <Container>
-        <Header as="h2"><Icon name='plug' /> Project</Header>
+        <Header as="h2"><Icon name='plug' />{projectInfo?.Name}</Header>
         <p>
-          A container is a fixed width element that wraps your site's content. It remains a constant
-          size and uses <b>margin</b> to center. Containers are the simplest way to center page
-          content inside a grid.
+          {projectInfo?.Description || 'Sorry. Here did not provide any information yet!😂'}
         </p>
         <Container>
         <Tab menu={{ secondary: true }} panes={panes} />

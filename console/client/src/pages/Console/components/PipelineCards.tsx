@@ -9,6 +9,7 @@ type CardItem = {
   header: string | React.ReactNode
   description: string
   meta: string | React.ReactNode
+  key?: string
 }
 const getAsyncPipelines: (pid: string) => Promise<Pipeline[]> = async (pid) => {
   const response = await mango.api.request({url: '/api/v1/user/' + pid + '/pipelines'})  
@@ -26,11 +27,12 @@ const CardExampleGroupProps = () => {
         setItems(result.map(r => ({
           header: <p>{PipelineStatusLabel(r.Status)}</p>,
           description: `${r.Source} from Project ${r.ProjectID}, Ref ${r.Ref}`,
-          meta: <a href={r.WebURL}>click here</a>
+          meta: <a href={r.WebURL}>click here</a>,
+          key: r.WebURL
         })))
       }
     })()
-  })
+  }, [])
   return (
     <>
       <Card.Group items={items} />
