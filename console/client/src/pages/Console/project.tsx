@@ -5,8 +5,9 @@ import {
 } from 'semantic-ui-react'
 import qs from 'query-string'
 import mango from '../../libs/mango'
-import PipelineCards from './components/PipelineCards'
+import ProjectPipelines from './components/ProjectPipelines'
 import type { Project as ProjectType } from '../../types'
+import { useLocation } from 'react-router-dom'
 
 const getAsyncProjectById: (id: string) => Promise<ProjectType[]> = async (id) => {
   const response = await mango.api.request({url: '/api/v1/project/' + id})  
@@ -18,7 +19,7 @@ const Project: () => React.ReactNode = () => {
   const panes = [
     {
       menuItem: 'Pipelines',
-      render: () => <Tab.Pane attached={false}><PipelineCards /></Tab.Pane>,
+      render: () => <Tab.Pane attached={false}><ProjectPipelines /></Tab.Pane>,
     },
     {
       menuItem: 'Overview',
@@ -30,16 +31,17 @@ const Project: () => React.ReactNode = () => {
     },
   ]
 
+  const location = useLocation()
   const [projectInfo, setProjectInfo] = React.useState<ProjectType>()
   React.useEffect(() => {
     (async function fn() {
-      const queries = qs.parse(window.location.search)
+      const queries = qs.parse(location.search)
       if (queries.id) {
         const result = await getAsyncProjectById(queries.id as string)
         setProjectInfo(result[0])
       }
     })()
-  }, [])
+  }, [location])
   return (
     <>
       <Container>
