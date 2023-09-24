@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"log"
-
 	command "github.com/daijinru/mango-packages-command"
 )
 
@@ -11,6 +10,7 @@ func NewDockerConfig() *command.Command {
 	cmd := &command.Command{
 		Use: "docker",
 		RunE: func(cmd *command.Command, args []string) error {
+      log.Println(11)
 			return nil
 		},
 	}

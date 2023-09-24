@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	cmd "github.com/daijinru/mango/gitlab-cli/commands"
+	cmd "github.com/daijinru/mango/mango-cli/commands"
 	"os"
 )
 

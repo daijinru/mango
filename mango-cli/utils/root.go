@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"reflect"
 
-	"gopkg.in/yaml.v2"
+	// "gopkg.in/yaml.v2"
 )
 
 type Config struct {
@@ -59,25 +59,25 @@ func PathExists(path string) bool {
 	return false
 }
 
-func ReadLocalConfig() *Config {
-	wd, e := os.Getwd()
-	if e != nil {
-		log.Fatal(e)
-	}
+// func ReadLocalConfig() *Config {
+// 	wd, e := os.Getwd()
+// 	if e != nil {
+// 		log.Fatal(e)
+// 	}
 	
-	if !PathExists("./config.yaml") {
-		log.Fatal("The config.yaml does not exist, plz add it to the root directory of the project which executing the Mango CLI.")
-	}
+// 	if !PathExists("./config.yaml") {
+// 		log.Fatal("The config.yaml does not exist, plz add it to the root directory of the project which executing the Mango CLI.")
+// 	}
 
-	yamlFile := readFile(filepath.Join(wd, "./config.yaml"))
-	var config *Config
-	// unmarshal(in []byte, out interface{})
-	err := yaml.Unmarshal(yamlFile, &config)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return config
-}
+// 	yamlFile := readFile(filepath.Join(wd, "./config.yaml"))
+// 	var config *Config
+// 	// unmarshal(in []byte, out interface{})
+// 	err := yaml.Unmarshal(yamlFile, &config)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return config
+// }
 
 // ConvertArrayToStr 拼接字符串数组 []string 返回单一 string
 func ConvertArrayToStr(arr []string) string {

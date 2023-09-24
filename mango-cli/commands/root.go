@@ -2,8 +2,7 @@ package cmd
 
 import (
 	command "github.com/daijinru/mango-packages-command"
-	"github.com/daijinru/mango/gitlab-cli/utils"
-	"github.com/xanzy/go-gitlab"
+	"github.com/daijinru/mango/mango-cli/utils"
 )
 
 var (
@@ -13,9 +12,14 @@ var (
 			return nil
 		},
 	}
-	customGit = initGit()
 	docker = initDocker()
 )
+
+func init() {
+	rootCmd.AddCommand(NewCmdVersion())
+	rootCmd.AddCommand(NewDockerConfig())
+	rootCmd.AddCommand(NewCmdRun())
+}
 
 func initDocker() *utils.Docker {
 	docker := &utils.Docker{}
@@ -27,25 +31,4 @@ func Execute() error {
 	return rootCmd.Execute()
 }
 
-func initGit() *gitlab.Client {
-	config := utils.ReadLocalConfig()
-	token := config.Token
-	url := config.BaseUrl
-	utils.CheckType(token, "Token")
-	utils.CheckType(url, "BaseUrl")
-	customGit, err := gitlab.NewClient(token, gitlab.WithBaseURL(url))
-	utils.ReportErr(err)
-	return customGit
-}
 
-func init() {
-	rootCmd.AddCommand(NewCmdConfig())
-	rootCmd.AddCommand(NewCmdPipelines())
-	rootCmd.AddCommand(NewCmdPipeline())
-	rootCmd.AddCommand(NewCmdProjects())
-	rootCmd.AddCommand(NewCmdProject())
-	rootCmd.AddCommand(NewCmdCommits())
-	rootCmd.AddCommand(NewCmdVersion())
-	
-	rootCmd.AddCommand(NewDockerConfig())
-}
