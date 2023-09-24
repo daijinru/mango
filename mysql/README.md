@@ -18,9 +18,25 @@ default-character-set=utf8
 default-character-set=utf8
 ```
 
-## Test
+## Starting
 
 ```bash
+# start container
+$ docker-compose up -d
+# docker inspect
 $ docker logs -f mysql
 $ docker exec -it mysql /bin/bash
+# if create databases
+$ mysql -uroot -p
+# and then
+$ CREATE DATABASE [database_name]
+```
+
+## Connnect Networks
+
+```bash
+# Multi Containers in a network
+# eg.
+$ docker network create local_database
+$ docker network connect local_database mysql
 ```
