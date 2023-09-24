@@ -11,7 +11,7 @@ import {
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import Console from './pages/Console'
 import Statistic from './pages/Statistic';
-import Project from './pages/Console/project'
+import Project from './pages/Console/Project'
 
 const App: React.FC = () => {
   const [activeItem, setActiveItem] = React.useState('')

@@ -1,0 +1,19 @@
+version: '3.6'
+services:
+  mysql:
+    image: mysql
+    restart: always
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      TZ: Asia/Shanghai
+    ports:
+      - 3306:3306
+    volumes:
+      - /root/mysql/data:/var/lib/mysql
+      - /root/mysql/config/my.cnf:/etc/mysql/my.cnf
+    command:
+      --max_connections=1000
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --default-authentication-plugin=mysql_native_password

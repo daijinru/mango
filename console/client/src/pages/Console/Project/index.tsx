@@ -4,9 +4,9 @@ import {
   Icon, Tab,
 } from 'semantic-ui-react'
 import qs from 'query-string'
-import mango from '../../libs/mango'
-import ProjectPipelines from './components/ProjectPipelines'
-import type { Project as ProjectType } from '../../types'
+import mango from '../../../libs/mango'
+import ProjectPipelines from './components/pipelines'
+import type { Project as ProjectType } from '../../../types'
 import { useLocation } from 'react-router-dom'
 
 const getAsyncProjectById: (id: string) => Promise<ProjectType[]> = async (id) => {

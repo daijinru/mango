@@ -1,9 +1,9 @@
 import React from 'react'
 import { Card, Tab, Form } from 'semantic-ui-react'
 import qs from 'query-string'
-import mango from '../../../libs/mango'
-import type { Pipeline } from '../../../types'
-import PipelineStatusLabel from './PipelineStatusLabel'
+import mango from '../../../../libs/mango'
+import type { Pipeline } from '../../../../types'
+import PipelineStatusLabel from '../../components/PipelineStatusLabel'
 
 type CardItem = {
   header: string | React.ReactNode
