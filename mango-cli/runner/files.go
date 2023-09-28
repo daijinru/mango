@@ -10,7 +10,7 @@ import (
 // It's the working directory client.
 type WorkspaceClient struct {
 	Workspace string `json:"Worksapce"`
-  Projects []string `json:"projects"`
+  Projects []string `json:"Projects"`
 }
 
 func (client *WorkspaceClient) ChWorkspace(path string) (string, error) {

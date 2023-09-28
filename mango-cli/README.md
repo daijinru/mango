@@ -65,5 +65,23 @@ List commits of the project since 150 days(default) before:
 $ mango-cli commits <pid>
 ```
 
+## Mango Ci Yaml
+
+```bash
+Version: "abc"
+Stages:
+  - start
+  - build
+
+job-dev:
+  stage: start
+  script:
+    - echo "dev success"
+
+build-job:
+  stage: build
+  script:
+    - echo "build success"
+```
 
 

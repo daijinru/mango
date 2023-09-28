@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/daijinru/mango-packages-command v0.0.1
 	github.com/fsouza/go-dockerclient v1.9.8
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

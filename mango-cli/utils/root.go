@@ -48,16 +48,16 @@ func CheckType(args ...interface{}) {
 	}
 }
 
-func PathExists(path string) bool {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true
-	}
-	if os.IsNotExist(err) {
-		return false
-	}
-	return false
-}
+// func PathExists(path string) bool {
+// 	_, err := os.Stat(path)
+// 	if err == nil {
+// 		return true
+// 	}
+// 	if os.IsNotExist(err) {
+// 		return false
+// 	}
+// 	return false
+// }
 
 // func ReadLocalConfig() *Config {
 // 	wd, e := os.Getwd()
@@ -88,7 +88,7 @@ func ConvertArrayToStr(arr []string) string {
 	return merged
 }
 
-func readFile(path string) []byte {
+func ReadFile(path string) []byte {
 	file, e := os.OpenFile(filepath.Join(path), os.O_RDONLY, 0)
 	if e != nil {
 		log.Fatal(e)
@@ -107,6 +107,22 @@ func readFile(path string) []byte {
 	}
 	return res
 }
+
+// func StructToMap(obj interface{}) map[string]interface{} {
+// 	result := make(map[string]interface{})
+
+// 	objValue := reflect.ValueOf(obj)
+// 	objType := objValue.Type()
+
+// 	for i := 0; i < objValue.NumField(); i++ {
+// 		field := objType.Field(i)
+// 		fieldValue := objValue.Field(i)
+
+// 		result[field.Name] = fieldValue.Interface()
+// 	}
+
+// 	return result
+// }
 
 func StructToMap(m interface{}) map[string]interface{} {
 	out := map[string]interface{}{}
