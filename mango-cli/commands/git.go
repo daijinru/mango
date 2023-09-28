@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	command "github.com/daijinru/mango-packages-command"
-	git "github.com/daijinru/mango/mango-cli/libs_git"
+	"github.com/daijinru/mango/mango-cli/runner"
 	"github.com/daijinru/mango/mango-cli/utils"
 )
 
@@ -26,7 +26,7 @@ func NewCmdGitLog() *command.Command {
 		Use: "log",
 		// Args: command.ExactArgs(1),
 		RunE: func(cmd *command.Command, args []string) error {
-			output, err := git.GetLog()
+			output, err := runner.GetLog()
 			utils.ReportErr(err)
 			fmt.Println(output)
 			return nil
@@ -40,7 +40,7 @@ func NewCmdGitStatus() *command.Command {
 		Use: "status",
 		// Args: command.ExactArgs(1),
 		RunE: func(cmd *command.Command, args []string) error {
-			output, err := git.GetStatus()
+			output, err := runner.GetStatus()
 			utils.ReportErr(err)
 			fmt.Println(output)
 			return nil

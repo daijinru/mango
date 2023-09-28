@@ -5,24 +5,24 @@ import (
 )
 
 type Docker struct {
-	client *docker.Client `json:"client"`
+	Client *docker.Client `json:"client"`
 }
 
 func (c *Docker) NewClient() *Docker {
 	client, err := docker.NewClientFromEnv()
   ReportErr(err)
-  c.client = client
+  c.Client = client
   return c
 }
 
 type Images struct {
-  Size int `json: "size"`
+  Size int `json:"size"`
   List []*docker.APIImages `json:"List"`
 }
 
 func (c *Docker) ListImages() *Images {
 	var out = &Images{}
-	imgs, err := c.client.ListImages(docker.ListImagesOptions{All: false})
+	imgs, err := c.Client.ListImages(docker.ListImagesOptions{All: false})
 	ReportErr(err)
 	for _, img := range imgs {
 		var unit = &docker.APIImages{
@@ -46,7 +46,7 @@ type Image struct {
 
 func (c *Docker) InspectImage(in string) *Image {
 	var out = &Image{}
-	img, err := c.client.InspectImage(in)
+	img, err := c.Client.InspectImage(in)
 	var item = &docker.Image{}
 	ReportErr(err)
 	item.ID = img.ID
