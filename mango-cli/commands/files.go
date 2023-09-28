@@ -15,20 +15,37 @@ func NewCmdFiles() *command.Command {
 			return nil
 		},
 	}
-	cmd.AddCommand(NewCmdDirectories())
+	cmd.AddCommand(NewCmdWorkspace())
+  cmd.AddCommand(NewCmdLs())
 	return cmd
 }	
 
 // List Directories in the current workspace.
-func NewCmdDirectories() *command.Command {
+func NewCmdWorkspace() *command.Command {
 	return &command.Command{
-		Use: "list",
+		Use: "ws",
 		Args: command.ExactArgs(1),
 		RunE: func(cmd *command.Command, args []string) error {
-			output, err := runner.ListDirectories(args[0])
+      client := &runner.WorkspaceClient{}
+      _, err := client.NewWorkSpaceClient(args[0])
 			utils.ReportErr(err)
-			fmt.Println(output)
+      fmt.Println(client.Workspace)
 			return nil
 		},
+  }
+}
+
+func NewCmdLs() *command.Command {
+  return &command.Command{
+    Use: "ls",
+    Args: command.ExactArgs(1),
+    RunE: func(cmd *command.Command, args []string) error {
+      // client, err := createWorkspaceClient(args[0])
+      client := &runner.WorkspaceClient{}
+      files, err := client.LsFiles(args[0])
+      utils.ReportErr(err)
+      fmt.Println(files)
+      return nil
+    },
   }
 }

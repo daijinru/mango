@@ -7,29 +7,38 @@ import (
 	"github.com/daijinru/mango/mango-cli/utils"
 )
 
-type WorkSpaceClient struct {
+// It's the working directory client.
+type WorkspaceClient struct {
 	Workspace string `json:"Worksapce"`
-	Directories []string `json:"Directories"`
+  Projects []string `json:"projects"`
 }
 
-func (ws *WorkSpaceClient) NewWorkSpaceClient(path string) *WorkSpaceClient {
-	var out = &WorkSpaceClient{}
-
-	useWorkspace, err := worksapce(path)
-	utils.ReportErr(err)
-	out.Workspace = path
-
-	if (!useWorkspace) {
-		return out
+func (client *WorkspaceClient) ChWorkspace(path string) (string, error) {
+	err := os.Chdir(path)
+	if err != nil {
+		return "", err
 	}
-	directories, err := listDirectories(path)
-	utils.ReportErr(err)
-	out.Directories = directories
 
-	return out
+	if (!client.PathExists(path)) {
+    return "", fmt.Errorf("path not exist: %s", path)
+  }
+
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("no access: %s", path)
+	}
+
+	return dir, nil
 }
 
-func listDirectories(path string) ([]string, error) {
+func (client *WorkspaceClient) NewWorkSpaceClient(path string) (*WorkspaceClient, error) {
+	workspace, err := client.ChWorkspace(path)
+	utils.ReportErr(err)
+  client.Workspace = workspace
+	return client, err
+}
+
+func (client *WorkspaceClient) ListDirectories(path string) ([]string, error) {
 	var directories []string
 
 	files, err := os.ReadDir(path)
@@ -46,23 +55,26 @@ func listDirectories(path string) ([]string, error) {
 	return directories, nil
 }
 
-func worksapce(path string) (bool, error) {
-	err := os.Chdir(path)
+func (client *WorkspaceClient) LsFiles(path string) ([]string, error) {
+	var out []string
+
+	files, err := os.ReadDir(path)
 	if err != nil {
-		return false, err
-	}
-	
-	_, err = os.Stat(path)
-	if (os.IsNotExist(err)) {
-		return false, fmt.Errorf("path not exist: %s", path)
+		return nil, err
 	}
 
-	_, err = os.Getwd()
-	if err != nil {
-		return false, fmt.Errorf("no access: %s", path)
+	for _, file := range files {
+			out = append(out, file.Name())
 	}
 
-	return true, nil
+	return out, err
 }
 
-
+func (client *WorkspaceClient) PathExists(path string) bool {
+	_, err := os.Stat(path)
+	utils.ReportErr(err)
+	if (err != nil && os.IsNotExist(err)) {
+		return false
+	}
+	return true
+}
