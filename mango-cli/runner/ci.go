@@ -8,11 +8,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// To defined several work objects in each CI profile to call actual tasks.
 type Job struct {
   Stage string `yaml:"Stage"`
   Scripts []interface{} `yaml:"Scripts"`
 }
 
+// The collections of CI methods, plz call NewCI() for initialization.
 type CiConfig struct {
 	Version string `yaml:"Version"`
 
@@ -29,7 +31,7 @@ func (ci *CiConfig) NewCI() *CiConfig {
   return ci
 }
 
-// 
+// It is the entry that read CI profile from diff versions of YAML.
 func (ci *CiConfig) ReadFromYaml(path string) (*CiConfig, error) {
   var YAML_NAME = ".mango-ci.yaml"
 
@@ -45,6 +47,10 @@ func (ci *CiConfig) ReadFromYaml(path string) (*CiConfig, error) {
   err := yaml.Unmarshal(ciFile, &data)
   utils.ReportErr(err)
 
+  return readFromYamlVersion_1(ci, data)
+}
+
+func readFromYamlVersion_1 (ci *CiConfig,  data map[string]interface{}) (*CiConfig, error) {
   for key, value := range data {
     switch key {
     case "Version":
@@ -88,3 +94,4 @@ func (ci *CiConfig) ReadFromYaml(path string) (*CiConfig, error) {
   }
   return ci, nil
 }
+
