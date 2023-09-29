@@ -13,17 +13,38 @@ import (
 	// "gopkg.in/yaml.v2"
 )
 
-type Config struct {
-	Token    string `yaml:"token"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	BaseUrl  string `yaml:"baseUrl"`
-}
+// Accepts a diff number of params,
+// prints the error when only one error type passing.
+// the second param is required to be a char carrying the %s placeholder.
+func ReportErr(args ...interface{}) {
+  if args[0] == nil {
+    return
+  }
 
-func ReportErr(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
+  if len(args) < 2 {
+    if value, ok := args[0].(error); ok {
+      log.Fatal(value)
+    }
+    return
+  }
+
+  var msg string
+  var err interface{}
+  if (len(args) > 1) {
+    for _, arg := range args {
+      if value, ok := arg.(string); ok {
+        msg = value
+      }
+      if value, ok := arg.(error); ok {
+        err = value
+      }
+    }
+
+    if err == nil {
+      return
+    }
+    log.Fatal(fmt.Errorf(msg, err))
+  }
 }
 
 func CheckType(args ...interface{}) {
@@ -48,38 +69,7 @@ func CheckType(args ...interface{}) {
 	}
 }
 
-// func PathExists(path string) bool {
-// 	_, err := os.Stat(path)
-// 	if err == nil {
-// 		return true
-// 	}
-// 	if os.IsNotExist(err) {
-// 		return false
-// 	}
-// 	return false
-// }
-
-// func ReadLocalConfig() *Config {
-// 	wd, e := os.Getwd()
-// 	if e != nil {
-// 		log.Fatal(e)
-// 	}
-	
-// 	if !PathExists("./config.yaml") {
-// 		log.Fatal("The config.yaml does not exist, plz add it to the root directory of the project which executing the Mango CLI.")
-// 	}
-
-// 	yamlFile := readFile(filepath.Join(wd, "./config.yaml"))
-// 	var config *Config
-// 	// unmarshal(in []byte, out interface{})
-// 	err := yaml.Unmarshal(yamlFile, &config)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	return config
-// }
-
-// ConvertArrayToStr 拼接字符串数组 []string 返回单一 string
+// convert []string, output 1 string
 func ConvertArrayToStr(arr []string) string {
 	merged := ""
 	for i := 0; i < len(arr); i++ {
@@ -107,22 +97,6 @@ func ReadFile(path string) []byte {
 	}
 	return res
 }
-
-// func StructToMap(obj interface{}) map[string]interface{} {
-// 	result := make(map[string]interface{})
-
-// 	objValue := reflect.ValueOf(obj)
-// 	objType := objValue.Type()
-
-// 	for i := 0; i < objValue.NumField(); i++ {
-// 		field := objType.Field(i)
-// 		fieldValue := objValue.Field(i)
-
-// 		result[field.Name] = fieldValue.Interface()
-// 	}
-
-// 	return result
-// }
 
 func StructToMap(m interface{}) map[string]interface{} {
 	out := map[string]interface{}{}
