@@ -2,8 +2,8 @@ package runner
 
 import (
 	"container/list"
-	"fmt"
 	"path/filepath"
+
 	"github.com/daijinru/mango/mango-cli/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -33,19 +33,19 @@ func (ci *CiConfig) NewCI() *CiConfig {
 
 // It is the entry that read CI profile from diff versions of YAML.
 func (ci *CiConfig) ReadFromYaml(path string) (*CiConfig, error) {
-  var YAML_NAME = ".mango-ci.yaml"
+  var YAML_NAME = "./meta-inf/.mango-ci.yaml"
 
   var client = &WorkspaceClient{}
   client.NewWorkSpaceClient(path)
   if !client.PathExists(YAML_NAME) {
-    return ci, fmt.Errorf(".mango-ci.yaml not exist %s: ", path)
+    return nil, nil
   }
   ciPath := filepath.Join(client.Workspace, YAML_NAME)
   ciFile := utils.ReadFile(ciPath)
 
   var data map[string]interface{}
   err := yaml.Unmarshal(ciFile, &data)
-  utils.ReportErr(err)
+  utils.ReportErr(err, "yaml unmarshal: %s")
 
   return readFromYamlVersion_1(ci, data)
 }
@@ -94,4 +94,5 @@ func readFromYamlVersion_1 (ci *CiConfig,  data map[string]interface{}) (*CiConf
   }
   return ci, nil
 }
+
 
