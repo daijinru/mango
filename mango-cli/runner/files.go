@@ -1,17 +1,27 @@
 package runner
 
 import (
-	"fmt"
-	"os"
-	"time"
-
-	"github.com/daijinru/mango/mango-cli/utils"
+  "fmt"
+  "os"
+  "time"
 )
 
 // It's the working directory client.
 type WorkspaceClient struct {
-  Workspace string `json:"Worksapce"`
-  Projects []string `json:"Projects"`
+  CWD string `json:"Worksapce"`
+  LockFile *LockFile `json:"LockFile"`
+}
+
+type LockFile struct {
+  Timestamp string
+  Name string
+  LockFilePath string
+}
+
+func (client *WorkspaceClient) NewWorkSpaceClient(path string) (*WorkspaceClient, error) {
+  workspace, err := client.chWorkspace(path)
+  client.CWD = workspace
+  return client, err
 }
 
 func (client *WorkspaceClient) chWorkspace(path string) (string, error) {
@@ -32,11 +42,57 @@ func (client *WorkspaceClient) chWorkspace(path string) (string, error) {
   return dir, nil
 }
 
-func (client *WorkspaceClient) NewWorkSpaceClient(path string) (*WorkspaceClient, error) {
-  workspace, err := client.chWorkspace(path)
-  utils.ReportErr(err)
-  client.Workspace = workspace
-  return client, err
+func (client *WorkspaceClient) NewLockFile(name string) *WorkspaceClient {
+  Suffix := ".lock"
+  lockFile := &LockFile{
+    Name: name,
+    Timestamp: TimeNow(),
+    LockFilePath: name + Suffix,
+  }
+  client.LockFile = lockFile
+  return client
+} 
+
+func (client *WorkspaceClient) IfExistsLock() (bool, error) {
+  _, err := os.Stat(client.LockFile.LockFilePath)
+  if err == nil {
+    return true, nil
+  } else if os.IsNotExist(err) {
+    return false, nil
+  } else {
+    return false, fmt.Errorf("unable to check file: %v", err)
+  }
+}
+
+func (client *WorkspaceClient) CreateLockFile(name string) (bool, error) {
+  lockFile := client.LockFile
+  if _, err := os.Stat(lockFile.LockFilePath); err == nil {
+    return true, nil
+  } else if os.IsNotExist(err) {
+    file, err := os.Create(lockFile.LockFilePath)
+    if err != nil {
+      return false, fmt.Errorf("failed to create file: %v", err)
+    }
+    defer file.Close()
+    return true, nil
+  } else {
+    return false, fmt.Errorf("unable to check file: %v", err)
+  }
+}
+
+func (client *WorkspaceClient) DeleteLockFile() error {
+  lockFile := client.LockFile
+  if _, err := os.Stat(lockFile.LockFilePath); err == nil {
+    err := os.Remove(lockFile.LockFilePath)
+    if err != nil {
+      return fmt.Errorf("lock file cannot be deleted: %v", err)
+    }
+  }
+  return nil
+}
+
+func TimeNow() string {
+  return time.Now().Format("01-02-2006 15:04:05")
 }
 
 func (client *WorkspaceClient) ListDirectories(path string) ([]string, error) {
@@ -73,66 +129,8 @@ func (client *WorkspaceClient) LsFiles(path string) ([]string, error) {
 
 func (client *WorkspaceClient) PathExists(path string) bool {
   _, err := os.Stat(path)
-  utils.ReportErr(err, "path not exists: %s")
   if (err != nil && os.IsNotExist(err)) {
     return false
   }
   return true
 }
-
-type LockFile struct {
-  Timestamp string
-  Name string
-  Exists bool
-}
-
-func (client *WorkspaceClient) IfExistsLock(name string) (bool, error) {
-  lockFilePath := name + ".lock" 
-  _, err := os.Stat(lockFilePath)
-  if err == nil {
-    return true, nil
-  } else if os.IsNotExist(err) {
-    return false, nil
-  } else {
-    return false, fmt.Errorf("unable to check file: %v", err)
-  }
-}
-
-func (client *WorkspaceClient) CreateLockFile(name string) (*LockFile, error) {
-  lockFile := &LockFile{
-    Name: name,
-    Timestamp: TimeNow(),
-    Exists: true,
-  }
-  lockFilePath := lockFile.Name + ".lock"
-  if _, err := os.Stat(lockFilePath); err == nil {
-    return lockFile, nil
-  } else if os.IsNotExist(err) {
-    file, err := os.Create(lockFilePath)
-    if err != nil {
-      return nil, fmt.Errorf("failed to create file: %v", err)
-    }
-    defer file.Close()
-    return lockFile, nil
-  } else {
-    return nil, fmt.Errorf("unable to check file: %v", err)
-  }
-}
-
-func (fileLock *LockFile) DeleteLockFile() error {
-  lockFilePath := fileLock.Name + ".lock"
-  if _, err := os.Stat(lockFilePath); err == nil {
-    err := os.Remove(lockFilePath)
-    if err != nil {
-      return fmt.Errorf("lock file cannot be deleted: %v", err)
-    }
-  }
-  fileLock.Exists = false
-  return nil
-}
-
-func TimeNow() string {
-  return time.Now().Format("01-02-2006 15:04:05")
-}
-
-
