@@ -29,7 +29,7 @@ func NewCmdWorkspace() *command.Command {
       client := &runner.WorkspaceClient{}
       _, err := client.NewWorkSpaceClient(args[0])
 			utils.ReportErr(err)
-      fmt.Println(client.Workspace)
+      fmt.Println(client.CWD)
 			return nil
 		},
   }

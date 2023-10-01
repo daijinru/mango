@@ -7,6 +7,10 @@ import (
   "github.com/daijinru/mango/mango-cli/utils"
 )
 
+var (
+  CI_LOCK_NAME = ".ci-running"
+)
+
 func NewCmdCI() *command.Command {
   root := &command.Command{
     Use: "ci",
@@ -23,15 +27,21 @@ func NewCmdGetConfig() *command.Command {
   return &command.Command{
     Use: "get",
     RunE: func(cmd *command.Command, args []string) error {
-      var ci = &runner.CiConfig{}
-      ci.NewCI()
-      _, err := ci.ReadFromYaml(args[0])
-      utils.ReportErr(err)
-      // TODO print fields of ci config
-      fmt.Println("Version: ", ci.Version)
-      for stage := ci.Stages.Front(); stage != nil; stage = stage.Next() {
-        fmt.Println(stage.Value)
+      ci := &runner.CiClient{}
+      ciOption := &runner.CiOption{
+        Path: args[0],
       }
+      ci.NewCI(ciOption)
+      ok, err := ci.ReadFromYaml(args[0])
+      utils.ReportErr(err)
+      if ok {
+        // TODO print fields of ci config
+        fmt.Println("Version: ", ci.Version)
+        for stage := ci.Stages.Front(); stage != nil; stage = stage.Next() {
+          fmt.Println(stage.Value)
+        }
+      }
+
       return nil
     },
   }
@@ -41,32 +51,39 @@ func NewCmdRunConfig() *command.Command {
   return &command.Command{
     Use: "run",
     RunE: func(cmd *command.Command, args []string) error {
-      lockName := ".ci.running"
-      workspace := &runner.WorkspaceClient{}
-      workspace.NewWorkSpaceClient(args[0])
-      
-      isLock, err := workspace.IfExistsLock(lockName)
+      ciOption := &runner.CiOption{
+        Path: args[0],
+        LockName: CI_LOCK_NAME,
+      }
+      ci := &runner.CiClient{}
+      ci.NewCI(ciOption)
+
+      running, err := ci.AreRunningLocally()
       utils.ReportErr(err)
-      if isLock {
-        fmt.Println("ci is running: " + lockName)
+      if running {
+        fmt.Println("😂 ci is running, can query the progresss of the current CI")
         return nil
       }
 
-      lockFile, err := workspace.CreateLockFile(lockName)
+      ok, err := ci.CreateRunningLocally()
       utils.ReportErr(err)
+      if ok {
+        fmt.Println("create lock file locally success: ", ci.Workspace.LockFile.Timestamp)
+      }
 
-      ci := &runner.CiConfig{}
-      ci.NewCI()
-      _, err = ci.ReadFromYaml(args[0])
+      ok, err = ci.ReadFromYaml(args[0])
       utils.ReportErr(err)
+      if ok {
+        fmt.Println("ci completes reading of: " + ci.LockName)
+      }
+
       runner.Setting(&runner.ExecutionOption{
         PrintLine: true,
       })
-
       for stage := ci.Stages.Front(); stage != nil; stage = stage.Next() {
         scripts := stage.Value
         if value, ok := scripts.(*runner.Job); ok {
-          fmt.Println("now start [stage]: ", value.Stage)
+          fmt.Println("[🥭 now start stage: ", value.Stage, " ]")
           for _, script := range value.Scripts {
             _, err := runner.RunCommandSplit(script.(string))
             utils.ReportErr(err)
@@ -74,8 +91,11 @@ func NewCmdRunConfig() *command.Command {
         }
       }
       
-      fmt.Println("now release the lock: ", lockFile.Timestamp)
-      lockFile.DeleteLockFile()
+      ok, err = ci.CompletedRunningTask()
+      utils.ReportErr(err)
+      if ok {
+        fmt.Println("now release the lock: ", runner.TimeNow())
+      }
       return nil
     },
   }

@@ -18,6 +18,7 @@ type LockFile struct {
   LockFilePath string
 }
 
+// Specify a path and use it to initialize current workspace, add CWD to the instance.
 func (client *WorkspaceClient) NewWorkSpaceClient(path string) (*WorkspaceClient, error) {
   workspace, err := client.chWorkspace(path)
   client.CWD = workspace
@@ -42,6 +43,8 @@ func (client *WorkspaceClient) chWorkspace(path string) (string, error) {
   return dir, nil
 }
 
+// Specify an id to initialize the LockFile instance, which is build-in the WorkspaceClient,
+// must be executed before using FileLock operations.
 func (client *WorkspaceClient) NewLockFile(name string) *WorkspaceClient {
   Suffix := ".lock"
   lockFile := &LockFile{
@@ -64,7 +67,7 @@ func (client *WorkspaceClient) IfExistsLock() (bool, error) {
   }
 }
 
-func (client *WorkspaceClient) CreateLockFile(name string) (bool, error) {
+func (client *WorkspaceClient) CreateLockFile() (bool, error) {
   lockFile := client.LockFile
   if _, err := os.Stat(lockFile.LockFilePath); err == nil {
     return true, nil

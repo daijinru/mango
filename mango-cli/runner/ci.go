@@ -2,6 +2,7 @@ package runner
 
 import (
 	"container/list"
+	"fmt"
 	"path/filepath"
 
 	"github.com/daijinru/mango/mango-cli/utils"
@@ -15,42 +16,83 @@ type Job struct {
 }
 
 // The collections of CI methods, plz call NewCI() for initialization.
-type CiConfig struct {
+type CiClient struct {
 	Version string `yaml:"Version"`
-
   StagesMap map[string]*list.Element
   Stages *list.List  `yaml:"Stages"`
-
   Jobs []*Job `yaml:"Jobs"`
+  // Directory for working currently
+  Workspace *WorkspaceClient
+  LockName string
 }
 
-func (ci *CiConfig) NewCI() *CiConfig {
+type CiOption struct {
+  // Local directory path, absolute or relative
+  Path string
+  LockName string
+}
+
+// Initialize a CI instance.
+func (ci *CiClient) NewCI(option *CiOption) *CiClient {
   ci.Version = ""
   ci.StagesMap = make(map[string]*list.Element)
   ci.Stages = list.New()
+
+  workspace := &WorkspaceClient{}
+  workspace.NewWorkSpaceClient(option.Path)
+  ci.Workspace = workspace
+
+  if option.LockName != "" {
+    workspace.NewLockFile(option.LockName)
+    ci.LockName = option.LockName
+  }
+
   return ci
 }
 
+// Only one process is allowed at a time in A physical machine,
+// because the CI instance usually performs build or release tasks,
+// and some cases of modifying files.
+func (ci *CiClient) AreRunningLocally() (bool, error) {
+  running, err := ci.Workspace.IfExistsLock()
+  return running, err
+}
+
+func (ci *CiClient) CreateRunningLocally() (bool, error) {
+  success, err := ci.Workspace.CreateLockFile()
+  return success, err
+}
+
+func (ci *CiClient) CompletedRunningTask() (bool, error) {
+  if err := ci.Workspace.DeleteLockFile(); err == nil {
+    return true, err
+  } else {
+    return false, err
+  }
+}
+
 // It is the entry that read CI profile from diff versions of YAML.
-func (ci *CiConfig) ReadFromYaml(path string) (*CiConfig, error) {
+func (ci *CiClient) ReadFromYaml(path string) (bool, error) {
   var YAML_NAME = "./meta-inf/.mango-ci.yaml"
 
-  var client = &WorkspaceClient{}
-  client.NewWorkSpaceClient(path)
-  if !client.PathExists(YAML_NAME) {
-    return nil, nil
+  if !ci.Workspace.PathExists(YAML_NAME) {
+    return false, fmt.Errorf("file not exists: %s", YAML_NAME)
   }
-  ciPath := filepath.Join(client.Workspace, YAML_NAME)
+  ciPath := filepath.Join(ci.Workspace.CWD, YAML_NAME)
   ciFile := utils.ReadFile(ciPath)
 
   var data map[string]interface{}
   err := yaml.Unmarshal(ciFile, &data)
   utils.ReportErr(err, "yaml unmarshal: %s")
 
-  return readFromYamlVersion_1(ci, data)
+  ok, err := readFromYamlVersion_1(ci, data)
+  if ok {
+    return ok, err
+  }
+  return false, fmt.Errorf("read from yaml faild")
 }
 
-func readFromYamlVersion_1 (ci *CiConfig,  data map[string]interface{}) (*CiConfig, error) {
+func readFromYamlVersion_1 (ci *CiClient,  data map[string]interface{}) (bool, error) {
   for key, value := range data {
     switch key {
     case "Version":
@@ -92,7 +134,5 @@ func readFromYamlVersion_1 (ci *CiConfig,  data map[string]interface{}) (*CiConf
       }
     }
   }
-  return ci, nil
+  return true, nil
 }
-
-
