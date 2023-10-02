@@ -29,6 +29,8 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
   ci := &runner.CiClient{}
   ci.NewCI(ciOption)
 
+  defer ci.Logger.Writer.Close()
+
   running, err := ci.AreRunningLocally()
   utils.ReportErr(err)
   if running {
@@ -80,7 +82,6 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
     utils.ReportErr(err, "cannot be ended running task %v")
     if ok {
       ci.Logger.ReportSuccess("✅finish running task and now release🔓 the lock")
-      ci.Logger.Writer.Close()
     }
   }()
   return nil
