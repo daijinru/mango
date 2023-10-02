@@ -1,12 +1,14 @@
 package runner
 
 import (
-  "container/list"
-  "fmt"
-  "path/filepath"
-  "os"
-  "github.com/daijinru/mango/mango-cli/utils"
-  "gopkg.in/yaml.v3"
+	"container/list"
+	"fmt"
+	"net/url"
+	"os"
+	"path/filepath"
+
+	"github.com/daijinru/mango/mango-cli/utils"
+	"gopkg.in/yaml.v3"
 )
 
 // To defined several work objects in each CI profile to call actual tasks.
@@ -24,12 +26,14 @@ type CiClient struct {
   // Directory for working currently
   Workspace *WorkspaceClient
   LockName string
+  Logger *utils.Logger
 }
 
 type CiOption struct {
   // Local directory path, absolute or relative
   Path string
   LockName string
+  LogName string
 }
 
 // Initialize a CI instance.
@@ -41,6 +45,18 @@ func (ci *CiClient) NewCI(option *CiOption) *CiClient {
   workspace := &WorkspaceClient{}
   workspace.NewWorkSpaceClient(option.Path)
   ci.Workspace = workspace
+
+  writer := &utils.Writer{}
+  logFilePath, err := url.JoinPath(workspace.CWD, "./ci.log")
+  if err == nil {
+    writerOption := &utils.WriterOption{
+      FilePath: logFilePath,
+    }
+    writer.NewWriter(*writerOption)
+    ci.Logger = &utils.Logger{
+      Writer: writer,
+    }
+  }
 
   if option.LockName != "" {
     workspace.NewLockFile(option.LockName)
@@ -91,7 +107,9 @@ func (ci *CiClient) ReadFromYaml() (bool, error) {
 
   var config YAML_Config
   err = yaml.Unmarshal(ciData, &config)
-  utils.ReportErr(err, "yaml unmarshal: %s")
+  if err != nil {
+    return false, fmt.Errorf("error from yaml.Unmarshal: %s", err)
+  }
   ok, err := readFromYamlVersion_1(ci, config.Data)
   if ok {
     return ok, nil

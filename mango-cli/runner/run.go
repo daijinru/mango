@@ -3,6 +3,7 @@ package runner
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"os/exec"
 	"strings"
 
@@ -31,7 +32,8 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
     text := scanner.Text()
     output += text + "\n"
     if ex.PrintLine {
-      utils.ReportLog(text)
+      fmt.Printf("[%s] %s\n", utils.TimeNow(), text)
+      // utils.ReportLog(text)
     }
   }
 

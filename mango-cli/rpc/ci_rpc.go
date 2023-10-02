@@ -9,14 +9,11 @@ var (
   CI_LOCK_NAME = ".ci_running"
 )
 
-type CiService struct {
-  // CiRunner *runner.CiClient
-}
+type CiService struct {}
 
 type Reply struct {
   Status int8
   Message string
-  // data map[string]interface{}
 }
 type RunArgs struct {
   Name string
@@ -37,14 +34,14 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
   if running {
     message := "🔒ci is running, No further operations allowed until it ends"
     reply.Message = utils.AddPrefixMsg(message)
-    utils.ReportWarn(message)
+    ci.Logger.ReportWarn(message)
     return nil
   }
 
   ok, err := ci.CreateRunningLocally()
   utils.ReportErr(err)
   if ok {
-    utils.ReportLog("create lock file locally success")
+    ci.Logger.ReportLog("create lock file locally success")
   } else {
     reply.Message = utils.AddPrefixMsg("create lock fail")
     return nil
@@ -53,7 +50,7 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
   ok, err = ci.ReadFromYaml()
   utils.ReportErr(err)
   if ok {
-    utils.ReportLog("ci completes reading from local yaml: " + ci.LockName)
+    ci.Logger.ReportLog("ci completes reading from local yaml: " + ci.LockName)
   } else {
     reply.Message = utils.AddPrefixMsg("ci cannot be completed reading of: " + ci.LockName)
     return nil
@@ -71,7 +68,7 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
     for stage := ci.Stages.Front(); stage != nil; stage = stage.Next() {
       scripts := stage.Value
       if value, ok := scripts.(*runner.Job); ok {
-        utils.ReportLog("now running stage: " + value.Stage)
+        ci.Logger.ReportLog("now running stage: " + value.Stage)
         for _, script := range value.Scripts {
           _, err := execution.RunCommandSplit(script.(string))
           utils.ReportErr(err, "started stage: " + value.Stage + ", but run ci script failed: %v")
@@ -82,9 +79,9 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
     ok, err = ci.CompletedRunningTask()
     utils.ReportErr(err, "cannot be ended running task %v")
     if ok {
-      utils.ReportSuccess("✅finish running task and now release🔓 the lock")
+      ci.Logger.ReportSuccess("✅finish running task and now release🔓 the lock")
+      ci.Logger.Writer.Close()
     }
   }()
-
   return nil
 }

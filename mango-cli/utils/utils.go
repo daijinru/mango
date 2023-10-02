@@ -1,72 +1,19 @@
 package utils
 
 import (
-	"bufio"
-	"errors"
-	"fmt"
-	"io"
-	"log"
-	"os"
-	"path/filepath"
-	"reflect"
-	"time"
-  "github.com/ttacon/chalk"
-	// "gopkg.in/yaml.v2"
+  "bufio"
+  "errors"
+  "fmt"
+  "io"
+  "log"
+  "os"
+  "time"
+  "path/filepath"
+  "reflect"
 )
 
 func TimeNow() string {
   return time.Now().Format("01-02-2006 15:04:05")
-}
-
-func AddPrefixMsg(msg string) string {
-  return "🥭 [" + TimeNow() + "] " + msg
-}
-
-func ReportLog(msg string) {
-  fmt.Println(chalk.Cyan, AddPrefixMsg(msg))
-}
-
-func ReportWarn(msg string) {
-  fmt.Println(chalk.Yellow, AddPrefixMsg(msg))
-}
-
-func ReportSuccess(msg string) {
-  fmt.Println(chalk.Green, AddPrefixMsg(msg))
-}
-
-// Accepts a diff number of params,
-// prints the error when only one error type passing.
-// the second param is required to be a char carrying the %s placeholder.
-func ReportErr(args ...interface{}) {
-  if args[0] == nil {
-    return
-  }
-
-  if len(args) < 2 {
-    if value, ok := args[0].(error); ok {
-      log.Println(chalk.Red, value)
-    }
-    return
-  }
-
-  var msg string
-  var err interface{}
-  if (len(args) > 1) {
-    for _, arg := range args {
-      if value, ok := arg.(string); ok {
-        msg = value
-      }
-      if value, ok := arg.(error); ok {
-        err = value
-      }
-    }
-
-    if err == nil {
-      return
-    }
-    fmt.Printf(msg, chalk.Red, err)
-    // log.Fatal(chalk.Red, fmt.Errorf(msg, err))
-  }
 }
 
 func CheckType(args ...interface{}) {
