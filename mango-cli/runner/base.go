@@ -1,9 +1,11 @@
 package runner
 
 func GetStatus() (string, error) {
-	return RunCommand("git", "status")
+  exec := &Execution{}
+  return exec.RunCommand("git", "status")
 }
 
 func GetLog() (string, error) {
-	return RunCommand("git", "log")
+  exec := &Execution{}
+  return exec.RunCommand("git", "log")
 }

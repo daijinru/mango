@@ -12,21 +12,12 @@ import (
 	"github.com/daijinru/mango/mango-cli/utils"
 )
 
-// configuration of commander
-var (
-  printLine = false
-)
-
-type ExecutionOption struct {
-  // print line by line
+type Execution struct {
+  // text will be printed line by line
   PrintLine bool
 }
 
-func Setting(option *ExecutionOption) {
-  printLine = option.PrintLine
-}
-
-func RunCommand(command string, args ...string) (string, error) {
+func (ex *Execution) RunCommand(command string, args ...string) (string, error) {
   // fmt.Println(command, args[0])
   cmd := exec.Command(command, args...)
 
@@ -42,7 +33,7 @@ func RunCommand(command string, args ...string) (string, error) {
   for scanner.Scan() {
     text := scanner.Text()
     output += text + "\n"
-    if printLine {
+    if ex.PrintLine {
       fmt.Println(text)
     }
   }
@@ -54,9 +45,9 @@ func RunCommand(command string, args ...string) (string, error) {
   return output, err
 }
 
-func RunCommandSplit(in string) (string, error) {
+func (ex *Execution)RunCommandSplit(in string) (string, error) {
   arr := strings.Split(in, " ")
-  output, err := RunCommand(arr[0], arr[1:]...)
+  output, err := ex.RunCommand(arr[0], arr[1:]...)
   utils.ReportErr(err)
   return output, err
 }

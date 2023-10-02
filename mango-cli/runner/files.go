@@ -3,7 +3,7 @@ package runner
 import (
   "fmt"
   "os"
-  "time"
+  "github.com/daijinru/mango/mango-cli/utils"
 )
 
 // It's the working directory client.
@@ -49,7 +49,7 @@ func (client *WorkspaceClient) NewLockFile(name string) *WorkspaceClient {
   Suffix := ".lock"
   lockFile := &LockFile{
     Name: name,
-    Timestamp: TimeNow(),
+    Timestamp: utils.TimeNow(),
     LockFilePath: name + Suffix,
   }
   client.LockFile = lockFile
@@ -92,10 +92,6 @@ func (client *WorkspaceClient) DeleteLockFile() error {
     }
   }
   return nil
-}
-
-func TimeNow() string {
-  return time.Now().Format("01-02-2006 15:04:05")
 }
 
 func (client *WorkspaceClient) ListDirectories(path string) ([]string, error) {

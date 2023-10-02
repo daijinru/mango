@@ -1,8 +1,6 @@
 package rpc
 
 import (
-  "fmt"
-
   "github.com/daijinru/mango/mango-cli/runner"
   "github.com/daijinru/mango/mango-cli/utils"
 )
@@ -21,10 +19,10 @@ type Reply struct {
   // data map[string]interface{}
 }
 type RunArgs struct {
+  Name string
   Path string
 }
 func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
-  fmt.Println(args)
   reply.Status = int8(FailedCreate)
 
   ciOption := &runner.CiOption{
@@ -38,51 +36,55 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
   utils.ReportErr(err)
   if running {
     message := "😂 ci is running, can query the progresss of the current CI"
-    reply.Message = AddPrefixMsg(message)
-    fmt.Println(message)
+    reply.Message = utils.AddPrefixMsg(message)
+    utils.ReportLog(message)
     return nil
   }
 
   ok, err := ci.CreateRunningLocally()
   utils.ReportErr(err)
   if ok {
-    fmt.Println("create lock file locally success: ", ci.Workspace.LockFile.Timestamp)
+    utils.ReportLog("create lock file locally success")
   } else {
-    reply.Message = AddPrefixMsg("create lock file locally fail")
+    reply.Message = utils.AddPrefixMsg("create lock fail")
     return nil
   }
 
   ok, err = ci.ReadFromYaml()
   utils.ReportErr(err)
   if ok {
-    fmt.Println("ci completes reading of: " + ci.LockName)
+    utils.ReportLog("ci completes reading from local yaml: " + ci.LockName)
   } else {
-    reply.Message = AddPrefixMsg("ci cannot be completed reading of: " + ci.LockName)
+    reply.Message = utils.AddPrefixMsg("ci cannot be completed reading of: " + ci.LockName)
     return nil
   }
 
   reply.Status = int8(OK)
-  reply.Message = AddPrefixMsg("successfully started the ci pipeline: " + ci.LockName)
+  reply.Message = utils.AddPrefixMsg("successfully started the ci pipeline: " + ci.LockName)
 
-  runner.Setting(&runner.ExecutionOption{
-    PrintLine: true,
-  })
-
-  for stage := ci.Stages.Front(); stage != nil; stage = stage.Next() {
-    scripts := stage.Value
-    if value, ok := scripts.(*runner.Job); ok {
-      fmt.Println(AddPrefixMsg("now start stage: " + value.Stage))
-      for _, script := range value.Scripts {
-        _, err := runner.RunCommandSplit(script.(string))
-        utils.ReportErr(err)
+  // Executiing of the pipelines is time-consuming,
+  // do not wait here just let for reponding
+  go func() {
+    execution := &runner.Execution{
+      PrintLine: true,
+    }
+    for stage := ci.Stages.Front(); stage != nil; stage = stage.Next() {
+      scripts := stage.Value
+      if value, ok := scripts.(*runner.Job); ok {
+        utils.ReportLog("now running stage: " + value.Stage)
+        for _, script := range value.Scripts {
+          _, err := execution.RunCommandSplit(script.(string))
+          utils.ReportErr(err, "started stage: " + value.Stage + ", but run ci script failed: %v")
+        }
       }
     }
-  }
 
-  ok, err = ci.CompletedRunningTask()
-  utils.ReportErr(err)
-  if ok {
-    fmt.Println("now release the lock: ", runner.TimeNow())
-  }
+    ok, err = ci.CompletedRunningTask()
+    utils.ReportErr(err, "cannot be ended running task %v")
+    if ok {
+      utils.ReportLog("finish running task and now release the lock")
+    }
+  }()
+
   return nil
 }

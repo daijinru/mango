@@ -7,67 +7,10 @@ $ go build
 # or
 $ go build -o path/mango-cli
 ```
+## Use Guider
 
-## Config
-
-Plz manually create a config.yaml in the User Root directory and contain the following:
-
+Add it the content below to your `[project-root]/meta-info/.mango-ci.yaml`.
 ```yaml
-username: <your_gitlab_username>
-password: <your_gitlab_pwd>
-token: <your_gitlab-token>
-baseUrl: <your_gitlab_instance_web_url>
-```
-
-## Usage
-
-### Projects
-
-A few examples:
-
-List projects:
-```bash
-$ mango-cli projects
-```
-
-Get single project info:
-```bash
-$ mango-cli project get <pid>
-```
-
-Get branches of the project:
-```bash
-$ mango-cli branches <pid> 
-```
-
-## Pipelines
-
-List pipelines:
-```bash
-$ mango-cli pipelines <pid>
-```
-
-Get a pipeline info:
-```bash
-$ mango-cli pipeline get <pid> <pipeline_id>
-```
-
-Create a pipeline:
-```bash
-# Ref is name of the branch
-$ mango-cli pipeline create <pid> <ref>
-```
-
-## Commits
-
-List commits of the project since 150 days(default) before:
-```bash
-$ mango-cli commits <pid>
-```
-
-## Mango Ci Yaml
-
-```bash
 Version: "abc"
 Stages:
   - start
@@ -84,4 +27,43 @@ build-job:
     - echo "build success"
 ```
 
+Execute at the command line.
 
+```bash
+$ mango-cli rpc start 1234
+```
+
+### How to call by RPC
+
+```go
+type RunReqOption struct {
+  Path string
+}
+type Reply struct {
+  Status int16
+  Message string
+}
+
+func main() {
+  client, err := rpc.Dial("tcp", "localhost:1234")
+  if err != nil {
+    fmt.Println("cannot connect to RPC service: ", err)
+    return
+  }
+  defer client.Close()
+
+  var reply = &Reply{}
+
+  reqOption := &RunReqOption{
+    Path: ".",
+  }
+
+  err = client.Call("CiService.Run", reqOption, reply)
+  if err != nil {
+    fmt.Println("call fail: ", err)
+    return
+  } else {
+    fmt.Printf("call end at: %v", reply.Message)
+  }
+}
+```
