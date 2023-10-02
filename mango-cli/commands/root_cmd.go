@@ -21,6 +21,7 @@ func init() {
 	rootCmd.AddCommand(NewCmdGit())
 	rootCmd.AddCommand(NewCmdFiles())
 	rootCmd.AddCommand(NewCmdCI())
+	rootCmd.AddCommand(NewServiceRPC())
 }
 
 func initDocker() *utils.Docker {

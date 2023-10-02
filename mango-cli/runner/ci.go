@@ -72,7 +72,7 @@ func (ci *CiClient) CompletedRunningTask() (bool, error) {
 }
 
 // It is the entry that read CI profile from diff versions of YAML.
-func (ci *CiClient) ReadFromYaml(path string) (bool, error) {
+func (ci *CiClient) ReadFromYaml() (bool, error) {
   var YAML_NAME = "./meta-inf/.mango-ci.yaml"
 
   if !ci.Workspace.PathExists(YAML_NAME) {

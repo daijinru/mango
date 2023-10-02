@@ -32,7 +32,7 @@ func NewCmdGetConfig() *command.Command {
         Path: args[0],
       }
       ci.NewCI(ciOption)
-      ok, err := ci.ReadFromYaml(args[0])
+      ok, err := ci.ReadFromYaml()
       utils.ReportErr(err)
       if ok {
         // TODO print fields of ci config
@@ -71,7 +71,7 @@ func NewCmdRunConfig() *command.Command {
         fmt.Println("create lock file locally success: ", ci.Workspace.LockFile.Timestamp)
       }
 
-      ok, err = ci.ReadFromYaml(args[0])
+      ok, err = ci.ReadFromYaml()
       utils.ReportErr(err)
       if ok {
         fmt.Println("ci completes reading of: " + ci.LockName)
