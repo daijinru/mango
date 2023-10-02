@@ -30,6 +30,10 @@ func ReportWarn(msg string) {
   fmt.Println(chalk.Yellow, AddPrefixMsg(msg))
 }
 
+func ReportSuccess(msg string) {
+  fmt.Println(chalk.Green, AddPrefixMsg(msg))
+}
+
 // Accepts a diff number of params,
 // prints the error when only one error type passing.
 // the second param is required to be a char carrying the %s placeholder.

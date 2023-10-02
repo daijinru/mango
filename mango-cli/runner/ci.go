@@ -1,12 +1,12 @@
 package runner
 
 import (
-	"container/list"
-	"fmt"
-	"path/filepath"
-
-	"github.com/daijinru/mango/mango-cli/utils"
-	"gopkg.in/yaml.v3"
+  "container/list"
+  "fmt"
+  "path/filepath"
+  "os"
+  "github.com/daijinru/mango/mango-cli/utils"
+  "gopkg.in/yaml.v3"
 )
 
 // To defined several work objects in each CI profile to call actual tasks.
@@ -17,7 +17,7 @@ type Job struct {
 
 // The collections of CI methods, plz call NewCI() for initialization.
 type CiClient struct {
-	Version string `yaml:"Version"`
+  Version string `yaml:"Version"`
   StagesMap map[string]*list.Element
   Stages *list.List  `yaml:"Stages"`
   Jobs []*Job `yaml:"Jobs"`
@@ -71,6 +71,10 @@ func (ci *CiClient) CompletedRunningTask() (bool, error) {
   }
 }
 
+type YAML_Config struct {
+  Data map[string]interface{} `yaml:",inline"`
+}
+
 // It is the entry that read CI profile from diff versions of YAML.
 func (ci *CiClient) ReadFromYaml() (bool, error) {
   var YAML_NAME = "./meta-inf/.mango-ci.yaml"
@@ -78,18 +82,21 @@ func (ci *CiClient) ReadFromYaml() (bool, error) {
   if !ci.Workspace.PathExists(YAML_NAME) {
     return false, fmt.Errorf("file not exists: %s", YAML_NAME)
   }
+
   ciPath := filepath.Join(ci.Workspace.CWD, YAML_NAME)
-  ciFile := utils.ReadFile(ciPath)
-
-  var data map[string]interface{}
-  err := yaml.Unmarshal(ciFile, &data)
-  utils.ReportErr(err, "yaml unmarshal: %s")
-
-  ok, err := readFromYamlVersion_1(ci, data)
-  if ok {
-    return ok, err
+  ciData, err := os.ReadFile(ciPath)
+  if err != nil {
+    return false, fmt.Errorf("error from os.ReadFile: %s", err)
   }
-  return false, fmt.Errorf("read from yaml faild")
+
+  var config YAML_Config
+  err = yaml.Unmarshal(ciData, &config)
+  utils.ReportErr(err, "yaml unmarshal: %s")
+  ok, err := readFromYamlVersion_1(ci, config.Data)
+  if ok {
+    return ok, nil
+  }
+  return false, fmt.Errorf("read from yaml: %s", err)
 }
 
 func readFromYamlVersion_1 (ci *CiClient,  data map[string]interface{}) (bool, error) {
@@ -106,10 +113,16 @@ func readFromYamlVersion_1 (ci *CiClient,  data map[string]interface{}) (bool, e
             job := &Job{}
             job.Stage = name
             elem := ci.Stages.PushBack(job)
-            ci.StagesMap[job.Stage] = elem
+            ci.StagesMap[name] = elem
           }
         }
       }
+    }
+  }
+  for key, value := range data {
+    switch key {
+    case "Version":
+    case "Stages":
     default:
       if item, ok := value.(map[string]interface{}); ok {
         for key, value := range item {

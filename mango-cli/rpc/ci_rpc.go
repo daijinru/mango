@@ -35,9 +35,9 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
   running, err := ci.AreRunningLocally()
   utils.ReportErr(err)
   if running {
-    message := "😂 ci is running, can query the progresss of the current CI"
+    message := "🔒ci is running, No further operations allowed until it ends"
     reply.Message = utils.AddPrefixMsg(message)
-    utils.ReportLog(message)
+    utils.ReportWarn(message)
     return nil
   }
 
@@ -82,7 +82,7 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
     ok, err = ci.CompletedRunningTask()
     utils.ReportErr(err, "cannot be ended running task %v")
     if ok {
-      utils.ReportLog("finish running task and now release the lock")
+      utils.ReportSuccess("✅finish running task and now release🔓 the lock")
     }
   }()
 
