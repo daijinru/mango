@@ -12,12 +12,6 @@ type WorkspaceClient struct {
   LockFile *LockFile `json:"LockFile"`
 }
 
-type LockFile struct {
-  Timestamp string
-  Name string
-  LockFilePath string
-}
-
 // Specify a path and use it to initialize current workspace, add CWD to the instance.
 func (client *WorkspaceClient) NewWorkSpaceClient(path string) (*WorkspaceClient, error) {
   workspace, err := client.chWorkspace(path)
@@ -43,6 +37,51 @@ func (client *WorkspaceClient) chWorkspace(path string) (string, error) {
   return dir, nil
 }
 
+func (client *WorkspaceClient) ListDirectories(path string) ([]string, error) {
+  var directories []string
+
+  files, err := os.ReadDir(path)
+  if err != nil {
+    return nil, err
+  }
+
+  for _, file := range files {
+    if file.IsDir() {
+      directories = append(directories, file.Name())
+    }
+  }
+
+  return directories, nil
+}
+
+func (client *WorkspaceClient) LsFiles(path string) ([]string, error) {
+  var out []string
+
+  files, err := os.ReadDir(path)
+  if err != nil {
+    return nil, err
+  }
+
+  for _, file := range files {
+      out = append(out, file.Name())
+  }
+
+  return out, err
+}
+
+func (client *WorkspaceClient) PathExists(path string) bool {
+  _, err := os.Stat(path)
+  if (err != nil && os.IsNotExist(err)) {
+    return false
+  }
+  return true
+}
+
+type LockFile struct {
+  Timestamp string
+  Name string
+  LockFilePath string
+}
 // Specify an id to initialize the LockFile instance, which is build-in the WorkspaceClient,
 // must be executed before using FileLock operations.
 func (client *WorkspaceClient) NewLockFile(name string) *WorkspaceClient {
@@ -92,44 +131,4 @@ func (client *WorkspaceClient) DeleteLockFile() error {
     }
   }
   return nil
-}
-
-func (client *WorkspaceClient) ListDirectories(path string) ([]string, error) {
-  var directories []string
-
-  files, err := os.ReadDir(path)
-  if err != nil {
-    return nil, err
-  }
-
-  for _, file := range files {
-    if file.IsDir() {
-      directories = append(directories, file.Name())
-    }
-  }
-
-  return directories, nil
-}
-
-func (client *WorkspaceClient) LsFiles(path string) ([]string, error) {
-  var out []string
-
-  files, err := os.ReadDir(path)
-  if err != nil {
-    return nil, err
-  }
-
-  for _, file := range files {
-      out = append(out, file.Name())
-  }
-
-  return out, err
-}
-
-func (client *WorkspaceClient) PathExists(path string) bool {
-  _, err := os.Stat(path)
-  if (err != nil && os.IsNotExist(err)) {
-    return false
-  }
-  return true
 }
