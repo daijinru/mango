@@ -9,6 +9,7 @@ import (
 
 	// "github.com/daijinru/mango/mango-cli/runner"
 	mangoRPC "github.com/daijinru/mango/mango-cli/rpc"
+	"github.com/daijinru/mango/mango-cli/runner"
 	"github.com/daijinru/mango/mango-cli/utils"
 )
 
@@ -21,6 +22,7 @@ func NewServiceRPC() *command.Command {
     },
   }
   cmd.AddCommand(NewServiceRpcStart())
+  cmd.AddCommand(NewServiceRpcStop())
   return cmd
 }
 
@@ -47,6 +49,24 @@ func NewServiceRpcStart() *command.Command {
         }
         go rpc.ServeConn(conn)
       }
+    },
+  }
+}
+
+func NewServiceRpcStop() *command.Command {
+  return &command.Command{
+    Use: "kill",
+    Args: command.ExactArgs(1),
+    RunE: func(cmd *command.Command, args[] string) error {
+      pid := &runner.Pid{}
+      pid.ThinClient(&runner.PidOption{
+        Path: args[0],
+      })
+      err := pid.ProcessKill()
+      if err != nil {
+        fmt.Printf("failed to kill process: %v\n", err)
+      }
+      return nil
     },
   }
 }

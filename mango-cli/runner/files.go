@@ -1,13 +1,13 @@
 package runner
 
 import (
-	"fmt"
-	"net/url"
-	"os"
-	"strconv"
-	"syscall"
+  "fmt"
+  "net/url"
+  "os"
+  "strconv"
+  "syscall"
 
-	"github.com/daijinru/mango/mango-cli/utils"
+  "github.com/daijinru/mango/mango-cli/utils"
 )
 
 // It's the working directory client.
@@ -248,7 +248,7 @@ func (pid *Pid) ProcessKill() error {
     return fmt.Errorf("unable to send SIGTERM signal: %v", err)
   }
   _, err = process.Wait()
-  if err != nil {
+  if err != nil && err.Error() != "waitid: no child processes" {
     return fmt.Errorf("unable to wait for process exit: %v", err)
   }
   return nil
