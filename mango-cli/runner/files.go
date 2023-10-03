@@ -137,6 +137,10 @@ func (client *WorkspaceClient) DeleteLockFile() error {
   return nil
 }
 
+var (
+  PID_FILE_NAME = ".pid.lock"
+)
+
 type Pid struct {
   Pid int
   PidFilePath string
@@ -147,13 +151,18 @@ type PidOption struct {
   // Restart bool
 }
 
+func (pid *Pid) ThinClient(option *PidOption) *Pid {
+  value, _ := url.JoinPath(option.Path, PID_FILE_NAME)
+  pid.PidFilePath = value
+  return pid
+}
+
 // Check if pid.lock exists,
 // if it exists then read PID from old file, check whether the process(by PID) exists,
 // (if process not exists) remove the file, and write a new pid.lock.
 // if not exists then get a new PID and write it into the new file.
 func (pid *Pid) NewPid(option *PidOption) (*Pid, error) {
-  filePath := "./pid.lock"
-  value, _ := url.JoinPath(option.Path, filePath)
+  value, _ := url.JoinPath(option.Path, PID_FILE_NAME)
   pid.PidFilePath = value
   _, err := os.Stat(pid.PidFilePath)
   if err == nil {
@@ -219,4 +228,28 @@ func (pid *Pid) ProcessExists() bool {
     return false
   }
   return true
+}
+
+func (pid *Pid) ProcessKill() error {
+  id := pid.Pid
+  if id == 0 {
+    value, err := pid.ReadPIDFromFile()
+    if err != nil {
+      return fmt.Errorf("unable read PID from file locally: %v", err)
+    }
+    id = value
+  }
+  process, err := os.FindProcess(id)
+  if err != nil {
+    return fmt.Errorf("unable to get process information: %v", err)
+  }
+  err = process.Signal(syscall.SIGTERM)
+  if err != nil {
+    return fmt.Errorf("unable to send SIGTERM signal: %v", err)
+  }
+  _, err = process.Wait()
+  if err != nil {
+    return fmt.Errorf("unable to wait for process exit: %v", err)
+  }
+  return nil
 }

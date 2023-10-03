@@ -6,4 +6,5 @@ const (
   AlreadyRunning STATUS = 6
   FailedCreate STATUS = 9
   FailedReading STATUS = 2
+  FailedExit STATUS = 3
 )

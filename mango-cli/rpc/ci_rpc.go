@@ -8,7 +8,7 @@ import (
 )
 
 var (
-  CI_LOCK_NAME = ".ci_running"
+  CI_LOCK_NAME = ".running"
 )
 
 type CiService struct {
@@ -35,7 +35,7 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
 
   defer ci.Logger.Writer.Close()
 
-  if (CiS.Pid == nil) {
+  if CiS.Pid == nil {
     pid := &runner.Pid{}
     pid, err := pid.NewPid(&runner.PidOption{
       Path: args.Path,
@@ -100,5 +100,28 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
       ci.Logger.ReportSuccess("✅finish running task and now release🔓 the lock")
     }
   }()
+  return nil
+}
+
+type ExitArgs struct {
+  Path string
+  Restart bool
+}
+func (CiS *CiService) Exit (args *ExitArgs, reply *Reply) error {
+  reply.Status = int8(FailedExit)
+
+  pid := &runner.Pid{}
+  pid.ThinClient(&runner.PidOption{
+    Path: args.Path,
+  })
+  err := pid.ProcessKill()
+  if err != nil {
+    message := "failed to kill process: %v\n"
+    fmt.Printf(utils.AddPrefixMsg(message), err)
+    reply.Message = message
+    return nil
+  }
+  reply.Status = int8(OK)
+  reply.Message = "kill process successfully"
   return nil
 }
