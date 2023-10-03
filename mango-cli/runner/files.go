@@ -1,9 +1,13 @@
 package runner
 
 import (
-  "fmt"
-  "os"
-  "github.com/daijinru/mango/mango-cli/utils"
+	"fmt"
+	"net/url"
+	"os"
+	"strconv"
+	"syscall"
+
+	"github.com/daijinru/mango/mango-cli/utils"
 )
 
 // It's the working directory client.
@@ -85,11 +89,11 @@ type LockFile struct {
 // Specify an id to initialize the LockFile instance, which is build-in the WorkspaceClient,
 // must be executed before using FileLock operations.
 func (client *WorkspaceClient) NewLockFile(name string) *WorkspaceClient {
-  Suffix := ".lock"
+  suffix := ".lock"
   lockFile := &LockFile{
     Name: name,
     Timestamp: utils.TimeNow(),
-    LockFilePath: name + Suffix,
+    LockFilePath: name + suffix,
   }
   client.LockFile = lockFile
   return client
@@ -131,4 +135,88 @@ func (client *WorkspaceClient) DeleteLockFile() error {
     }
   }
   return nil
+}
+
+type Pid struct {
+  Pid int
+  PidFilePath string
+}
+
+type PidOption struct {
+  Path string
+  // Restart bool
+}
+
+// Check if pid.lock exists,
+// if it exists then read PID from old file, check whether the process(by PID) exists,
+// (if process not exists) remove the file, and write a new pid.lock.
+// if not exists then get a new PID and write it into the new file.
+func (pid *Pid) NewPid(option *PidOption) (*Pid, error) {
+  filePath := "./pid.lock"
+  value, _ := url.JoinPath(option.Path, filePath)
+  pid.PidFilePath = value
+  _, err := os.Stat(pid.PidFilePath)
+  if err == nil {
+    id, err := pid.ReadPIDFromFile()
+    if err != nil {
+      return nil, err
+    }
+    pid.Pid = id
+    if pid.ProcessExists() {
+      return pid, nil
+    } else {
+      err := os.Remove(pid.PidFilePath)
+      if err != nil {
+        return nil, err
+      }
+      id, err := pid.WritePIDToFile()
+      if err != nil {
+        return nil, err
+      }
+      pid.Pid = id
+      return pid, nil
+    }
+  } else {
+    id, err := pid.WritePIDToFile()
+    if (err != nil) {
+      return nil, err
+    }
+    pid.Pid = id
+    return pid, nil
+  }
+}
+
+func (pid *Pid) WritePIDToFile() (int, error) {
+  id := os.Getpid()
+  err := os.WriteFile(pid.PidFilePath, []byte(strconv.Itoa(id)), 0644)
+  if err != nil {
+    return 0, fmt.Errorf("unable write pid file: %v", err)
+  }
+  return id, nil
+}
+
+func (pid *Pid) ReadPIDFromFile() (int, error) {
+  bytes, err := os.ReadFile(pid.PidFilePath)
+  if err != nil {
+    return 0, fmt.Errorf("unable read pid from file: %v", err)
+  }
+  id, err := strconv.Atoi(string(bytes))
+  if err != nil {
+    return 0, fmt.Errorf("invalid pid: %v", err)
+  }
+  return id, nil
+}
+
+func (pid *Pid) ProcessExists() bool {
+  process, err := os.FindProcess(pid.Pid)
+  if err != nil {
+    fmt.Printf("unable to get process infor: %v\n", err)
+    return false
+  }
+  err = process.Signal(syscall.Signal(0))
+  if err != nil {
+    fmt.Printf("the process is not existed: %v\n", err)
+    return false
+  }
+  return true
 }

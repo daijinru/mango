@@ -25,3 +25,6 @@ mango-cli
 
 # logs
 *.log
+
+# locks
+*.lock

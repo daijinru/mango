@@ -1,15 +1,19 @@
 package rpc
 
 import (
-  "github.com/daijinru/mango/mango-cli/runner"
-  "github.com/daijinru/mango/mango-cli/utils"
+	"fmt"
+
+	"github.com/daijinru/mango/mango-cli/runner"
+	"github.com/daijinru/mango/mango-cli/utils"
 )
 
 var (
   CI_LOCK_NAME = ".ci_running"
 )
 
-type CiService struct {}
+type CiService struct {
+  Pid *runner.Pid
+}
 
 type Reply struct {
   Status int8
@@ -30,6 +34,18 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
   ci.NewCI(ciOption)
 
   defer ci.Logger.Writer.Close()
+
+  if (CiS.Pid == nil) {
+    pid := &runner.Pid{}
+    pid, err := pid.NewPid(&runner.PidOption{
+      Path: args.Path,
+    })
+    if err != nil {
+      fmt.Printf(utils.AddPrefixMsg("errors about pid has occured: %v"), err)
+    } else {
+      CiS.Pid = pid
+    }
+  }
 
   running, err := ci.AreRunningLocally()
   utils.ReportErr(err)

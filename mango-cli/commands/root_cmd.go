@@ -2,7 +2,6 @@ package cmd
 
 import (
   command "github.com/daijinru/mango-packages-command"
-  "github.com/daijinru/mango/mango-cli/utils"
 )
 
 var (
@@ -12,18 +11,11 @@ var (
       return nil
     },
   }
-  docker = initDocker()
 )
 
 func init() {
   rootCmd.AddCommand(NewCmdVersion())
   rootCmd.AddCommand(NewServiceRPC())
-}
-
-func initDocker() *utils.Docker {
-  docker := &utils.Docker{}
-  client := docker.NewClient()
-  return client
 }
 
 func Execute() error {
