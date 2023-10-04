@@ -70,7 +70,10 @@ func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
   if ok {
     ci.Logger.ReportLog("ci completes reading from local yaml: " + ci.LockName)
   } else {
-    reply.Message = utils.AddPrefixMsg("ci cannot be completed reading of: " + ci.LockName)
+    message := "error occured at ci.ReadFromYaml: %s"
+    utils.ReportErr(err, message)
+    reply.Message = err.Error()
+    // reply.Message = utils.AddPrefixMsg("ci cannot be completed reading of: " + ci.LockName)
     return nil
   }
 
