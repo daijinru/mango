@@ -19,11 +19,15 @@ type Reply struct {
   Status int8
   Message string
 }
-type RunArgs struct {
-  Name string
+type PipArgs struct {
+  Tag string
   Path string
 }
-func (CiS *CiService) Run(args *RunArgs, reply *Reply) error {
+
+// Path parameter passing that service will switch to the path,
+// as the working directory,
+// and then performing the tasks by meta-inf/.mango-ci.yaml
+func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
   reply.Status = int8(FailedCreate)
 
   ciOption := &runner.CiOption{
@@ -126,5 +130,22 @@ func (CiS *CiService) Exit (args *ExitArgs, reply *Reply) error {
   }
   reply.Status = int8(OK)
   reply.Message = "kill process successfully"
+  return nil
+}
+
+// Get the pipelines running status which using the Tag and Path.
+// It will return contents of the pipeline file which was written of each running task.
+// This Content describes the status of executing stage and jobs.
+func (Cis *CiService) GetPip (args *PipArgs, reply *Reply) error {
+  return nil
+}
+
+// Gets all pipeline files by the path passing.
+func (Cis *CiService) GetPips (args *PipArgs, reply *Reply) error {
+  return nil
+}
+
+// Jobs tasks execution is output to a file, and its calling returns the contents of the file.
+func (Cis *CiService) GetPipOutput (args *PipArgs, reply *Reply) error {
   return nil
 }
