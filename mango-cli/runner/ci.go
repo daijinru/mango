@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
+	"syscall"
 	"time"
 
 	"github.com/daijinru/mango/mango-cli/utils"
@@ -127,25 +129,60 @@ func (pip *Pipeline) Close() error {
   return err
 }
 
-// Only one process is allowed at a time in A physical machine,
-// because the CI instance usually performs build or release tasks,
-// and some cases of modifying files.
+// Only one process is allowed at a time, a directory.
+// Checking if lock file exists, if not, return false,
+// if it exists, read PID from the lock file, and return rue if the process(from PID) is present.
 func (ci *CiClient) AreRunningLocally() (bool, error) {
-  running, err := ci.Workspace.IfExistsLock()
-  return running, err
+  existed, err := ci.Workspace.IfExistsLock()
+  if existed {
+    bytes, err := os.ReadFile(ci.Workspace.LockFile.LockFilePath)
+    if err != nil {
+      return false, err
+    }
+    pid, err := strconv.Atoi(string(bytes))
+    if err != nil {
+      return false, err
+    }
+    process, err := os.FindProcess(pid)
+    if err != nil {
+      return false, fmt.Errorf("failed to inspect to process: %v", err)
+    }
+
+    err = process.Signal(syscall.Signal(0))
+    if err == nil {
+      return true, nil
+    }
+
+    err = ci.CompletedRunningTask()
+    if err != nil {
+      return false, err
+    }
+    return false, nil
+  }
+  
+  if err != nil {
+    return false, err
+  }
+  
+  return false, nil
 }
 
 func (ci *CiClient) CreateRunningLocally() (bool, error) {
   success, err := ci.Workspace.CreateLockFile()
-  return success, err
+  if success {
+    pid := os.Getpid()
+    err := os.WriteFile(ci.Workspace.LockFile.LockFilePath, []byte(strconv.Itoa(pid)), 0644)
+    if err != nil {
+      return false, err
+    }
+    return true, err
+  }
+  return false, err
 }
 
-func (ci *CiClient) CompletedRunningTask() (bool, error) {
-  if err := ci.Workspace.DeleteLockFile(); err == nil {
-    return true, err
-  } else {
-    return false, err
-  }
+func (ci *CiClient) CompletedRunningTask() error {
+  err := ci.Workspace.DeleteLockFile()
+  return err
 }
 
 type YAML_Config struct {

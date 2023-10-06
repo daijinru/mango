@@ -12,7 +12,6 @@ var (
 )
 
 type CiService struct {
-  Pid *runner.Pid
 }
 
 type CreatePipelineReply struct {
@@ -47,20 +46,12 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
   defer ci.Logger.Writer.Close()
   defer ci.Pipeline.File.Close()
 
-  if CiS.Pid == nil {
-    pid := &runner.Pid{}
-    pid, err := pid.NewPid(&runner.PidOption{
-      Path: args.Path,
-    })
-    if err != nil {
-      fmt.Printf(utils.AddPrefixMsg("errors about pid has occured: %v"), err)
-    } else {
-      CiS.Pid = pid
-    }
-  }
-
   running, err := ci.AreRunningLocally()
-  utils.ReportErr(err)
+  if err != nil {
+    ci.Logger.ReportWarn(err.Error())
+    reply.Message = formatPipMsg(ci, err.Error())
+    return nil
+  }
   if running {
     message := "🔒 ci is running, No further operations allowed until it ends"
     reply.Message = formatPipMsg(ci, message)
@@ -69,16 +60,16 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
   }
 
   ok, err := ci.CreateRunningLocally()
-  utils.ReportErr(err)
-  if ok {
-    ci.Logger.ReportLog("🔒 create lock file locally success")
-  } else {
+  if err != nil {
+    ci.Logger.ReportWarn(err.Error())
     reply.Message = formatPipMsg(ci, "create lock fail")
     return nil
   }
+  if ok {
+    ci.Logger.ReportLog("🔒 create lock file locally success")
+  }
 
   ok, err = ci.ReadFromYaml()
-  utils.ReportErr(err)
   if ok {
     ci.Logger.ReportLog("📝 ci completes reading from local yaml")
   } else {
@@ -106,40 +97,21 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
         // fmt.Println(value)
         for _, script := range value.Scripts {
           _, err := execution.RunCommandSplit(script.(string))
-          utils.ReportErr(err, "started stage: " + value.Stage + ", but run ci script failed: %v")
+          if err != nil {
+            ci.Logger.ReportWarn(fmt.Sprintf("has launched %s, but execution of ci script failed", value.Stage))
+          }
         }
       }
     }
 
-    ok, err = ci.CompletedRunningTask()
-    utils.ReportErr(err, "cannot be ended running task %v")
+    err = ci.CompletedRunningTask()
+    if err != nil {
+      ci.Logger.ReportWarn(fmt.Sprintf("unable ended running pipeline: %s", err))
+    }
     if ok {
       ci.Logger.ReportSuccess("✅ finish running task and now release 🔓 the lock")
     }
   }()
-  return nil
-}
-
-type ExitArgs struct {
-  Path string
-  Restart bool
-}
-func (CiS *CiService) Exit (args *ExitArgs, reply *Reply) error {
-  reply.Status = int8(FailedExit)
-
-  pid := &runner.Pid{}
-  pid.ThinClient(&runner.PidOption{
-    Path: args.Path,
-  })
-  err := pid.ProcessKill()
-  if err != nil {
-    message := "failed to kill process: %v\n"
-    fmt.Printf(utils.AddPrefixMsg(message), err)
-    reply.Message = message
-    return nil
-  }
-  reply.Status = int8(OK)
-  reply.Message = "kill process successfully"
   return nil
 }
 
