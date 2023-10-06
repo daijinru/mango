@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/daijinru/mango/mango-cli/runner"
 	"github.com/daijinru/mango/mango-cli/utils"
@@ -122,8 +123,40 @@ func (Cis *CiService) GetPip (args *PipArgs, reply *Reply) error {
   return nil
 }
 
+type PipsPagination struct {
+  Total int
+  Filenames []string
+  Tag string
+}
+type PipsReply struct {
+  Status int8
+  Message string
+  Data PipsPagination
+}
 // Gets all pipeline files by the path passing.
-func (Cis *CiService) GetPips (args *PipArgs, reply *Reply) error {
+func (Cis *CiService) GetPips (args *PipArgs, reply *PipsReply) error {
+  reply.Status = int8(FailedQuery)
+  workspace := &runner.WorkspaceClient{}
+  workspace.NewWorkSpaceClient(args.Path)
+  path, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/")
+  if err != nil {
+    reply.Message = err.Error()
+    return nil
+  }
+  pip, err := runner.NewPipeline(args.Tag, path)
+  if err != nil {
+    reply.Message = err.Error()
+    return nil
+  }
+  pipFilenames, err := pip.List()
+  if err != nil {
+    reply.Message = err.Error()
+    return nil
+  }
+  reply.Status = int8(OK)
+  reply.Data.Total = len(pipFilenames)
+  reply.Data.Filenames = pipFilenames
+  reply.Data.Tag = pip.Tag
   return nil
 }
 

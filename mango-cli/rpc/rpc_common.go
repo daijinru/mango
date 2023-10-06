@@ -7,4 +7,5 @@ const (
   FailedCreate STATUS = 9
   FailedReading STATUS = 2
   FailedExit STATUS = 3
+  FailedQuery STATUS = 5
 )

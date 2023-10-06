@@ -6,7 +6,9 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -85,6 +87,7 @@ type Pipeline struct {
   FilePath string
   Filename string
   File *os.File
+  Directory string
 }
 
 func NewPipeline(tag, path string) (*Pipeline, error) {
@@ -100,6 +103,7 @@ func NewPipeline(tag, path string) (*Pipeline, error) {
     Tag: tag,
     FilePath: filePath,
     Filename: filename,
+    Directory: path,
   }, nil
 }
 
@@ -132,11 +136,35 @@ func (pip *Pipeline) Close() error {
   return nil
 }
 
-func (pip *Pipeline) List() error {
-  return nil
+func (pip *Pipeline) List() ([]string, error) {
+  files, err := os.ReadDir(pip.Directory)
+  if err != nil {
+    return nil, err
+  }
+  
+  filenames := make([]string, 0)
+  for _, file := range files {
+    if file.IsDir() {
+      continue
+    }
+    filenames = append(filenames, file.Name())
+  }
+	sort.Slice(filenames, func(i, j int) bool {
+		file1 := filepath.Join(pip.Directory, filenames[i])
+		file2 := filepath.Join(pip.Directory, filenames[j])
+		info1, _ := os.Stat(file1)
+		info2, _ := os.Stat(file2)
+		return info1.ModTime().Before(info2.ModTime())
+	})
+
+  filteredFilenames := make([]string, 0)
+  for _, filename := range filenames {
+    if strings.Contains(filename, pip.Tag) {
+      filteredFilenames = append(filteredFilenames, filename)
+    }
+  }
+  return filteredFilenames, nil
 }
-
-
 
 // Only one process is allowed at a time, a directory.
 // Checking if lock file exists, if not, return false,
