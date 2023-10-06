@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/daijinru/mango/mango-cli/utils"
 	"gopkg.in/yaml.v3"
@@ -27,6 +28,7 @@ type CiClient struct {
   Workspace *WorkspaceClient
   LockName string
   Logger *utils.Logger
+  Pipeline *Pipeline
 }
 
 type CiOption struct {
@@ -34,10 +36,11 @@ type CiOption struct {
   Path string
   LockName string
   LogName string
+  Tag string
 }
 
 // Initialize a CI instance.
-func (ci *CiClient) NewCI(option *CiOption) *CiClient {
+func (ci *CiClient) NewCI(option *CiOption) (*CiClient, error) {
   ci.Version = ""
   ci.StagesMap = make(map[string]*list.Element)
   ci.Stages = list.New()
@@ -63,7 +66,63 @@ func (ci *CiClient) NewCI(option *CiOption) *CiClient {
     ci.LockName = option.LockName
   }
 
-  return ci
+  var Pipeline_Tag string = option.Tag
+  if option.Tag == "" {
+    Pipeline_Tag = utils.GenerateUUIDFileName()
+  }
+  Pipeline_Path, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/")
+  if err != nil {
+    return ci, err
+  }
+  ci.Pipeline, err = NewPipeline(Pipeline_Tag, Pipeline_Path)
+  return ci, err
+}
+
+type Pipeline struct {
+  Tag string
+  FilePath string
+  File *os.File
+}
+
+func NewPipeline(tag, path string) (*Pipeline, error) {
+  err := os.MkdirAll(path, 0755)
+  if err != nil {
+    return nil, err
+  }
+  now := time.Now().Format("20060102_150405")
+  fileName := fmt.Sprintf("%s_%s.txt", tag, now)
+  filePath := filepath.Join(path, fileName)
+  
+  file, err := os.Create(filePath)
+  if err != nil {
+    return nil, err
+  }
+  file.Close()
+
+  file, err = os.OpenFile(filePath,  os.O_WRONLY|os.O_APPEND, 0644)
+  if err != nil {
+    return nil, err
+  }
+
+  return &Pipeline{
+    Tag: tag,
+    FilePath: filePath,
+    File: file,
+  }, nil
+}
+
+func (pip *Pipeline) AppendLocally(text string) error {
+  file, err := os.OpenFile(pip.FilePath, os.O_APPEND|os.O_WRONLY, 0644)
+  if err != nil {
+    return err
+  }
+  _, err = file.WriteString(text)
+  return err
+}
+
+func (pip *Pipeline) Close() error {
+  err := pip.File.Close()
+  return err
 }
 
 // Only one process is allowed at a time in A physical machine,
@@ -143,16 +202,17 @@ func readFromYamlVersion_1 (ci *CiClient,  data map[string]interface{}) (bool, e
     case "Stages":
     default:
       if item, ok := value.(map[string]interface{}); ok {
+        fmt.Println(item)
         for key, value := range item {
           switch key {
-          case "Stage":
+          case "stage":
             if stage, ok := value.(string); ok {
               job := &Job{}
               job.Stage = stage
               elem := ci.StagesMap[stage]
               for key, value := range item {
                 switch key {
-                case "Scripts":
+                case "scripts":
                   if scripts, ok := value.([]interface{}); ok {
                     job.Scripts = scripts
                     elem.Value = job

@@ -18,12 +18,12 @@ Stages:
 
 job-dev:
   stage: start
-  script:
+  scripts:
     - echo "dev success"
 
 build-job:
   stage: build
-  script:
+  scripts:
     - echo "build success"
 ```
 

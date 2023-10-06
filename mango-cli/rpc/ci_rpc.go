@@ -38,6 +38,7 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
   ci.NewCI(ciOption)
 
   defer ci.Logger.Writer.Close()
+  defer ci.Pipeline.File.Close()
 
   if CiS.Pid == nil {
     pid := &runner.Pid{}
@@ -89,11 +90,13 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
   go func() {
     execution := &runner.Execution{
       PrintLine: true,
+      Pipeline: ci.Pipeline,
     }
     for stage := ci.Stages.Front(); stage != nil; stage = stage.Next() {
       scripts := stage.Value
       if value, ok := scripts.(*runner.Job); ok {
         ci.Logger.ReportLog("now running stage: " + value.Stage)
+        // fmt.Println(value)
         for _, script := range value.Scripts {
           _, err := execution.RunCommandSplit(script.(string))
           utils.ReportErr(err, "started stage: " + value.Stage + ", but run ci script failed: %v")

@@ -28,3 +28,9 @@ mango-cli
 
 # locks
 *.lock
+
+# Vi
+*.swp
+
+# pipelines
+/meta-inf/**/*.txt

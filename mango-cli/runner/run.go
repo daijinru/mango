@@ -13,6 +13,7 @@ import (
 type Execution struct {
   // text will be printed line by line
   PrintLine bool
+  Pipeline *Pipeline
 }
 
 func (ex *Execution) RunCommand(command string, args ...string) (string, error) {
@@ -31,9 +32,11 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   for scanner.Scan() {
     text := scanner.Text()
     output += text + "\n"
+    if ex.Pipeline != nil {
+      ex.Pipeline.AppendLocally("[" + utils.TimeNow() + "] " + output)
+    }
     if ex.PrintLine {
       fmt.Printf("[%s] %s\n", utils.TimeNow(), text)
-      // utils.ReportLog(text)
     }
   }
 
@@ -44,7 +47,7 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   return output, err
 }
 
-func (ex *Execution)RunCommandSplit(in string) (string, error) {
+func (ex *Execution) RunCommandSplit(in string) (string, error) {
   arr := strings.Split(in, " ")
   output, err := ex.RunCommand(arr[0], arr[1:]...)
   utils.ReportErr(err)
