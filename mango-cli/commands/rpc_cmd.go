@@ -39,7 +39,7 @@ func NewServiceRpcStart() *command.Command {
       utils.ReportErr(err, "❌unable start RPC service: %s")
       defer listener.Close()
       
-      fmt.Println("🌏Now listening for RPC request at port: " + args[0])
+      fmt.Println("🌏 Now listening for RPC request at port: " + args[0])
     
       for {
         conn, err := listener.Accept()

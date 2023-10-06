@@ -34,7 +34,7 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
     text := scanner.Text()
     output += text + "\n"
     if ex.Pipeline != nil {
-      ex.Pipeline.AppendLocally("[" + utils.TimeNow() + "] " + output)
+      ex.Pipeline.AppendLocally(fmt.Sprintf("[%s] %s", utils.TimeNow(), output))
     }
     if ex.PrintLine {
       fmt.Printf("[%s] %s\n", utils.TimeNow(), text)

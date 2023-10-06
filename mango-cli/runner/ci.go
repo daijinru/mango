@@ -81,6 +81,7 @@ func (ci *CiClient) NewCI(option *CiOption) (*CiClient, error) {
 type Pipeline struct {
   Tag string
   FilePath string
+  Filename string
   File *os.File
 }
 
@@ -90,9 +91,9 @@ func NewPipeline(tag, path string) (*Pipeline, error) {
     return nil, err
   }
   now := time.Now().Format("20060102_150405")
-  fileName := fmt.Sprintf("%s_%s.txt", tag, now)
-  filePath := filepath.Join(path, fileName)
-  
+  filename := fmt.Sprintf("%s_%s", tag, now)
+  filePath := filepath.Join(path, filename + ".txt")
+
   file, err := os.Create(filePath)
   if err != nil {
     return nil, err
@@ -108,6 +109,7 @@ func NewPipeline(tag, path string) (*Pipeline, error) {
     Tag: tag,
     FilePath: filePath,
     File: file,
+    Filename: filename,
   }, nil
 }
 
@@ -202,7 +204,7 @@ func readFromYamlVersion_1 (ci *CiClient,  data map[string]interface{}) (bool, e
     case "Stages":
     default:
       if item, ok := value.(map[string]interface{}); ok {
-        fmt.Println(item)
+        // fmt.Println(item)
         for key, value := range item {
           switch key {
           case "stage":

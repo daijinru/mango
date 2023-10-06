@@ -15,15 +15,22 @@ type CiService struct {
   Pid *runner.Pid
 }
 
+type CreatePipelineReply struct {
+  Tag string
+}
 type Reply struct {
   Status int8
   Message string
+  Data CreatePipelineReply 
 }
 type PipArgs struct {
   Tag string
   Path string
 }
 
+func formatPipMsg(ci *runner.CiClient, msg string) string {
+  return fmt.Sprintf("[%s] [%s] 🥭 %s", utils.TimeNow(), ci.Pipeline.Filename, msg)
+}
 // Path parameter passing that service will switch to the path,
 // as the working directory,
 // and then performing the tasks by meta-inf/.mango-ci.yaml
@@ -55,8 +62,8 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
   running, err := ci.AreRunningLocally()
   utils.ReportErr(err)
   if running {
-    message := "🔒ci is running, No further operations allowed until it ends"
-    reply.Message = utils.AddPrefixMsg(message)
+    message := "🔒 ci is running, No further operations allowed until it ends"
+    reply.Message = formatPipMsg(ci, message)
     ci.Logger.ReportWarn(message)
     return nil
   }
@@ -64,26 +71,26 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
   ok, err := ci.CreateRunningLocally()
   utils.ReportErr(err)
   if ok {
-    ci.Logger.ReportLog("create lock file locally success")
+    ci.Logger.ReportLog("🔒 create lock file locally success")
   } else {
-    reply.Message = utils.AddPrefixMsg("create lock fail")
+    reply.Message = formatPipMsg(ci, "create lock fail")
     return nil
   }
 
   ok, err = ci.ReadFromYaml()
   utils.ReportErr(err)
   if ok {
-    ci.Logger.ReportLog("ci completes reading from local yaml: " + ci.LockName)
+    ci.Logger.ReportLog("📝 ci completes reading from local yaml")
   } else {
-    message := "error occured at ci.ReadFromYaml: %s"
-    utils.ReportErr(err, message)
-    reply.Message = err.Error()
-    // reply.Message = utils.AddPrefixMsg("ci cannot be completed reading of: " + ci.LockName)
+    message := "error occured at ci.ReadFromYaml"
+    reply.Message = formatPipMsg(ci, message)
+    ci.Logger.ReportWarn(err.Error())
     return nil
   }
 
   reply.Status = int8(OK)
-  reply.Message = utils.AddPrefixMsg("successfully started the ci pipeline: " + ci.LockName)
+  reply.Message = formatPipMsg(ci, "new pipeline was successfully launched!")
+  reply.Data.Tag = ci.Pipeline.Tag
 
   // Executiing of the pipelines is time-consuming,
   // do not wait here just let for reponding
@@ -95,7 +102,7 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
     for stage := ci.Stages.Front(); stage != nil; stage = stage.Next() {
       scripts := stage.Value
       if value, ok := scripts.(*runner.Job); ok {
-        ci.Logger.ReportLog("now running stage: " + value.Stage)
+        ci.Logger.ReportLog("🎯 now running stage: " + value.Stage)
         // fmt.Println(value)
         for _, script := range value.Scripts {
           _, err := execution.RunCommandSplit(script.(string))
@@ -107,7 +114,7 @@ func (CiS *CiService) CreatePip(args *PipArgs, reply *Reply) error {
     ok, err = ci.CompletedRunningTask()
     utils.ReportErr(err, "cannot be ended running task %v")
     if ok {
-      ci.Logger.ReportSuccess("✅finish running task and now release🔓 the lock")
+      ci.Logger.ReportSuccess("✅ finish running task and now release 🔓 the lock")
     }
   }()
   return nil
