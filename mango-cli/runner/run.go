@@ -2,7 +2,6 @@ package runner
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os/exec"
 	"strings"
@@ -21,10 +20,12 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   cmd := exec.Command(command, args...)
 
   stdout, err := cmd.StdoutPipe()
-  utils.ReportErr(err, "unable to create execution pipe: %s")
+  if err != nil {
+    return "", fmt.Errorf("unable create execution: %s", err)
+  }
 
   if err := cmd.Start(); err != nil {
-    utils.ReportErr(err, "unable to start execution: %s")
+    return "", fmt.Errorf("unable start execution: %s", err)
   }
 
   scanner := bufio.NewScanner(stdout)
@@ -41,7 +42,7 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   }
 
   if err:= cmd.Wait(); err != nil {
-    utils.ReportErr(errors.New(command + " " + utils.ConvertArrayToStr(args)), "unable to exeute: %s")
+    return "", fmt.Errorf("unable execute: %s %s", command, utils.ConvertArrayToStr(args))
   }
 
   return output, err
@@ -50,6 +51,8 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
 func (ex *Execution) RunCommandSplit(in string) (string, error) {
   arr := strings.Split(in, " ")
   output, err := ex.RunCommand(arr[0], arr[1:]...)
-  utils.ReportErr(err)
+  if err != nil {
+    return "", err
+  }
   return output, err
 }
