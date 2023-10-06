@@ -96,38 +96,47 @@ func NewPipeline(tag, path string) (*Pipeline, error) {
   filename := fmt.Sprintf("%s_%s", tag, now)
   filePath := filepath.Join(path, filename + ".txt")
 
-  file, err := os.Create(filePath)
-  if err != nil {
-    return nil, err
-  }
-  file.Close()
-
-  file, err = os.OpenFile(filePath,  os.O_WRONLY|os.O_APPEND, 0644)
-  if err != nil {
-    return nil, err
-  }
-
   return &Pipeline{
     Tag: tag,
     FilePath: filePath,
-    File: file,
     Filename: filename,
   }, nil
 }
 
 func (pip *Pipeline) AppendLocally(text string) error {
-  file, err := os.OpenFile(pip.FilePath, os.O_APPEND|os.O_WRONLY, 0644)
-  if err != nil {
-    return err
+  _, err := os.Stat(pip.FilePath)
+  if err != nil && os.IsNotExist(err) {
+    _, err := os.Create(pip.FilePath)
+    if err != nil {
+      return err
+    }
   }
-  _, err = file.WriteString(text)
+
+  if pip.File == nil {
+    pip.File, err = os.OpenFile(pip.FilePath, os.O_APPEND|os.O_WRONLY, 0644)
+    if err != nil {
+      return err
+    }
+  }
+
+  _, err = pip.File.WriteString(text)
+
   return err
 }
 
 func (pip *Pipeline) Close() error {
-  err := pip.File.Close()
-  return err
+  if pip.File != nil {
+    err := pip.File.Close()
+    return err
+  }
+  return nil
 }
+
+func (pip *Pipeline) List() error {
+  return nil
+}
+
+
 
 // Only one process is allowed at a time, a directory.
 // Checking if lock file exists, if not, return false,
