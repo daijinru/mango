@@ -18,17 +18,20 @@ type Execution struct {
 func (ex *Execution) RunCommand(command string, args ...string) (string, error) {
   // fmt.Println(command, args[0])
   cmd := exec.Command(command, args...)
+  combine := command + " " + utils.ConvertArrayToStr(args)
 
   stdout, err := cmd.StdoutPipe()
   if err != nil {
     message := fmt.Sprintf("failed to create execution: %s\n", err)
-    ex.Pipeline.AppendLocally(message)
+    ex.Pipeline.AppendErrorLocally(err, combine)
+    // ex.Pipeline.AppendInfoLocally(message)
     return "", fmt.Errorf(message)
   }
 
   if err := cmd.Start(); err != nil {
     message := fmt.Sprintf("failed to start execution: %s\n", err)
-    ex.Pipeline.AppendLocally(message)
+    ex.Pipeline.AppendErrorLocally(err, combine)
+    // ex.Pipeline.AppendInfoLocally(message)
     return "", fmt.Errorf(message)
   }
 
@@ -38,7 +41,7 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
     text := scanner.Text()
     output += text + "\n"
     if ex.Pipeline != nil {
-      ex.Pipeline.AppendLocally(fmt.Sprintf("[%s] %s", utils.TimeNow(), output))
+      ex.Pipeline.AppendInfoLocally(output)
     }
     if ex.PrintLine {
       fmt.Printf("[%s] %s\n", utils.TimeNow(), text)
@@ -46,8 +49,9 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   }
 
   if err:= cmd.Wait(); err != nil {
-    message := fmt.Sprintf("[%s] failed to start execution: %s %s", utils.TimeNow(),command, utils.ConvertArrayToStr(args))
-    ex.Pipeline.AppendLocally(message + "\n")
+    message := fmt.Sprintf("error occured from: %s", combine)
+    ex.Pipeline.AppendInfoLocally(message + "\n")
+    ex.Pipeline.AppendErrorLocally(err, combine)
     return "", fmt.Errorf(message)
   }
 

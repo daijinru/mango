@@ -115,23 +115,43 @@ func NewPipeline(tag, path string) (*Pipeline, error) {
   }, nil
 }
 
-func (pip *Pipeline) AppendLocally(text string) error {
+func (pip *Pipeline) IfLogFileExists() (*os.File, error) {
   _, err := os.Stat(pip.FilePath)
   if err != nil && os.IsNotExist(err) {
     _, err := os.Create(pip.FilePath)
     if err != nil {
-      return err
+      return nil, err
     }
   }
 
   if pip.File == nil {
     pip.File, err = os.OpenFile(pip.FilePath, os.O_APPEND|os.O_WRONLY, 0644)
     if err != nil {
-      return err
+      return nil, err
     }
   }
+  return pip.File, nil
+}
 
-  _, err = pip.File.WriteString(text)
+func (pip *Pipeline) AppendInfoLocally(text string) error {
+  file, err := pip.IfLogFileExists()
+  if err != nil {
+    return err
+  }
+
+  _, err = file.WriteString(fmt.Sprintf("[%s] %s", utils.TimeNow(), text))
+
+  return err
+}
+
+func (pip *Pipeline) AppendErrorLocally(cause error, command string) error {
+  file, err := pip.IfLogFileExists()
+  if err != nil {
+    return err
+  }
+
+  errorMsg := fmt.Sprintf("[Failed] [Tag:%s] [Filename:%s] [Error:%s] [occured:%s]", pip.Tag, pip.Filename, cause.Error(), command)
+  _, err = file.WriteString(errorMsg)
 
   return err
 }
