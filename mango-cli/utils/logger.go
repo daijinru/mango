@@ -12,7 +12,7 @@ type Logger struct {
 }
 
 func (l *Logger) Printing(color chalk.Color, input string) {
-  println(input)
+  fmt.Println(color, input)
   if (l.Writer != nil) {
     _, err := l.Writer.Append(input)
     if err != nil {

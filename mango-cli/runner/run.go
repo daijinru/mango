@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/daijinru/mango/mango-cli/utils"
+	"github.com/ttacon/chalk"
 )
 
 type Execution struct {
@@ -44,7 +45,8 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
       ex.Pipeline.AppendInfoLocally(output)
     }
     if ex.PrintLine {
-      fmt.Printf("[%s] %s\n", utils.TimeNow(), text)
+      msg := fmt.Sprintf("[%s] %s", utils.TimeNow(), text)
+      fmt.Println(chalk.White, msg)
     }
   }
 
