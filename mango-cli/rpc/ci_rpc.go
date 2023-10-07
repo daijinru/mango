@@ -101,7 +101,7 @@ func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *Reply) error {
           _, err := execution.RunCommandSplit(script.(string))
           if err != nil {
             ci.Logger.ReportWarn(fmt.Sprintf("❌ has launched stage: [%s], but execution of ci script failed: %s", value.Stage, err))
-            ci.Logger.ReportWarn(fmt.Sprintf("sorry, the task was interrupted cause of error occured in stage: [%s], pipelind id: [%s]", value.Stage, ci.Pipeline.Tag))
+            ci.Logger.ReportWarn(fmt.Sprintf("sorry 😅, the task was interrupted cause of error occured in stage: [%s], pipelind id: [%s]", value.Stage, ci.Pipeline.Tag))
             break OuterLoop
           }
         }

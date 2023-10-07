@@ -46,8 +46,8 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   }
 
   if err:= cmd.Wait(); err != nil {
-    message := fmt.Sprintf("[%s] failed to start execution: %s %s\n", utils.TimeNow(),command, utils.ConvertArrayToStr(args))
-    ex.Pipeline.AppendLocally(message)
+    message := fmt.Sprintf("[%s] failed to start execution: %s %s", utils.TimeNow(),command, utils.ConvertArrayToStr(args))
+    ex.Pipeline.AppendLocally(message + "\n")
     return "", fmt.Errorf(message)
   }
 

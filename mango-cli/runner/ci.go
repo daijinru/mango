@@ -54,7 +54,15 @@ func (ci *CiClient) NewCI(option *CiOption) (*CiClient, error) {
   ci.Workspace = workspace
 
   writer := &utils.Writer{}
-  logFilePath, err := url.JoinPath(workspace.CWD, "./ci.log")
+  logFileDir, err := url.JoinPath(workspace.CWD, "./meta-inf/logs/")
+  if err != nil {
+    return nil, fmt.Errorf("failed to join path for LogFileDir: %s", logFileDir)
+  }
+  err = os.MkdirAll(logFileDir, 0755)
+  if err != nil {
+    return nil, fmt.Errorf("faled to make directory: %s", logFileDir)
+  }
+  logFilePath, err := url.JoinPath(logFileDir, "ci.info.log")
   if err == nil {
     writerOption := &utils.WriterOption{
       FilePath: logFilePath,
