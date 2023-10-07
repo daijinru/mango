@@ -21,11 +21,15 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
 
   stdout, err := cmd.StdoutPipe()
   if err != nil {
-    return "", fmt.Errorf("unable create execution: %s", err)
+    message := fmt.Sprintf("failed to create execution: %s\n", err)
+    ex.Pipeline.AppendLocally(message)
+    return "", fmt.Errorf(message)
   }
 
   if err := cmd.Start(); err != nil {
-    return "", fmt.Errorf("unable start execution: %s", err)
+    message := fmt.Sprintf("failed to start execution: %s\n", err)
+    ex.Pipeline.AppendLocally(message)
+    return "", fmt.Errorf(message)
   }
 
   scanner := bufio.NewScanner(stdout)
@@ -42,7 +46,9 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   }
 
   if err:= cmd.Wait(); err != nil {
-    return "", fmt.Errorf("unable execute: %s %s", command, utils.ConvertArrayToStr(args))
+    message := fmt.Sprintf("[%s] failed to start execution: %s %s\n", utils.TimeNow(),command, utils.ConvertArrayToStr(args))
+    ex.Pipeline.AppendLocally(message)
+    return "", fmt.Errorf(message)
   }
 
   return output, err
