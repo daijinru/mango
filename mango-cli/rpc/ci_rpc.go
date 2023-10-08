@@ -41,8 +41,14 @@ func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *Reply) error {
     Path: args.Path,
     LockName: CI_LOCK_NAME,
   }
+
   ci := &runner.CiClient{}
-  ci.NewCI(ciOption)
+  _, err := ci.NewCI(ciOption)
+  if err != nil {
+    message := fmt.Sprintf("❌ error occured at NewCI: %s", err)
+    reply.Message = message
+    return nil
+  }
 
   defer ci.Logger.Writer.Close()
   defer ci.Pipeline.File.Close()
@@ -60,7 +66,17 @@ func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *Reply) error {
     return nil
   }
 
-  ok, err := ci.CreateRunningLocally()
+  ok, err := ci.ReadFromYaml()
+  if ok {
+    ci.Logger.ReportLog("📝 ci completes reading from local yaml")
+  } else {
+    message := fmt.Sprintf("error occured at ci.ReadFromYaml: %s", err)
+    reply.Message = formatPipMsg(ci, message)
+    ci.Logger.ReportWarn(err.Error())
+    return nil
+  }
+
+  ok, err = ci.CreateRunningLocally()
   if err != nil {
     ci.Logger.ReportWarn(err.Error())
     reply.Message = formatPipMsg(ci, "create lock fail")
@@ -68,16 +84,6 @@ func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *Reply) error {
   }
   if ok {
     ci.Logger.ReportLog("🔒 create lock file locally success")
-  }
-
-  ok, err = ci.ReadFromYaml()
-  if ok {
-    ci.Logger.ReportLog("📝 ci completes reading from local yaml")
-  } else {
-    message := "error occured at ci.ReadFromYaml"
-    reply.Message = formatPipMsg(ci, message)
-    ci.Logger.ReportWarn(err.Error())
-    return nil
   }
 
   reply.Status = int8(OK)
