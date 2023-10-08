@@ -21,7 +21,7 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   cmd := exec.Command(command, args...)
   combine := command + " " + utils.ConvertArrayToStr(args)
 
-  stdout, err := cmd.StdoutPipe()
+  stdoutPipe, err := cmd.StdoutPipe()
   if err != nil {
     message := fmt.Sprintf("failed to create execution: %s\n", err)
     ex.Pipeline.AppendErrorLocally(err, combine)
@@ -36,11 +36,11 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
     return "", fmt.Errorf(message)
   }
 
-  scanner := bufio.NewScanner(stdout)
+  scanner := bufio.NewScanner(stdoutPipe)
   var output string
   for scanner.Scan() {
     text := scanner.Text()
-    output += text + "\n"
+    output = text + "\n"
     if ex.Pipeline != nil {
       ex.Pipeline.AppendInfoLocally(output)
     }
