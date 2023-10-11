@@ -86,11 +86,10 @@ type LockFile struct {
 // Specify an id to initialize the LockFile instance, which is build-in the WorkspaceClient,
 // must be executed before using FileLock operations.
 func (client *WorkspaceClient) NewLockFile(name string) *WorkspaceClient {
-  suffix := ".lock"
   lockFile := &LockFile{
     Name: name,
     Timestamp: utils.TimeNow(),
-    LockFilePath: name + suffix,
+    LockFilePath: name,
   }
   client.LockFile = lockFile
   return client

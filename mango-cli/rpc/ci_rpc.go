@@ -9,7 +9,7 @@ import (
 )
 
 var (
-  CI_LOCK_NAME = ".running"
+  CI_LOCK_NAME = ".running.lock"
 )
 
 type CiService struct {
@@ -17,6 +17,7 @@ type CiService struct {
 
 type CreatePipelineReply struct {
   Tag string
+  Running bool
 }
 type Reply struct {
   Status int8
@@ -131,13 +132,32 @@ type QueryPipArgs struct {
   Path string
 }
 
-// Get the pipelines running status which using the Tag and Path.
-// It will return contents of the pipeline file which was written of each running task.
-// This Content describes the status of executing stage and jobs.
 func (Cis *CiService) GetPipStatus (args *QueryPipArgs, reply *Reply) error {
   reply.Status = int8(FailedQuery)
-  
-  
+  workspace := &runner.WorkspaceClient{}
+  workspace.NewWorkSpaceClient(args.Path)
+  lockFilePath, err := url.JoinPath(workspace.CWD, CI_LOCK_NAME)
+  if err != nil {
+    reply.Message = err.Error()
+    return nil
+  }
+  pipelinePath, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/")
+  if err != nil {
+    reply.Message = err.Error()
+    return nil
+  }
+  pip, err := runner.NewPipeline(args.Tag, pipelinePath)
+  if err != nil {
+    reply.Message = err.Error()
+    return nil
+  }
+
+  existed, err := pip.ArePipelineRunning(lockFilePath)
+  reply.Status = int8(OK)
+  if err != nil {
+    reply.Message = err.Error()
+  }
+  reply.Data.Running = existed
   return nil
 }
 

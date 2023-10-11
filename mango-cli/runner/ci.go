@@ -115,6 +115,42 @@ func NewPipeline(tag, path string) (*Pipeline, error) {
   }, nil
 }
 
+// Get running status of the pipeline(Tag) from the lock file.
+func (pip *Pipeline) ArePipelineRunning(lockFilePath string) (bool, error) {
+  _, err := os.Stat(lockFilePath)
+  if err != nil {
+    return false, err
+  }
+  bytes, err := os.ReadFile(lockFilePath)
+  if err != nil {
+    return false, err
+  }
+  lines := strings.Split(string(bytes), "\n")
+  if len(lines) < 2 {
+    return false, fmt.Errorf("lock file is incomplete")
+  }
+  
+  pid, err := strconv.Atoi(lines[0])
+  if err != nil {
+    return false, err
+  }
+  process, err := os.FindProcess(pid)
+  if err != nil {
+    return false, err
+  }
+  err = process.Signal(syscall.Signal(0))
+  if err != nil {
+    return false, err
+  }
+  
+  tag := lines[1]
+  if tag != pip.Tag {
+    return false, nil
+  }
+  
+  return true, nil
+}
+
 func (pip *Pipeline) IfLogFileExists() (*os.File, error) {
   _, err := os.Stat(pip.FilePath)
   if err != nil && os.IsNotExist(err) {
