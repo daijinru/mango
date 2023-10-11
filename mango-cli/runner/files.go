@@ -107,19 +107,19 @@ func (client *WorkspaceClient) IfExistsLock() (bool, error) {
   }
 }
 
-func (client *WorkspaceClient) CreateLockFile() (bool, error) {
+func (client *WorkspaceClient) CreateLockFile() error {
   lockFile := client.LockFile
   if _, err := os.Stat(lockFile.LockFilePath); err == nil {
-    return true, nil
+    return nil
   } else if os.IsNotExist(err) {
     file, err := os.Create(lockFile.LockFilePath)
     if err != nil {
-      return false, fmt.Errorf("failed to create file: %v", err)
+      return fmt.Errorf("failed to create file: %v", err)
     }
     defer file.Close()
-    return true, nil
+    return nil
   } else {
-    return false, fmt.Errorf("unable to check file: %v", err)
+    return fmt.Errorf("unable to check file: %v", err)
   }
 }
 

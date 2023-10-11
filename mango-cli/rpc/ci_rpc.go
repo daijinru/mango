@@ -40,6 +40,7 @@ func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *Reply) error {
   ciOption := &runner.CiOption{
     Path: args.Path,
     LockName: CI_LOCK_NAME,
+    Tag: args.Tag,
   }
 
   ci := &runner.CiClient{}
@@ -76,13 +77,12 @@ func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *Reply) error {
     return nil
   }
 
-  ok, err = ci.CreateRunningLocally()
+  err = ci.CreateRunningLocally()
   if err != nil {
     ci.Logger.ReportWarn(err.Error())
     reply.Message = formatPipMsg(ci, "create lock fail")
     return nil
-  }
-  if ok {
+  } else {
     ci.Logger.ReportLog("🔒 create lock file locally success")
   }
 
@@ -135,6 +135,9 @@ type QueryPipArgs struct {
 // It will return contents of the pipeline file which was written of each running task.
 // This Content describes the status of executing stage and jobs.
 func (Cis *CiService) GetPipStatus (args *QueryPipArgs, reply *Reply) error {
+  reply.Status = int8(FailedQuery)
+  
+  
   return nil
 }
 

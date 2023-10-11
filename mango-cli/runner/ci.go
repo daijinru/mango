@@ -204,7 +204,13 @@ func (ci *CiClient) AreRunningLocally() (bool, error) {
     if err != nil {
       return false, err
     }
-    pid, err := strconv.Atoi(string(bytes))
+
+    lines := strings.Split(string(bytes), "\n")
+    if len(lines) < 2 {
+      fmt.Sprintln("warnning: os.Pid and pipline.Tag should existed in the lock file")
+    }
+
+    pid, err := strconv.Atoi(lines[0])
     if err != nil {
       return false, err
     }
@@ -232,17 +238,27 @@ func (ci *CiClient) AreRunningLocally() (bool, error) {
   return false, nil
 }
 
-func (ci *CiClient) CreateRunningLocally() (bool, error) {
-  success, err := ci.Workspace.CreateLockFile()
-  if success {
-    pid := os.Getpid()
-    err := os.WriteFile(ci.Workspace.LockFile.LockFilePath, []byte(strconv.Itoa(pid)), 0644)
+func (ci *CiClient) CreateRunningLocally() error {
+  err := ci.Workspace.CreateLockFile()
+  if err == nil {
+    file, err := os.OpenFile(ci.Workspace.LockFile.LockFilePath, os.O_APPEND|os.O_WRONLY, 0644)
     if err != nil {
-      return false, err
+      return err
     }
-    return true, err
+
+    pid := os.Getpid()
+    _, err = file.WriteString((strconv.Itoa(pid)) + "\n")
+    if err != nil {
+      return err
+    }
+
+    _, err = file.WriteString(ci.Pipeline.Tag)
+    if err != nil {
+      return err
+    }
+    return nil
   }
-  return false, err
+  return err
 }
 
 func (ci *CiClient) CompletedRunningTask() error {
