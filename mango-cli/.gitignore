@@ -32,5 +32,6 @@ mango-cli
 # Vi
 *.swp
 
-# pipelines
-/meta-inf/**/*.txt
+# .mango
+.mango
+.mango/**/*

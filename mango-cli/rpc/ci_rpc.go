@@ -123,7 +123,7 @@ func (Cis *CiService) GetPipStatus(args *QueryPipArgs, reply *PipReply) error {
     reply.Message = err.Error()
     return nil
   }
-  pipelinePath, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/")
+  pipelinePath, err := url.JoinPath(workspace.CWD, ".mango/pipelines/")
   if err != nil {
     reply.Message = err.Error()
     return nil
@@ -149,7 +149,7 @@ func (Cis *CiService) GetPipStdout(args *QueryPipArgs, reply *PipReply) error {
   
   workspace := &runner.WorkspaceClient{}
   workspace.NewWorkSpaceClient(args.Path)
-  filepath, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/", args.Filename)
+  filepath, err := url.JoinPath(workspace.CWD, ".mango/pipelines/", args.Filename)
   if err != nil {
     reply.Message = err.Error()
     return nil
@@ -169,7 +169,7 @@ func (Cis *CiService) GetPips(args *QueryPipArgs, reply *PipListReply) error {
   reply.Status = int8(FailedQuery)
   workspace := &runner.WorkspaceClient{}
   workspace.NewWorkSpaceClient(args.Path)
-  path, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/")
+  path, err := url.JoinPath(workspace.CWD, ".mango/pipelines/")
   if err != nil {
     reply.Message = err.Error()
     return nil

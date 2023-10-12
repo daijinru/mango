@@ -54,7 +54,7 @@ func (ci *CiClient) NewCI(option *CiOption) (*CiClient, error) {
   ci.Workspace = workspace
 
   writer := &utils.Writer{}
-  logFileDir, err := url.JoinPath(workspace.CWD, "./meta-inf/logs/")
+  logFileDir, err := url.JoinPath(workspace.CWD, ".mango/logs/")
   if err != nil {
     return nil, fmt.Errorf("failed to join path for LogFileDir: %s", logFileDir)
   }
@@ -82,7 +82,7 @@ func (ci *CiClient) NewCI(option *CiOption) (*CiClient, error) {
   if option.Tag == "" {
     Pipeline_Tag = utils.GenerateUUIDFileName()
   }
-  Pipeline_Path, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/")
+  Pipeline_Path, err := url.JoinPath(workspace.CWD, ".mango/pipelines/")
   if err != nil {
     return ci, err
   }
@@ -308,7 +308,7 @@ type YAML_Config struct {
 
 // It is the entry that read CI profile from diff versions of YAML.
 func (ci *CiClient) ReadFromYaml() (bool, error) {
-  var YAML_NAME = "./meta-inf/.mango-ci.yaml"
+  var YAML_NAME = ".mango/mango-ci.yaml"
 
   if !ci.Workspace.PathExists(YAML_NAME) {
     return false, fmt.Errorf("file not exists: %s", YAML_NAME)

@@ -9,7 +9,7 @@ $ go build -o path/mango-cli
 ```
 ## Use Guider
 
-Add it the content below to your `[project-root]/meta-info/.mango-ci.yaml`.
+Add it the content below to your `[project-root]/.mango/mango-ci.yaml`.
 ```yaml
 Version: "abc"
 Stages:
