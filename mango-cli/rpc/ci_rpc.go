@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"path/filepath"
-
 	"github.com/daijinru/mango/mango-cli/runner"
 	"github.com/daijinru/mango/mango-cli/utils"
 )
@@ -17,28 +15,14 @@ var (
 type CiService struct {
 }
 
-type CreatePipelineReply struct {
-  Tag string
-  Running bool
-  Content string
-}
-type Reply struct {
-  Status int8
-  Message string
-  Data CreatePipelineReply 
-}
-type CreatePipArgs struct {
-  Tag string
-  Path string
-}
-
 func formatPipMsg(ci *runner.CiClient, msg string) string {
   return fmt.Sprintf("[%s] [%s] 🥭 %s", utils.TimeNow(), ci.Pipeline.Filename, msg)
 }
+
 // Path parameter passing that service will switch to the path,
 // as the working directory,
 // and then performing the tasks by meta-inf/.mango-ci.yaml
-func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *Reply) error {
+func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *PipReply) error {
   reply.Status = int8(FailedCreate)
 
   ciOption := &runner.CiOption{
@@ -129,14 +113,8 @@ func (CiS *CiService) CreatePip(args *CreatePipArgs, reply *Reply) error {
   return nil
 }
 
-type QueryPipArgs struct {
-  Tag string
-  DateTime string
-  Path string
-  Filename string
-}
-
-func (Cis *CiService) GetPipStatus (args *QueryPipArgs, reply *Reply) error {
+// Whether the pipeline is running: query by pid and name locate the lock file at the path.
+func (Cis *CiService) GetPipStatus(args *QueryPipArgs, reply *PipReply) error {
   reply.Status = int8(FailedQuery)
   workspace := &runner.WorkspaceClient{}
   workspace.NewWorkSpaceClient(args.Path)
@@ -166,51 +144,28 @@ func (Cis *CiService) GetPipStatus (args *QueryPipArgs, reply *Reply) error {
 }
 
 // Jobs tasks execution is output to a file, and its calling returns the contents of the file.
-func (Cis *CiService) GetPipStdout (args *QueryPipArgs, reply *Reply) error {
+func (Cis *CiService) GetPipStdout(args *QueryPipArgs, reply *PipReply) error {
   reply.Status = int8(FailedQuery)
   
   workspace := &runner.WorkspaceClient{}
   workspace.NewWorkSpaceClient(args.Path)
-  directory, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/")
+  filepath, err := url.JoinPath(workspace.CWD, "./meta-inf/pipelines/", args.Filename)
   if err != nil {
     reply.Message = err.Error()
     return nil
   }
-  files, err := os.ReadDir(directory)
+  content, err := os.ReadFile(filepath)
   if err != nil {
     reply.Message = err.Error()
     return nil
-  }
-  for _, file := range files {
-    if file.Name() == args.Filename {
-      filePath := filepath.Join(directory, file.Name())
-      content, err := os.ReadFile(filePath)
-      if err != nil {
-        reply.Message = err.Error()
-        return nil
-      }
-      reply.Status = int8(OK)
-      reply.Data.Content = string(content)
-      return nil
-    }
   }
   reply.Status = int8(OK)
-  reply.Data.Content = "not found stdout the pipeline"
+  reply.Data.Content = string(content)
   return nil
 }
 
-type PipsPagination struct {
-  Total int
-  Filenames []string
-  Tag string
-}
-type PipsReply struct {
-  Status int8
-  Message string
-  Data PipsPagination
-}
 // Gets all pipeline files by the path passing.
-func (Cis *CiService) GetPips (args *QueryPipArgs, reply *PipsReply) error {
+func (Cis *CiService) GetPips(args *QueryPipArgs, reply *PipListReply) error {
   reply.Status = int8(FailedQuery)
   workspace := &runner.WorkspaceClient{}
   workspace.NewWorkSpaceClient(args.Path)
