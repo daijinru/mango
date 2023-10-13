@@ -6,10 +6,7 @@ import (
 	"net/rpc"
 
 	command "github.com/daijinru/mango-packages-command"
-
-	// "github.com/daijinru/mango/mango-cli/runner"
 	mangoRPC "github.com/daijinru/mango/mango-cli/rpc"
-	"github.com/daijinru/mango/mango-cli/utils"
 )
 
 func NewServiceRPC() *command.Command {
@@ -34,7 +31,9 @@ func NewServiceRpcStart() *command.Command {
       
       port := ":" + args[0]
       listener, err := net.Listen("tcp", port)
-      utils.ReportErr(err, "❌unable start RPC service: %s")
+      if err != nil {
+        fmt.Printf("❌unable start RPC service: %s", err)
+      }
       defer listener.Close()
       
       fmt.Println("🌏 Now listening for RPC request at port: " + args[0])
@@ -42,7 +41,7 @@ func NewServiceRpcStart() *command.Command {
       for {
         conn, err := listener.Accept()
         if err != nil {
-          utils.ReportErr(err, "❌connect error: %s")
+          fmt.Printf("❌connect error: %s", err)
           continue
         }
         go rpc.ServeConn(conn)

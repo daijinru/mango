@@ -24,14 +24,13 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
   stdoutPipe, err := cmd.StdoutPipe()
   if err != nil {
     message := fmt.Sprintf("failed to create execution: %s\n", err)
-    ex.Pipeline.AppendErrorLocally(err, combine)
-    // ex.Pipeline.AppendInfoLocally(message)
+    ex.Pipeline.WriteError(err, combine)
     return "", fmt.Errorf(message)
   }
 
   if err := cmd.Start(); err != nil {
     message := fmt.Sprintf("failed to start execution: %s\n", err)
-    ex.Pipeline.AppendErrorLocally(err, combine)
+    ex.Pipeline.WriteError(err, combine)
     // ex.Pipeline.AppendInfoLocally(message)
     return "", fmt.Errorf(message)
   }
@@ -42,7 +41,7 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
     text := scanner.Text()
     output = text + "\n"
     if ex.Pipeline != nil {
-      ex.Pipeline.AppendInfoLocally(output)
+      ex.Pipeline.WriteInfo(output)
     }
     if ex.PrintLine {
       msg := fmt.Sprintf("[%s] %s", utils.TimeNow(), text)
@@ -52,8 +51,8 @@ func (ex *Execution) RunCommand(command string, args ...string) (string, error) 
 
   if err:= cmd.Wait(); err != nil {
     message := fmt.Sprintf("error occured from: %s", combine)
-    ex.Pipeline.AppendInfoLocally(message + "\n")
-    ex.Pipeline.AppendErrorLocally(err, combine)
+    ex.Pipeline.WriteInfo(message + "\n")
+    ex.Pipeline.WriteError(err, combine)
     return "", fmt.Errorf(message)
   }
 

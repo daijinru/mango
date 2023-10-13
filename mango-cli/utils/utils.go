@@ -2,7 +2,6 @@ package utils
 
 import (
   "bufio"
-  "errors"
   "fmt"
   "io"
   "log"
@@ -24,28 +23,6 @@ func GenerateUUIDFileName() string {
 	fileName = fileName[:8] + fileName[9:13] + fileName[14:18] + fileName[19:23] + fileName[24:]
 
 	return fileName
-}
-
-func CheckType(args ...interface{}) {
-  var argType string = reflect.TypeOf(args[0]).Kind().String()
-  var argName string = "unknown variable name"
-
-  if len(args) > 1 && args[1] != nil {
-    argName = args[1].(string)
-  }
-
-  switch argType {
-    case "int":
-      if args[0] == 0 {
-        ReportErr(errors.New(argName + ": type is int but it is 0"))
-      }
-    case "string":
-      if (args[0] == "") {
-        ReportErr(errors.New(argName + ": type is string but it is empty"))
-      }
-    default:
-      return
-  }
 }
 
 // convert []string, output 1 string
