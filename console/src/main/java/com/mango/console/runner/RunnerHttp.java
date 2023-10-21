@@ -26,10 +26,11 @@ public class RunnerHttp {
         RunnerHttp.environment = environment;
     }
 
-    public static RunnerReply send(RunnerEndpointEnum endpoint, RunnerParamsBuilder paramsBuilder) {
+    public static RunnerReply send(RunnerMethods endpoint, RunnerParamsBuilder paramsBuilder) {
         String method = paramsBuilder.getMethod();
         String tag = paramsBuilder.getTag();
         String path = paramsBuilder.getPath();
+        String filename = paramsBuilder.getFilename();
 
         String baseURL = environment.getProperty("mango.runner.baseURL");
         String url = baseURL + endpoint.getEndpoint();
@@ -42,6 +43,7 @@ public class RunnerHttp {
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("tag", tag));
             params.add(new BasicNameValuePair("path", path));
+            params.add(new BasicNameValuePair("filename", filename));
 
             try {
                 httpPost.setEntity(new UrlEncodedFormEntity(params));

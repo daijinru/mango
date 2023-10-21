@@ -1,29 +1,68 @@
 package com.mango.console.controllers;
 
 import com.mango.console.runner.RunnerHttp;
-import com.mango.console.runner.RunnerEndpointEnum;
+import com.mango.console.runner.RunnerMethods;
 import com.mango.console.runner.RunnerParamsBuilder;
 import com.mango.console.runner.RunnerReply;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
-@Controller
 @RestController
+@RequestMapping("/v1/pipeline")
 public class PipelineController {
 
-    @PostMapping("/api/v1/pipeline/create")
-    public String createPipeline(@RequestBody PipelineRequest request) throws Exception {
-        if (Objects.isNull(request.getTag()) || Objects.isNull(request.getPath())) {
+    @PostMapping("/create")
+    public Object create(@RequestBody PipelineArgs args) throws Exception {
+        if (Objects.isNull(args.getTag()) || Objects.isNull(args.getPath())) {
             throw new Exception("No empty tag or path");
         }
         RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
-            .method("POST")
-            .tag(request.getTag())
-            .path(request.getPath());
-        RunnerReply response = RunnerHttp.send(RunnerEndpointEnum.CREATE_PIPELINE, paramsBuilder);
-        return response.getContent();
+                .method("POST")
+                .tag(args.getTag())
+                .path(args.getPath());
+        RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_CREATE, paramsBuilder);
+        return reply.getContent();
+    }
+
+    @PostMapping("status")
+    public Object status(@RequestBody PipelineArgs args) throws Exception {
+        if (Objects.isNull(args.getTag()) || Objects.isNull(args.getPath())) {
+            throw new Exception("No empty tag or path");
+        }
+        RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+                .method("POST")
+                .path(args.getPath())
+                .tag(args.getTag());
+        RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STATUS, paramsBuilder);
+        return reply.getContent();
+    }
+
+    @PostMapping("stdout")
+    public Object stdout(@RequestBody PipelineArgs args) throws Exception {
+        if (Objects.isNull(args.getFilename()) || Objects.isNull(args.getPath())) {
+            throw new Exception("No empty filename or path");
+        }
+        RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+                .method("POST")
+                .path(args.getPath())
+                .filename(args.getFilename());
+        RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STDOUT, paramsBuilder);
+        return reply.getContent();
+    }
+
+    @PostMapping("list")
+    public Object list(@RequestBody PipelineArgs args) throws Exception {
+        if (Objects.isNull(args.getTag()) || Objects.isNull(args.getPath())) {
+            throw new Exception("No empty tag or path");
+        }
+        RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+                .method("POST")
+                .path(args.getPath())
+                .tag(args.getTag());
+        RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_LIST, paramsBuilder);
+        return reply.getContent();
     }
  }

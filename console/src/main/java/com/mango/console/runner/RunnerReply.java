@@ -7,7 +7,7 @@ public class RunnerReply {
       this.content = content;
   }
 
-  public String getContent() {
+  public Object getContent() {
       return content;
   }
 }

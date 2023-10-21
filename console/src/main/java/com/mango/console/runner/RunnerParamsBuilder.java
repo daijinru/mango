@@ -5,6 +5,8 @@ public class RunnerParamsBuilder {
     private String tag;
     private String path;
 
+    private String filename;
+
     public RunnerParamsBuilder() {
     }
 
@@ -15,6 +17,11 @@ public class RunnerParamsBuilder {
 
     public RunnerParamsBuilder tag(String tag) {
         this.tag = tag;
+        return this;
+    }
+
+    public RunnerParamsBuilder filename(String filename) {
+        this.filename = filename;
         return this;
     }
 
@@ -33,5 +40,9 @@ public class RunnerParamsBuilder {
 
     public String getPath() {
         return path;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 }
