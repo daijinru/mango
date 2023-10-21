@@ -20,6 +20,6 @@ public class LoggerAspect {
         String requestMethod = request.getMethod();
         Object[] requestParams = joinPoint.getArgs();
 
-        System.out.print("Request Path: " + requestPath + ", method: " + requestMethod + ", params: " + requestParams);
+        System.out.println("Request Path: " + requestPath + ", method: " + requestMethod + ", params: " + requestParams);
     }
 }

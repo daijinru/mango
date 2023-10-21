@@ -1,9 +1,9 @@
 package com.mango.console.runner;
 
-public class RunnerResponse {
+public class RunnerReply {
   private String content;
 
-  public RunnerResponse(String content) {
+  public RunnerReply(String content) {
       this.content = content;
   }
 
