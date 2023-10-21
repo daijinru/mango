@@ -1,4 +1,4 @@
-package com.mango.console.Aspects;
+package com.mango.console.aspects;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
