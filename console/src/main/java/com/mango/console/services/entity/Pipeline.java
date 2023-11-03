@@ -1,4 +1,4 @@
-package com.mango.console.entities;
+package com.mango.console.services.entity;
 
 import lombok.Data;
 
@@ -13,7 +13,7 @@ public class Pipeline {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "project_id")
-    private Integer projectId;
+    private Long projectId;
     @Column(name = "stages")
     private String stages;
     @Column(name = "status")

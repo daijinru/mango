@@ -1,4 +1,4 @@
-package com.mango.console.entities;
+package com.mango.console.services.entity;
 
 import lombok.Data;
 

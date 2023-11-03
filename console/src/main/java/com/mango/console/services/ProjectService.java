@@ -1,6 +1,7 @@
-package com.mango.console.sqls;
+package com.mango.console.services;
 
-import com.mango.console.entities.Project;
+import com.mango.console.services.dao.ProjectRepo;
+import com.mango.console.services.entity.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
