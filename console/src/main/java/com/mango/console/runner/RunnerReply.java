@@ -1,13 +1,9 @@
 package com.mango.console.runner;
 
+import lombok.Data;
+
+@Data
 public class RunnerReply {
-  private String content;
-
-  public RunnerReply(String content) {
-      this.content = content;
-  }
-
-  public Object getContent() {
-      return content;
-  }
+  private String status;
+  private String message;
 }

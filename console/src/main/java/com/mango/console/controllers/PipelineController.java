@@ -21,8 +21,8 @@ public class PipelineController {
 
     @PostMapping("/create")
     public Object create(@RequestBody PipelineArgs args) throws Exception {
-         Object result = pipelineService.create(args.getPid());
-         return new WrapResponsesData(result).success();
+         RunnerReply reply = pipelineService.create(args.getPid());
+         return new WrapResponsesData(reply).success();
     }
 
 //    @PostMapping("status")

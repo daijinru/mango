@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -49,9 +51,19 @@ public class RunnerHttp {
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
 
                 HttpResponse response = httpClient.execute(httpPost);
+
+                int statusCode = response.getStatusLine().getStatusCode();
                 HttpEntity entity = response.getEntity();
                 String content = EntityUtils.toString(entity);
-                return new RunnerReply(content);
+                RunnerReply reply = new RunnerReply();
+                if (statusCode == HttpStatus.SC_OK) {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    reply = objectMapper.readValue(content, RunnerReply.class);
+                } else {
+                    reply.setStatus(Integer.toString(statusCode));
+                    reply.setMessage(content);
+                }
+                return reply;
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -14,6 +14,8 @@ public class Pipeline {
     private Long id;
     @Column(name = "project_id")
     private Long projectId;
+    @Column(name = "filename")
+    private String filename;
     @Column(name = "stages")
     private String stages;
     @Column(name = "status")

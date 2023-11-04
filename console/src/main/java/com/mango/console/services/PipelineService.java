@@ -32,18 +32,13 @@ public class PipelineService {
     }
 
     @Transactional
-    public Object create(Long projectId) {
-        Optional<Project> findProject = projectRepo.findById(projectId);
+    public RunnerReply create(Long projectId) {
         Project project = Optional.ofNullable(
                 projectRepo.findById(projectId)
         ).get().orElseGet(() -> null);
 
         if (Objects.nonNull(project)) {
             Long pid = project.getId();
-            Pipeline pipeline = new Pipeline();
-            pipeline.setProjectId(pid);
-            pipeline.setCreatedAt(Utils.getLocalDateTime());
-            pipelineRepo.save(pipeline);
 
             String name = project.getName();
             String path = project.getPath();
@@ -52,7 +47,15 @@ public class PipelineService {
                     .tag(name)
                     .path(path);
             RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_CREATE, paramsBuilder);
-            return reply.getContent();
+            if (Objects.nonNull(reply) && reply.getStatus().equalsIgnoreCase("success")) {
+                Pipeline pipeline = new Pipeline();
+                pipeline.setProjectId(pid);
+                pipeline.setCreatedAt(Utils.getLocalDateTime());
+                pipeline.setStatus((short)0);
+                pipeline.setFilename(reply.getMessage());
+                pipelineRepo.save(pipeline);
+            }
+            return reply;
         }
         return null;
     }
