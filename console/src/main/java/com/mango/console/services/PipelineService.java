@@ -39,7 +39,6 @@ public class PipelineService {
 
         if (Objects.nonNull(project)) {
             Long pid = project.getId();
-
             String name = project.getName();
             String path = project.getPath();
             RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
@@ -55,6 +54,24 @@ public class PipelineService {
                 pipeline.setFilename(reply.getMessage());
                 pipelineRepo.save(pipeline);
             }
+            return reply;
+        }
+        return null;
+    }
+
+    @Transactional
+    public RunnerReply running(Long projectId) {
+        Project project = Optional.ofNullable(
+                projectRepo.findById(projectId)
+        ).get().orElseGet(() -> null);
+        if (Objects.nonNull(project)) {
+            String name = project.getName();
+            String path = project.getPath();
+            RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+                    .method("POST")
+                    .tag(name)
+                    .path(path);
+            RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STATUS, paramsBuilder);
             return reply;
         }
         return null;
