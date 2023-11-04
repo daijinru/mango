@@ -76,4 +76,23 @@ public class PipelineService {
         }
         return null;
     }
+
+    @Transactional
+    public RunnerReply stdout(Long projectId, String filename) {
+        Project project = Optional.ofNullable(
+                projectRepo.findById(projectId)
+        ).get().orElseGet(() -> null);
+        if (Objects.nonNull(project)) {
+            String path = project.getPath();
+            RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+                    .method("POST")
+                    .path(path)
+                    .filename(filename + ".txt");
+            RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STDOUT, paramsBuilder);
+            return reply;
+        }
+        return null;
+    }
 }
+
+

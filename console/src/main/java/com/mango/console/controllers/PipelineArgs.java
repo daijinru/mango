@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class PipelineArgs {
     private Long pid;
+    private String filename;
 }

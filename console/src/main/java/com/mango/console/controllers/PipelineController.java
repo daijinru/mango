@@ -31,6 +31,12 @@ public class PipelineController {
         return new WrapResponsesData(reply).success();
     }
 
+    @PostMapping("/stdout")
+    public Object stdout(@RequestBody PipelineArgs args) throws Exception {
+        RunnerReply reply = pipelineService.stdout(args.getPid(), args.getFilename());
+        return new WrapResponsesData(reply).success();
+    }
+
 //    @PostMapping("status")
 //    public Object status(@RequestBody PipelineArgs args) throws Exception {
 //        if (Objects.isNull(args.getTag()) || Objects.isNull(args.getPath())) {
