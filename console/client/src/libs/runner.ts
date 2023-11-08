@@ -45,6 +45,29 @@ function get<T extends RequestArgs>(option: RequestOption<T>) {
       })
   })
 }
+function post<T extends RequestArgs>(option: RequestOption<T>) {
+  option = Object.assign({}, option)
+  return new Promise((resolve, reject) => {
+    window.fetch(
+      BASE_URL + option.url,
+      {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(option.data),
+      },
+    )
+    .then(res => res.json())
+    .then(res => {
+      if (res.status === HttpStatus.OK) {
+        resolve(res.data)
+      } else {
+        resolve(res.message)
+      }
+    })
+  })
+}
 
 export default {
   HttpUtils: {
