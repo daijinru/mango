@@ -32,6 +32,15 @@ public class ProjectController {
         return new WrapResponsesData(project).success();
     }
 
+    @GetMapping("{id}")
+    public Object project(@PathVariable Long id) throws Exception {
+        if (Objects.isNull(id)) {
+            throw new Exception("No empty id");
+        }
+        Project project = projectService.project(id);
+        return new WrapResponsesData(project).success();
+    }
+
     @GetMapping("/{projectId}/pipelines")
     public Object pipelines(@PathVariable("projectId") Long id) {
         List<Pipeline> pipelines = pipelineService.getPipelinesByProjectId(id);

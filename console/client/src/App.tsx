@@ -10,8 +10,8 @@ import Home from './pages/home'
 const menuConfig = [
   {path: '/', title: 'home', active: 'home', component: Home},
   {path: '/pipelines', tilte: 'pipelines', active: 'pipelines', component: Pipeline},
-  {path: '/project/:id', title: 'Projects', active: 'project', component: Project},
-  {path: '/pipeline/:id', title: 'Pipeline', active: 'pipeline', component: Pipeline,},
+  {path: '/project', title: 'Projects', active: 'project', component: Project},
+  {path: '/pipeline', title: 'Pipeline', active: 'pipeline', component: Pipeline,},
 ]
 
 export default () => {

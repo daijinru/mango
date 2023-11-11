@@ -1,3 +1,4 @@
+import { message } from "antd";
 import { RequestArgs } from "./runner.types";
 
 export enum HttpMethod {
@@ -33,6 +34,10 @@ function get<T extends RequestArgs, K/** response.data */>(option: RequestOption
         return res.json()
       })
       .then(res => {
+        if (!res.status) {
+          message.warning('no status from the response: status, data, message')
+          return null
+        }
         if (res.status === HttpStatus.OK) {
           resolve(res.data)
         } else {
@@ -60,6 +65,10 @@ function post<T extends RequestArgs, K/** response.data */>(option: RequestOptio
     )
     .then(res => res.json())
     .then(res => {
+      if (!res.status) {
+        message.warning('no status from the response: status, data, message')
+        return null
+      }
       if (res.status === HttpStatus.OK) {
         resolve(res.data)
       } else {

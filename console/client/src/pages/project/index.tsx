@@ -1,26 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { EllipsisOutlined } from '@ant-design/icons'
 import { PageContainer, ProCard } from '@ant-design/pro-components'
-import { Button, Dropdown } from 'antd'
+import { Button, Dropdown, message } from 'antd'
+import ListPipelines from './components/list-pipelines'
+import { Project } from '../../libs/runner.types';
+import runner from '../../libs/runner';
+import { useLocation } from 'react-router-dom';
+import qs from 'query-string'
 
 const App: React.FC = () => {
+  const [tabKey, setTabKey] = useState<string>('overview')
+  const [project, setProject] = useState<Project>({} as Project)
+  const location = useLocation()
+  React.useEffect(() => {
+    (async function fn() {
+      const queries = qs.parse(location.search)
+      if (!queries.id) return message.warning('No empty proejct id: <url>?id=<id>')
+      const project = await runner.HttpUtils.get<any, Project>({
+        url: '/v1/project/' + queries.id
+      })
+      if (project) {
+        setProject(project)
+      }
+    })()
+  }, [])
   return (
     <>
       <div
         style={{
-          background: '#F5F7FA',
+          background: 'transparent',
           width: '100%',
           height: '100%',
         }}
       >
         <PageContainer
+          onTabChange={key => {
+            console.info('changeto: ', key)
+            setTabKey(key)
+          }}
           tabProps={{
             size: 'small',
 
           }}
           header={{
-            title: 'Test_Project',
+            title: project.name,
             ghost: true,
             breadcrumb: {
               items: [
@@ -30,7 +54,7 @@ const App: React.FC = () => {
                 },
                 {
                   path: '',
-                  title: 'Test_Project',
+                  title: project.name,
                 },
               ],
             },
@@ -66,18 +90,23 @@ const App: React.FC = () => {
           tabList={[
             {
               tab: 'Overview',
-              key: 'base',
+              key: 'overview',
               closable: false,
             },
             {
               tab: 'Build Log',
-              key: 'info',
+              key: 'log',
               closable: false,
             },
           ]}
         >
           <ProCard direction="column" ghost gutter={[0, 16]}>
-            <ProCard style={{ height: '100%' }} />
+            <ProCard style={{ height: '100%' }}>
+              {
+                tabKey === 'overview'
+                && <ListPipelines />
+              }
+            </ProCard>
           </ProCard>
         </PageContainer>
       </div>

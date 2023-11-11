@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectService {
@@ -25,5 +26,11 @@ public class ProjectService {
 
     public List<Project> listProjects() {
         return projectRepo.findAll();
+    }
+
+    public Project project(Long id) {
+        return Optional.ofNullable(
+                projectRepo.findById(id)
+        ).get().orElseGet(() -> null);
     }
 }

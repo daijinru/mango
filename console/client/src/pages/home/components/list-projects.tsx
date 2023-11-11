@@ -3,11 +3,13 @@ import {
   ProList,
 } from '@ant-design/pro-components'
 import { Progress, Tag } from 'antd'
-import runner, { HttpMethod } from '../../../libs/runner'
+import runner  from '../../../libs/runner'
 import { Project, RequestArgs } from '../../../libs/runner.types'
+import { useNavigate } from 'react-router-dom'
 
 export default () => {
   const [dataSource, setDataSource] = React.useState<any>()
+  const navigate = useNavigate()
   React.useEffect(() => {
     (async function() {
       const data = await runner.HttpUtils.get<RequestArgs, Project[]>({
@@ -16,6 +18,7 @@ export default () => {
       setDataSource(data.map(item => {
         return {
           title: item.name,
+          data: item,
           subTitle: <Tag color="#5BD8A6">{item.path}</Tag>,
           actions: [<a key="run">Run</a>, <a key="delete">Remove</a>],
           avatar:
@@ -62,7 +65,7 @@ export default () => {
         onItem={(record: any) => {
           return {
             onClick: () => {
-              console.log(record)
+              record.data?.id && navigate('/project?id=' + record.data.id)
             },
           }
         }}
