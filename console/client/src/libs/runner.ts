@@ -1,4 +1,4 @@
-import { RequestArgs, Project } from "./runner.types";
+import { RequestArgs } from "./runner.types";
 
 export enum HttpMethod {
   GET='get',
@@ -17,7 +17,7 @@ export enum HttpStatus {
   unAuth=401,
 }
 export type RequestOption<T extends RequestArgs> = {
-  method: HttpMethod
+  method?: HttpMethod
   url: string,
   data?: { 
     [K in keyof T]: T[K]

@@ -1,13 +1,27 @@
 import React from "react";
-import { Button, Divider, Form, Input } from 'antd'
+import { useNavigate } from "react-router-dom";
+import { Button, Divider, Form, Input, message } from 'antd'
+import runner from "../../../libs/runner";
+import { Project, ProjectArgs } from "../../../libs/runner.types";
 
 const App: React.FC = () => {
-  const onFinish = (values: any) => {
-    console.log('Success:', values)
+  const navigate = useNavigate()
+  const onFinish = async (values: ProjectArgs) => {
+    const data = await runner.HttpUtils.post<ProjectArgs, Project>({
+      url: '/v1/project/create',
+      data: {
+        name: values.name,
+        path: values.path,
+      }
+    })
+    message.success('create success: ' + data.name + ', id:' + data.id)
+    if (data.id) {
+      navigate('/project/' + data.id)
+    }
   }
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
+    message.warning(errorInfo.errorFields[0].errors[0])
   }
 
  return  (

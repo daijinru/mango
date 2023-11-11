@@ -1,18 +1,18 @@
 import React from 'react'
 import {
-  ProFormRadio,
-  ProFormSwitch,
   ProList,
 } from '@ant-design/pro-components'
 import { Progress, Tag } from 'antd'
-import { listProjects } from '../../../libs/api'
-import { HttpStatus } from '../../../libs/runner'
+import runner, { HttpMethod } from '../../../libs/runner'
+import { Project, RequestArgs } from '../../../libs/runner.types'
 
 export default () => {
   const [dataSource, setDataSource] = React.useState<any>()
   React.useEffect(() => {
     (async function() {
-      const data = await listProjects()
+      const data = await runner.HttpUtils.get<RequestArgs, Project[]>({
+        url: '/v1/project/all',
+      })
       setDataSource(data.map(item => {
         return {
           title: item.name,
