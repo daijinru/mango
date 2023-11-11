@@ -1,4 +1,4 @@
-import { RequestArgs } from "./runner.types";
+import { RequestArgs, Project } from "./runner.types";
 
 export enum HttpMethod {
   GET='get',
@@ -19,13 +19,13 @@ export enum HttpStatus {
 export type RequestOption<T extends RequestArgs> = {
   method: HttpMethod
   url: string,
-  data: {
+  data?: { 
     [K in keyof T]: T[K]
   },
 }
 
 export const BASE_URL = window.location.protocol + '//' + window.location.host
-function get<T extends RequestArgs>(option: RequestOption<T>) {
+function get<T extends RequestArgs, K/** response.data */>(option: RequestOption<T>): Promise<K> {
   option = Object.assign({}, option)
   return new Promise((resolve, reject) => {
     window.fetch(BASE_URL + option.url)
@@ -45,7 +45,7 @@ function get<T extends RequestArgs>(option: RequestOption<T>) {
       })
   })
 }
-function post<T extends RequestArgs>(option: RequestOption<T>) {
+function post<T extends RequestArgs, K/** response.data */>(option: RequestOption<T>): Promise<K> {
   option = Object.assign({}, option)
   return new Promise((resolve, reject) => {
     window.fetch(
@@ -72,5 +72,6 @@ function post<T extends RequestArgs>(option: RequestOption<T>) {
 export default {
   HttpUtils: {
     get,
+    post
   }
 }

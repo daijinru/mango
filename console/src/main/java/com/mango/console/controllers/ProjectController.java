@@ -37,4 +37,10 @@ public class ProjectController {
         List<Pipeline> pipelines = pipelineService.getPipelinesByProjectId(id);
         return new WrapResponsesData(pipelines).success();
     }
+
+    @GetMapping("/all")
+    public Object projects() {
+        List<Project> projects = projectService.listProjects();
+        return new WrapResponsesData(projects).success();
+    }
 }

@@ -1,16 +1,12 @@
 import React from 'react'
 
 import { CheckCard } from '@ant-design/pro-components'
-import { Button, Checkbox, Divider, Form, Input } from 'antd'
+import { Divider } from 'antd'
+
+import ListProjects from './components/list-projects'
+import CreateProject from './components/create-project'
 
 const App: React.FC = () => {
-  const onFinish = (values: any) => {
-    console.log('Success:', values)
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
-  };
 
   const [actionVisible, setActionVisible] = React.useState<string>('')
 
@@ -25,7 +21,7 @@ const App: React.FC = () => {
         defaultValue="A"
       >
         <CheckCard title="Create a Project" description="To create a project from a directory." value="action_create" />
-        <CheckCard title="Go to projects" description="Go to see the projects." value="action_projects" />
+        <CheckCard title="Go to projects" description="Go to see the projects." value="action_list_projects" />
         {/* <CheckCard
           title="Card C"
           disabled
@@ -35,43 +31,14 @@ const App: React.FC = () => {
       </CheckCard.Group>
       <div>
         { actionVisible === 'action_create'
+          && <CreateProject />
+        }
+        {
+          actionVisible === 'action_list_projects'
           && (
             <>
               <Divider></Divider>
-              <Form
-                name="basic"
-                size="small"
-                layout="vertical"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 12 }}
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
-                autoComplete="off"
-
-              >
-                <Form.Item
-                  label="name"
-                  name="name"
-                  rules={[{ required: true, message: 'Please enter name of project' }]}
-                >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  label="path"
-                  name="path"
-                  rules={[{ required: true, message: 'Please enter path of project' }]}
-                >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item>
-                  <Button type="primary" htmlType="submit">
-                    Submit
-                  </Button>
-                </Form.Item>
-              </Form>
+              <ListProjects />
             </>
           )
         }

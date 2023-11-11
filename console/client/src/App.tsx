@@ -8,7 +8,7 @@ import Home from './pages/home'
 
 
 const menuConfig = [
-  {path: '/home', title: 'home', active: 'home', component: Home},
+  {path: '/', title: 'home', active: 'home', component: Home},
   {path: '/pipelines', tilte: 'pipelines', active: 'pipelines', component: Pipeline},
   {path: '/project/:id', title: 'Projects', active: 'project', component: Project},
   {path: '/pipeline/:id', title: 'Pipeline', active: 'pipeline', component: Pipeline,},
@@ -27,7 +27,7 @@ export default () => {
         <div className="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
             <li className="nav-item">
-              <a className="nav-link" href="#"><Link to={'/home'}>Home</Link></a>
+              <a className="nav-link" href="#"><Link to={'/'}>Home</Link></a>
             </li>
             <li className="nav-item">
               <a className="nav-link" href="#"><Link to={'/pipelines'}>Pipelines</Link></a>

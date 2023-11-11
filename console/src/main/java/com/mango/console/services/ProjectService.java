@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class ProjectService {
@@ -20,5 +21,9 @@ public class ProjectService {
     @Transactional
     public void deleteProject(Long id) {
         projectRepo.deleteById(id);
+    }
+
+    public List<Project> listProjects() {
+        return projectRepo.findAll();
     }
 }
