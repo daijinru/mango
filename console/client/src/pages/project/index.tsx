@@ -9,7 +9,7 @@ import runner from '../../libs/runner';
 import { useLocation } from 'react-router-dom';
 import qs from 'query-string'
 
-const App: React.FC = () => {
+export default () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [tabKey, setTabKey] = useState<string>('overview')
@@ -152,4 +152,4 @@ const App: React.FC = () => {
   );
 }
 
-export default App;
+// export default App;

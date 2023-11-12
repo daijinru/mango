@@ -6,7 +6,7 @@ import { Divider } from 'antd'
 import ListProjects from './components/list-projects'
 import CreateProject from './components/create-project'
 
-const App: React.FC = () => {
+export default () => {
 
   const [actionVisible, setActionVisible] = React.useState<string>('')
 
@@ -47,5 +47,3 @@ const App: React.FC = () => {
     </>
   )
 }
-
-export default App

@@ -7,7 +7,7 @@ import { FileSyncOutlined } from '@ant-design/icons'
 import runner from '../../../libs/runner';
 import { Pipeline } from '../../../libs/runner.types';
 import { useLoader } from '../../../components/Loader/Loader';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import qs from 'query-string'
 
 interface Props {}
@@ -16,6 +16,7 @@ const App =  React.forwardRef<Props, any>((props, ref) => {
   const [pipelines, setPipelines] = useState<any>([])
   const location = useLocation()
   const [Loader, setLoaderOpen] = useLoader()
+  const navigate = useNavigate()
   const reload = async () => {
     setLoaderOpen(true)
     const queries = qs.parse(location.search)
@@ -66,29 +67,42 @@ const App =  React.forwardRef<Props, any>((props, ref) => {
           },
           avatar: {},
           content: {
-            render: () => (
-              <div
-                style={{
-                  minWidth: 200,
-                  flex: 1,
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <div
-                  style={{
-                    width: '200px',
-                  }}
-                >
-                  <div>Running</div>
-                  <Progress percent={100} />
-                </div>
-              </div>
-            ),
+            render: () => {
+              return (
+                <>
+                  <div
+                    style={{
+                      minWidth: 200,
+                      flex: 1,
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '200px',
+                      }}
+                    >
+                      <div>Running</div>
+                      <Progress percent={100} />
+                    </div>
+                  </div>
+                </>
+              )
+            }
           },
           actions: {
-            render: () => {
-              return <Button type="text" icon={<FileSyncOutlined />}></Button>
+            render: (text, row: any) => {
+              console.info(row)
+              return (
+                <>
+                  <Button
+                    onClick={() => navigate('/pipeline?pid=' + row.projectId + '&id=' + row.id)}
+                    type="text"
+                    icon={<FileSyncOutlined />}
+                  ></Button>
+                </>
+              )
               // return <a key="invite">Build Log</a>;
             },
           },

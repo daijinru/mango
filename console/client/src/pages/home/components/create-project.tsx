@@ -17,7 +17,7 @@ const App: React.FC = () => {
     const data = response.data
     message.success('create success: ' + data.name + ', id:' + data.id)
     if (data.id) {
-      navigate('/project/' + data.id)
+      navigate('/project?id=' + data.id)
     }
   }
 

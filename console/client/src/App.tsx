@@ -6,12 +6,11 @@ import Project from './pages/project'
 import Pipeline from './pages/pipeline'
 import Home from './pages/home'
 
-
 const menuConfig = [
   {path: '/', title: 'home', active: 'home', component: Home},
   {path: '/pipelines', tilte: 'pipelines', active: 'pipelines', component: Pipeline},
   {path: '/project', title: 'Projects', active: 'project', component: Project},
-  {path: '/pipeline', title: 'Pipeline', active: 'pipeline', component: Pipeline,},
+  {path: '/pipeline', title: 'Pipeline', active: 'pipeline', component: Pipeline},
 ]
 
 export default () => {
@@ -57,8 +56,9 @@ export default () => {
       <Routes>
           {
             menuConfig.map(menu => {
+              const Component = menu.component
               return (
-                <Route key={menu.path} path={menu.path} element={menu.component({})}></Route>
+                <Route key={menu.path} path={menu.path} element={<Component />}></Route>
               )
             })
           }
