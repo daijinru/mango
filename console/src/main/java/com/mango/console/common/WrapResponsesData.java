@@ -11,6 +11,8 @@ public class WrapResponsesData {
         this.data = data;
     }
 
+    public WrapResponsesData() {}
+
     public WrapResponsesData success() {
         this.status = HttpStatus.OK.value();
         this.message = "success";
@@ -25,6 +27,11 @@ public class WrapResponsesData {
 
     public WrapResponsesData error(String msg) {
         this.status = HttpStatus.BAD_REQUEST.value();
+        this.message = msg;
+        return this;
+    }
+
+    public WrapResponsesData message(String msg) {
         this.message = msg;
         return this;
     }

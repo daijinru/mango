@@ -7,6 +7,7 @@ import com.mango.console.runner.RunnerParamsBuilder;
 import com.mango.console.runner.RunnerReply;
 
 import com.mango.console.services.PipelineService;
+import com.mango.console.services.entity.Pipeline;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +22,11 @@ public class PipelineController {
 
     @PostMapping("/create")
     public Object create(@RequestBody PipelineArgs args) throws Exception {
-         RunnerReply reply = pipelineService.create(args.getPid());
-         return new WrapResponsesData(reply).success();
+         Pipeline pipeline = pipelineService.create(args.getPid());
+         if (Objects.isNull(pipeline)) {
+             return new WrapResponsesData().success().message("Failed to create pipeline: it may be in progress.");
+         }
+         return new WrapResponsesData(pipeline).success();
     }
 
     @PostMapping("/running")

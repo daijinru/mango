@@ -32,7 +32,7 @@ public class PipelineService {
     }
 
     @Transactional
-    public RunnerReply create(Long projectId) {
+    public Pipeline create(Long projectId) {
         Project project = Optional.ofNullable(
                 projectRepo.findById(projectId)
         ).get().orElseGet(() -> null);
@@ -46,15 +46,15 @@ public class PipelineService {
                     .tag(name)
                     .path(path);
             RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_CREATE, paramsBuilder);
+            Pipeline pipeline = new Pipeline();
             if (Objects.nonNull(reply) && reply.getStatus().equalsIgnoreCase("success")) {
-                Pipeline pipeline = new Pipeline();
                 pipeline.setProjectId(pid);
                 pipeline.setCreatedAt(Utils.getLocalDateTime());
                 pipeline.setStatus((short)0);
                 pipeline.setFilename(reply.getMessage());
                 pipelineRepo.save(pipeline);
             }
-            return reply;
+            return pipeline;
         }
         return null;
     }
