@@ -2,31 +2,67 @@ import React, { useState } from 'react';
 
 import { EllipsisOutlined } from '@ant-design/icons'
 import { PageContainer, ProCard } from '@ant-design/pro-components'
-import { Button, Dropdown, message } from 'antd'
+import { Button, Dropdown, message, Modal } from 'antd'
 import ListPipelines from './components/list-pipelines'
-import { Project } from '../../libs/runner.types';
+import { Pipeline, PipelineArgs, Project } from '../../libs/runner.types';
 import runner from '../../libs/runner';
 import { useLocation } from 'react-router-dom';
 import qs from 'query-string'
 
 const App: React.FC = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [tabKey, setTabKey] = useState<string>('overview')
   const [project, setProject] = useState<Project>({} as Project)
+  const pipelinesRef = React.useRef<any>()
+
   const location = useLocation()
+  const queries = qs.parse(location.search)
+
+  const onExtraAction = async (info: any) => {
+    if (info.key === '1') {
+      Modal.confirm({
+        title: 'tips',
+        content: 'are you sure want to create a new Pipeline?',
+        onOk() {
+          if (!queries.id) return message.warning('No empty project id for create pipeline!')
+          messageApi.open({
+            type: 'loading',
+            content: 'new pipeline is now being created',
+            duration: 0,
+          });
+          runner.HttpUtils.post<PipelineArgs, Pipeline>({
+            url: '/v1/pipeline/create',
+            data: {
+              pid: queries.id as string,
+            }
+          }).then(response => {
+            if (!response.data) {
+              message.warning(response.message)
+            }
+            if (response.data.id) {
+              message.success(`id: ` + response.data.id + ' was created')
+              messageApi.destroy()
+              pipelinesRef.current.reload()
+            }
+          })
+        }
+      })
+    }
+  }
+
   React.useEffect(() => {
     (async function fn() {
-      const queries = qs.parse(location.search)
       if (!queries.id) return message.warning('No empty proejct id: <url>?id=<id>')
-      const project = await runner.HttpUtils.get<any, Project>({
+      const response = await runner.HttpUtils.get<any, Project>({
         url: '/v1/project/' + queries.id
       })
-      if (project) {
-        setProject(project)
-      }
+      setProject(response.data)
     })()
   }, [])
   return (
     <>
+     {contextHolder}
       <div
         style={{
           background: 'transparent',
@@ -67,7 +103,9 @@ const App: React.FC = () => {
               <Dropdown
                 key="dropdown"
                 trigger={['click']}
+                
                 menu={{
+                  onClick: onExtraAction,
                   items: [
                     {
                       label: 'Create Pipeline',
@@ -75,7 +113,7 @@ const App: React.FC = () => {
                     },
                     {
                       label: 'Deploy',
-                      key: '3',
+                      key: '2',
                     },
                   ],
                 }}
@@ -104,7 +142,7 @@ const App: React.FC = () => {
             <ProCard style={{ height: '100%' }}>
               {
                 tabKey === 'overview'
-                && <ListPipelines />
+                && <ListPipelines ref={pipelinesRef}/>
               }
             </ProCard>
           </ProCard>

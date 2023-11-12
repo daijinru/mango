@@ -1,7 +1,7 @@
 export interface RequestArgs {}
 export interface PipelineArgs extends RequestArgs {
-  pid: number
-  filename: string
+  pid: number | string
+  filename?: string
 }
 export interface ProjectArgs extends RequestArgs {
   name: string

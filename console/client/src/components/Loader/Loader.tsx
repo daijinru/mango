@@ -1,7 +1,9 @@
+import React from 'react'
 import './Loader.css'
-const Loader = () => {
+
+const Loader = ({ open }: any) => () => {
   return (
-    <div className="loader">
+    <div className="loader" hidden={!open}>
       <div className="loader-inner pacman">
         <div></div>
         <div></div>
@@ -13,4 +15,7 @@ const Loader = () => {
   )
 }
 
-export default Loader
+export const useLoader = () => {
+  const [open, setOpen] = React.useState<boolean>(false)
+  return [Loader({ open }), setOpen] as const
+}

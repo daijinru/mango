@@ -26,22 +26,18 @@ export type RequestOption<T extends RequestArgs> = {
 }
 
 export const BASE_URL = window.location.protocol + '//' + window.location.host
-function get<T extends RequestArgs, K/** response.data */>(option: RequestOption<T>): Promise<K> {
+function get<T extends RequestArgs, K/** response.data */>(option: RequestOption<T>): Promise<ResponseWrapper<K>> {
   option = Object.assign({}, option)
   return new Promise((resolve, reject) => {
     window.fetch(BASE_URL + option.url)
-      .then(res => {
-        return res.json()
-      })
-      .then(res => {
+      .then(res => res.json())
+      .then((res: ResponseWrapper<K>) => {
         if (!res.status) {
           message.warning('no status from the response: status, data, message')
           return null
         }
         if (res.status === HttpStatus.OK) {
-          resolve(res.data)
-        } else {
-          resolve(res.message)
+          resolve(res)
         }
       })
       .catch(error => {
@@ -50,7 +46,7 @@ function get<T extends RequestArgs, K/** response.data */>(option: RequestOption
       })
   })
 }
-function post<T extends RequestArgs, K/** response.data */>(option: RequestOption<T>): Promise<K> {
+function post<T extends RequestArgs, K/** response.data */>(option: RequestOption<T>): Promise<ResponseWrapper<K>> {
   option = Object.assign({}, option)
   return new Promise((resolve, reject) => {
     window.fetch(
@@ -64,16 +60,18 @@ function post<T extends RequestArgs, K/** response.data */>(option: RequestOptio
       },
     )
     .then(res => res.json())
-    .then(res => {
+    .then((res: ResponseWrapper<K>) => {
       if (!res.status) {
         message.warning('no status from the response: status, data, message')
         return null
       }
       if (res.status === HttpStatus.OK) {
-        resolve(res.data)
-      } else {
-        resolve(res.message)
+        resolve(res)
       }
+    })
+    .catch(error => {
+      console.error(error)
+      reject(error)
     })
   })
 }

@@ -12,10 +12,10 @@ export default () => {
   const navigate = useNavigate()
   React.useEffect(() => {
     (async function() {
-      const data = await runner.HttpUtils.get<RequestArgs, Project[]>({
+      const response = await runner.HttpUtils.get<RequestArgs, Project[]>({
         url: '/v1/project/all',
       })
-      setDataSource(data.map(item => {
+      setDataSource(response.data.map(item => {
         return {
           title: item.name,
           data: item,

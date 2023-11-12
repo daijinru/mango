@@ -7,13 +7,14 @@ import { Project, ProjectArgs } from "../../../libs/runner.types";
 const App: React.FC = () => {
   const navigate = useNavigate()
   const onFinish = async (values: ProjectArgs) => {
-    const data = await runner.HttpUtils.post<ProjectArgs, Project>({
+    const response = await runner.HttpUtils.post<ProjectArgs, Project>({
       url: '/v1/project/create',
       data: {
         name: values.name,
         path: values.path,
       }
     })
+    const data = response.data
     message.success('create success: ' + data.name + ', id:' + data.id)
     if (data.id) {
       navigate('/project/' + data.id)
