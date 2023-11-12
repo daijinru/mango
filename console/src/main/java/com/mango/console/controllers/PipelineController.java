@@ -40,4 +40,13 @@ public class PipelineController {
         RunnerReply reply = pipelineService.stdout(args.getPid(), args.getFilename());
         return new WrapResponsesData(reply).success();
     }
+
+    @GetMapping("{id}")
+    public Object pipeline(@PathVariable Long id) throws Exception {
+        if (Objects.isNull(id)) {
+            throw new Exception("No empty id");
+        }
+        Pipeline pipeline = pipelineService.pipeline(id);
+        return new WrapResponsesData(pipeline).success();
+    }
  }

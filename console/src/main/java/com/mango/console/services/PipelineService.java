@@ -24,7 +24,6 @@ public class PipelineService {
     @Autowired
     private ProjectRepo projectRepo;
 
-    @Transactional
     public List<Pipeline> getPipelinesByProjectId(Long projectId) {
         Pipeline pipeline = new Pipeline();
         pipeline.setProjectId(projectId);
@@ -59,7 +58,6 @@ public class PipelineService {
         return null;
     }
 
-    @Transactional
     public RunnerReply running(Long projectId) {
         Project project = Optional.ofNullable(
                 projectRepo.findById(projectId)
@@ -77,7 +75,6 @@ public class PipelineService {
         return null;
     }
 
-    @Transactional
     public RunnerReply stdout(Long projectId, String filename) {
         Project project = Optional.ofNullable(
                 projectRepo.findById(projectId)
@@ -92,6 +89,12 @@ public class PipelineService {
             return reply;
         }
         return null;
+    }
+
+    public Pipeline pipeline(Long id) {
+        return Optional.ofNullable(
+                pipelineRepo.findById(id)
+        ).get().orElseGet(() -> null);
     }
 }
 
