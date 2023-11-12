@@ -1,5 +1,6 @@
 package com.mango.console.services;
 
+import com.mango.console.common.Utils;
 import com.mango.console.services.dao.ProjectRepo;
 import com.mango.console.services.entity.Project;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,13 @@ public class ProjectService {
     private ProjectRepo projectRepo;
 
     @Transactional
-    public void insertProject(Project project) {
+    public Project insertProject(String name, String path) {
+        Project project = new Project();
+        project.setName(name);
+        project.setPath(path);
+        project.setCreatedAt(Utils.getLocalDateTime());
         projectRepo.save(project);
+        return project;
     }
 
     @Transactional

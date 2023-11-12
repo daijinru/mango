@@ -24,11 +24,7 @@ public class ProjectController {
         if (Objects.isNull(args.getName()) || Objects.isNull(args.getPath())) {
             throw new Exception("No empty name or path");
         }
-        Project project = new Project();
-        project.setName(args.getName());
-        project.setPath(args.getPath());
-        project.setCreatedAt(Utils.getLocalDateTime());
-        projectService.insertProject(project);
+        Project project = projectService.insertProject(args.getName(), args.getPath());
         return new WrapResponsesData(project).success();
     }
 
