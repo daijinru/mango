@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mango.console.common.Utils;
+import com.mango.console.services.AgentService;
+import com.mango.console.services.entity.Agent;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -22,10 +25,15 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class RunnerHttp {
     private static Environment environment;
+    private static AgentService agentService;
 
     @Autowired
     public void setEnvironment(Environment environment) {
         RunnerHttp.environment = environment;
+    }
+    @Autowired
+    public void setAgentService(AgentService agentService) {
+        RunnerHttp.agentService = agentService;
     }
 
     public static RunnerReply send(RunnerMethods endpoint, RunnerParamsBuilder paramsBuilder) {
@@ -34,8 +42,23 @@ public class RunnerHttp {
         String path = paramsBuilder.getPath();
         String filename = paramsBuilder.getFilename();
 
-        String baseURL = environment.getProperty("mango.runner.baseURL");
-        String url = baseURL + endpoint.getEndpoint();
+        RunnerReply reply = new RunnerReply();
+        List<Agent> agents = agentService.listAgents();
+        System.out.println(agents);
+        if (agents.isEmpty()) {
+            reply.setStatus("fail");
+            reply.setMessage("there are no agents available");
+            return reply;
+        }
+        Agent agent = Utils.pickRandomEntity(agents);
+        boolean agentStatus = agentService.status(agent.getId());
+        if (!agentStatus) {
+            reply.setStatus("fail");
+            reply.setMessage("the selected agent is unavailable: " + agent.getId() + " , check if it's in status");
+            return reply;
+        }
+
+        String url = agent.getBaseUrl() + endpoint.getEndpoint();
 
         HttpClient httpClient = HttpClientBuilder.create().build();
 
@@ -55,11 +78,13 @@ public class RunnerHttp {
                 int statusCode = response.getStatusLine().getStatusCode();
                 HttpEntity entity = response.getEntity();
                 String content = EntityUtils.toString(entity);
-                RunnerReply reply = new RunnerReply();
                 if (statusCode == HttpStatus.SC_OK) {
                     ObjectMapper objectMapper = new ObjectMapper();
                     reply = objectMapper.readValue(content, RunnerReply.class);
                 } else {
+                    /**
+                     * if returned incorrect, return the status code and message from runner.
+                     */
                     reply.setStatus(Integer.toString(statusCode));
                     reply.setMessage(content);
                 }

@@ -31,7 +31,7 @@ public class PipelineService {
     }
 
     @Transactional
-    public Pipeline create(Long projectId) {
+    public Object create(Long projectId) {
         Project project = Optional.ofNullable(
                 projectRepo.findById(projectId)
         ).get().orElseGet(() -> null);
@@ -52,8 +52,10 @@ public class PipelineService {
                 pipeline.setStatus((short)0);
                 pipeline.setFilename(reply.getMessage());
                 pipelineRepo.save(pipeline);
+                return pipeline;
+            } else {
+                return reply;
             }
-            return pipeline;
         }
         return null;
     }

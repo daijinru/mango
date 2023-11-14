@@ -4,10 +4,15 @@ public class RunnerParamsBuilder {
     private String method;
     private String tag;
     private String path;
-
     private String filename;
+    private String baseUrl;
 
     public RunnerParamsBuilder() {
+    }
+
+    public RunnerParamsBuilder baseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+        return this;
     }
 
     public RunnerParamsBuilder method(String method) {
@@ -30,6 +35,9 @@ public class RunnerParamsBuilder {
         return this;
     }
 
+    public String getBaseUrl() {
+        return baseUrl;
+    }
     public String getMethod() {
         return method;
     }

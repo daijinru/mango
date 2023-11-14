@@ -22,7 +22,7 @@ public class PipelineController {
 
     @PostMapping("/create")
     public Object create(@RequestBody PipelineArgs args) throws Exception {
-         Pipeline pipeline = pipelineService.create(args.getPid());
+         Object pipeline = pipelineService.create(args.getPid());
          if (Objects.isNull(pipeline)) {
              return new WrapResponsesData().success().message("Failed to create pipeline: it may be in progress.");
          }
