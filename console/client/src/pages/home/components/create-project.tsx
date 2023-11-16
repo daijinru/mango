@@ -1,17 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Divider, Form, Input, message } from 'antd'
+import { Button, Divider, Form, Input, Select, message } from 'antd'
 import runner from "../../../libs/runner";
-import { Project, ProjectArgs } from "../../../libs/runner.types";
+import { Agent, Project, ProjectArgs } from "../../../libs/runner.types";
 
 const App: React.FC = () => {
   const navigate = useNavigate()
+  const [agents, setAgents] = React.useState<Agent[]>([])
   const onFinish = async (values: ProjectArgs) => {
     const response = await runner.HttpUtils.post<ProjectArgs, Project>({
       url: '/v1/project/create',
       data: {
         name: values.name,
         path: values.path,
+        agentId: values.agentId,
       }
     })
     const data = response.data
@@ -21,13 +23,24 @@ const App: React.FC = () => {
     }
   }
 
+  const getAgents = async () => {
+    const response = await runner.HttpUtils.get<any, Agent[]>({
+      url: '/v1/agent/all',
+    })
+    const data = response.data
+    setAgents(data)
+  }
+
   const onFinishFailed = (errorInfo: any) => {
     message.warning(errorInfo.errorFields[0].errors[0])
   }
 
+  React.useEffect(() => {
+    getAgents()
+  }, [])
+
  return  (
     <>
-      <Divider></Divider>
       <Form
         name="basic"
         size="small"
@@ -54,6 +67,21 @@ const App: React.FC = () => {
           rules={[{ required: true, message: 'Please enter path of project' }]}
         >
           <Input />
+        </Form.Item>
+
+        <Form.Item
+          label="agent"
+          name="agentId"
+          rules={[{ required: true, message: 'Please select an agent for the project'}]}
+        >
+          <Select
+            options={agents.map(ag => {
+              return {
+                label: ag.baseUrl,
+                value: ag.baseUrl,
+              }
+            })}
+          />
         </Form.Item>
 
         <Form.Item>

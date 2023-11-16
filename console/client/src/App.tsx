@@ -5,12 +5,14 @@ import './App.css';
 import Project from './pages/project'
 import Pipeline from './pages/pipeline'
 import Home from './pages/home'
+import Agent from './pages/agent'
 
 const menuConfig = [
   {path: '/', title: 'home', active: 'home', component: Home},
   {path: '/pipelines', tilte: 'pipelines', active: 'pipelines', component: Pipeline},
   {path: '/project', title: 'Projects', active: 'project', component: Project},
   {path: '/pipeline', title: 'Pipeline', active: 'pipeline', component: Pipeline},
+  {path: '/agents', title: 'Agents', active: 'agents', component: Agent}
 ]
 
 export default () => {
@@ -28,12 +30,12 @@ export default () => {
             <li className="nav-item">
               <a className="nav-link" href="#"><Link to={'/'}>Home</Link></a>
             </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#"><Link to={'/pipelines'}>Pipelines</Link></a>
-            </li>
             {/* <li className="nav-item">
-              <a className="nav-link" href="#">Agents</a>
+              <a className="nav-link" href="#"><Link to={'/pipelines'}>Pipelines</Link></a>
             </li> */}
+            <li className="nav-item">
+              <a className="nav-link" href="#"><Link to={'/agents'}>Agents</Link></a>
+            </li>
             <li className="nav-item dropdown dmenu">
               <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
                 Helper
@@ -67,5 +69,3 @@ export default () => {
     </>
   );
 };
-
-// export default App;

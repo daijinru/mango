@@ -2,7 +2,6 @@ import React from 'react';
 
 import { PageContainer, ProCard } from '@ant-design/pro-components'
 import { message } from 'antd'
-import BuildLog from './components/build-log'
 import { Pipeline, Project } from '../../libs/runner.types';
 import { useLocation } from 'react-router-dom';
 import qs from 'query-string'
@@ -17,29 +16,29 @@ export default () => {
 
   const location = useLocation()
   const queries = qs.parse(location.search)
-  const getPipeline = async () => {
-    setLoaderOpen(true)
+  // const getPipeline = async () => {
+  //   setLoaderOpen(true)
 
-    if (!queries.pid) return message.warning('No empty pid for project')
-    const projectResp = await runner.HttpUtils.get<any, Project>({
-      url: '/v1/project/' + queries.pid
-    })
-    if (projectResp.data) {
-      setProject(projectResp.data)
-    } else {
-      return message.warning('No valid project info')
-    }
-    if (!queries.id) return message.warning('No empty id for pipeline')
-    const pipelineResp = await runner.HttpUtils.get<any, Pipeline>({
-      url: '/v1/pipeline/' + queries.id
-    })
-    if (pipelineResp.data) {
-      setPipeline(pipelineResp.data)
-    }
-    setLoaderOpen(false)
-  }
+  //   if (!queries.pid) return message.warning('No empty pid for project')
+  //   const projectResp = await runner.HttpUtils.get<any, Project>({
+  //     url: '/v1/project/' + queries.pid
+  //   })
+  //   if (projectResp.data) {
+  //     setProject(projectResp.data)
+  //   } else {
+  //     return message.warning('No valid project info')
+  //   }
+  //   if (!queries.id) return message.warning('No empty id for pipeline')
+  //   const pipelineResp = await runner.HttpUtils.get<any, Pipeline>({
+  //     url: '/v1/pipeline/' + queries.id
+  //   })
+  //   if (pipelineResp.data) {
+  //     setPipeline(pipelineResp.data)
+  //   }
+  //   setLoaderOpen(false)
+  // }
   React.useEffect(() => {
-    getPipeline()
+    // getPipeline()
   }, [])
 
   return (
@@ -97,8 +96,6 @@ export default () => {
           <ProCard direction="column" ghost gutter={[0, 16]}>
             <ProCard style={{ height: '100%' }}>
               {
-                tabKey === 'build-log'
-                && <BuildLog />
               }
             </ProCard>
           </ProCard>

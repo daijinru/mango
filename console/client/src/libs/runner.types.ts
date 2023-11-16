@@ -6,6 +6,11 @@ export interface PipelineArgs extends RequestArgs {
 export interface ProjectArgs extends RequestArgs {
   name: string
   path: string
+  agentId: number;
+}
+export interface AgentArgs extends RequestArgs {
+  baseUrl: string
+  token?: string
 }
 
 export interface Entity {}
@@ -26,4 +31,11 @@ export interface Project extends Entity {
   path: string
   createdAt: string
   updatedAt: string
+  agentId: number;
+}
+export interface Agent extends Entity {
+  id?: number
+  baseUrl: string
+  token?: string
+  createdAt: string
 }

@@ -1,5 +1,6 @@
 import { message } from "antd";
 import { RequestArgs } from "./runner.types";
+import { Entity } from "./runner.types";
 
 export enum HttpMethod {
   GET='get',
@@ -25,6 +26,7 @@ export type RequestOption<T extends RequestArgs> = {
   },
 }
 
+export type DataDefault = { message: string, status: string }
 export const BASE_URL = window.location.protocol + '//' + window.location.host
 function get<T extends RequestArgs, K/** response.data */>(option: RequestOption<T>): Promise<ResponseWrapper<K>> {
   option = Object.assign({}, option)
@@ -35,6 +37,9 @@ function get<T extends RequestArgs, K/** response.data */>(option: RequestOption
         if (!res.status) {
           message.warning('no status from the response: status, data, message')
           return null
+        }
+        if ((res.data as DataDefault).status === 'fail') {
+          message.warning((res.data as DataDefault).message)
         }
         if (res.status === HttpStatus.OK) {
           resolve(res)
@@ -64,6 +69,9 @@ function post<T extends RequestArgs, K/** response.data */>(option: RequestOptio
       if (!res.status) {
         message.warning('no status from the response: status, data, message')
         return null
+      }
+      if ((res.data as DataDefault).status === 'fail') {
+        message.warning((res.data as DataDefault).message)
       }
       if (res.status === HttpStatus.OK) {
         resolve(res)

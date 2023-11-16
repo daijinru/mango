@@ -5,10 +5,11 @@ import { Divider } from 'antd'
 
 import ListProjects from './components/list-projects'
 import CreateProject from './components/create-project'
+import CreateAgent from './components/create-agent'
 
 export default () => {
 
-  const [actionVisible, setActionVisible] = React.useState<string>('')
+  const [actionVisible, setActionVisible] = React.useState<string>('action_create_agent')
 
   return (
     <>
@@ -18,20 +19,29 @@ export default () => {
             setActionVisible(value as string)
           }
         }}
-        defaultValue="A"
+        defaultValue="action_create_agent"
       >
-        <CheckCard title="Create a Project" description="To create a project from a directory." value="action_create" />
+        <CheckCard title="Create an Agent" description="To create an agent for execution tasks." value="action_create_agent" />
+        <CheckCard title="Create a Project" description="To create a project from a directory." value="action_create_project" />
         <CheckCard title="Go to projects" description="Go to see the projects." value="action_list_projects" />
-        {/* <CheckCard
-          title="Card C"
-          disabled
-          description="选项三，这是一个不可选项"
-          value="C"
-        /> */}
       </CheckCard.Group>
       <div>
-        { actionVisible === 'action_create'
-          && <CreateProject />
+        {
+          actionVisible === 'action_create_agent'
+          && (
+            <>
+              <Divider></Divider>
+              <CreateAgent />
+            </>
+          )
+        }
+        { actionVisible === 'action_create_project'
+          && (
+            <>
+              <Divider></Divider>
+              <CreateProject />
+            </>
+          )
         }
         {
           actionVisible === 'action_list_projects'
