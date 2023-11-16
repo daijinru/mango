@@ -5,8 +5,10 @@ import com.mango.console.runner.RunnerHttp;
 import com.mango.console.runner.RunnerMethods;
 import com.mango.console.runner.RunnerParamsBuilder;
 import com.mango.console.runner.RunnerReply;
+import com.mango.console.services.dao.AgentRepo;
 import com.mango.console.services.dao.PipelineRepo;
 import com.mango.console.services.dao.ProjectRepo;
+import com.mango.console.services.entity.Agent;
 import com.mango.console.services.entity.Pipeline;
 import com.mango.console.services.entity.Project;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class PipelineService {
     private PipelineRepo pipelineRepo;
     @Autowired
     private ProjectRepo projectRepo;
+    @Autowired
+    private AgentRepo agentRepo;
 
     public List<Pipeline> getPipelinesByProjectId(Long projectId) {
         Pipeline pipeline = new Pipeline();
@@ -40,8 +44,14 @@ public class PipelineService {
             Long pid = project.getId();
             String name = project.getName();
             String path = project.getPath();
+
+            Agent agent = Optional.ofNullable(
+                    agentRepo.findById(project.getAgentId())
+            ).get().orElseGet(() -> new Agent());
+
             RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
                     .method("POST")
+                    .baseUrl(agent.getBaseUrl())
                     .tag(name)
                     .path(path);
             RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_CREATE, paramsBuilder);
@@ -67,9 +77,13 @@ public class PipelineService {
         if (Objects.nonNull(project)) {
             String name = project.getName();
             String path = project.getPath();
+            Agent agent = Optional.ofNullable(
+                    agentRepo.findById(project.getAgentId())
+            ).get().orElseGet(() -> new Agent());
             RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
                     .method("POST")
                     .tag(name)
+                    .baseUrl(agent.getBaseUrl())
                     .path(path);
             RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STATUS, paramsBuilder);
             return reply;
@@ -83,9 +97,13 @@ public class PipelineService {
         ).get().orElseGet(() -> null);
         if (Objects.nonNull(project)) {
             String path = project.getPath();
+            Agent agent = Optional.ofNullable(
+                    agentRepo.findById(project.getAgentId())
+            ).get().orElseGet(() -> new Agent());
             RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
                     .method("POST")
                     .path(path)
+                    .baseUrl(agent.getBaseUrl())
                     .filename(filename + ".txt");
             RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STDOUT, paramsBuilder);
             return reply;

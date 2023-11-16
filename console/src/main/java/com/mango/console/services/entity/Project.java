@@ -14,6 +14,8 @@ public class Project {
     private Long id;
     @Column(name = "name")
     private String name;
+    @Column(name = "agent_id")
+    private Long agentId;
     @Column(name = "path")
     private String path;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

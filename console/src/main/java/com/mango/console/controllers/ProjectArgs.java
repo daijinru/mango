@@ -6,5 +6,5 @@ import lombok.Data;
 public class ProjectArgs {
     private String name;
     private String path;
+    private Long agentId;
 }
-

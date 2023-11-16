@@ -3,11 +3,10 @@ package com.mango.console.runner;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mango.console.common.Utils;
 import com.mango.console.services.AgentService;
-import com.mango.console.services.entity.Agent;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -41,24 +40,16 @@ public class RunnerHttp {
         String tag = paramsBuilder.getTag();
         String path = paramsBuilder.getPath();
         String filename = paramsBuilder.getFilename();
+        String agentBaseUrl = paramsBuilder.getBaseUrl();
 
         RunnerReply reply = new RunnerReply();
-        List<Agent> agents = agentService.listAgents();
-        System.out.println(agents);
-        if (agents.isEmpty()) {
+        if (Objects.isNull(agentBaseUrl)) {
             reply.setStatus("fail");
-            reply.setMessage("there are no agents available");
-            return reply;
-        }
-        Agent agent = Utils.pickRandomEntity(agents);
-        boolean agentStatus = agentService.status(agent.getId());
-        if (!agentStatus) {
-            reply.setStatus("fail");
-            reply.setMessage("the selected agent is unavailable: " + agent.getId() + " , check if it's in status");
+            reply.setMessage("there are no agent available");
             return reply;
         }
 
-        String url = agent.getBaseUrl() + endpoint.getEndpoint();
+        String url = agentBaseUrl + endpoint.getEndpoint();
 
         HttpClient httpClient = HttpClientBuilder.create().build();
 

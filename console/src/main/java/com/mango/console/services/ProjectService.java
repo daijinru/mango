@@ -1,6 +1,7 @@
 package com.mango.console.services;
 
 import com.mango.console.common.Utils;
+import com.mango.console.controllers.ProjectArgs;
 import com.mango.console.services.dao.ProjectRepo;
 import com.mango.console.services.entity.Project;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -16,10 +18,13 @@ public class ProjectService {
     private ProjectRepo projectRepo;
 
     @Transactional
-    public Project insertProject(String name, String path) {
+    public Project insertProject(ProjectArgs args) {
         Project project = new Project();
-        project.setName(name);
-        project.setPath(path);
+        project.setName(args.getName());
+        project.setPath(args.getPath());
+        if (Objects.nonNull(args.getAgentId())) {
+            project.setAgentId(args.getAgentId());
+        }
         project.setCreatedAt(Utils.getLocalDateTime());
         projectRepo.save(project);
         return project;

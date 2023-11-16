@@ -24,7 +24,7 @@ public class ProjectController {
         if (Objects.isNull(args.getName()) || Objects.isNull(args.getPath())) {
             throw new Exception("No empty name or path");
         }
-        Project project = projectService.insertProject(args.getName(), args.getPath());
+        Project project = projectService.insertProject(args);
         return new WrapResponsesData(project).success();
     }
 
