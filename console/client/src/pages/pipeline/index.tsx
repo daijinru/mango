@@ -3,6 +3,7 @@ import React from 'react';
 import { PageContainer, ProCard } from '@ant-design/pro-components'
 import { message } from 'antd'
 import BuildLog from './components/build-log'
+import Overview from './components/overview'
 import { Pipeline, Project } from '../../libs/runner.types';
 import { useLocation } from 'react-router-dom';
 import qs from 'query-string'
@@ -99,6 +100,10 @@ export default () => {
               {
                 tabKey === 'build-log'
                 && <BuildLog />
+              }
+              {
+                tabKey === 'overview'
+                && <Overview pipeline={pipeline} />
               }
             </ProCard>
           </ProCard>
