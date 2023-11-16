@@ -43,7 +43,7 @@ export default () => {
             if (response.data.id) {
               message.success(`id: ` + response.data.id + ' was created')
               messageApi.destroy()
-              pipelinesRef.current.reload()
+              pipelinesRef.current && pipelinesRef.current.reload()
             }
           })
         }

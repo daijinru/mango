@@ -38,7 +38,7 @@ function get<T extends RequestArgs, K/** response.data */>(option: RequestOption
           message.warning('no status from the response: status, data, message')
           return null
         }
-        if ((res.data as DataDefault).status === 'fail') {
+        if ((res.data as DataDefault) && (res.data as DataDefault).status === 'fail') {
           message.warning((res.data as DataDefault).message)
         }
         if (res.status === HttpStatus.OK) {
@@ -70,7 +70,7 @@ function post<T extends RequestArgs, K/** response.data */>(option: RequestOptio
         message.warning('no status from the response: status, data, message')
         return null
       }
-      if ((res.data as DataDefault).status === 'fail') {
+      if ((res.data as DataDefault) && (res.data as DataDefault).status === 'fail') {
         message.warning((res.data as DataDefault).message)
       }
       if (res.status === HttpStatus.OK) {

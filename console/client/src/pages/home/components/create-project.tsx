@@ -78,7 +78,7 @@ const App: React.FC = () => {
             options={agents.map(ag => {
               return {
                 label: ag.baseUrl,
-                value: ag.baseUrl,
+                value: ag.id,
               }
             })}
           />
