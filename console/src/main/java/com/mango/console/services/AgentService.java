@@ -50,7 +50,9 @@ public class AgentService {
         if ( Objects.isNull(agent) || Objects.isNull(agent.getBaseUrl())) {
             return false;
         }
+        System.out.println(agent);
         RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+                .method("POST")
                 .baseUrl(agent.getBaseUrl());
         RunnerReply reply = RunnerHttp.send(RunnerMethods.SERVICE_STATUS, paramsBuilder);
         return Objects.nonNull(reply) && reply.getStatus().equalsIgnoreCase("success");

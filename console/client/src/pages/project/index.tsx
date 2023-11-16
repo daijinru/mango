@@ -3,7 +3,10 @@ import React, { useState } from 'react';
 import { EllipsisOutlined } from '@ant-design/icons'
 import { PageContainer, ProCard } from '@ant-design/pro-components'
 import { Button, Dropdown, message, Modal } from 'antd'
+
 import ListPipelines from './components/list-pipelines'
+import Overview from './components/overview'
+
 import { Pipeline, PipelineArgs, Project } from '../../libs/runner.types';
 import runner from '../../libs/runner';
 import { useLocation } from 'react-router-dom';
@@ -133,7 +136,7 @@ export default () => {
             },
             {
               tab: 'Build Log',
-              key: 'log',
+              key: 'build-log',
               closable: false,
             },
           ]}
@@ -142,6 +145,10 @@ export default () => {
             <ProCard style={{ height: '100%' }}>
               {
                 tabKey === 'overview'
+                && <Overview project={project}/>
+              }
+              {
+                tabKey === 'build-log'
                 && <ListPipelines ref={pipelinesRef}/>
               }
             </ProCard>

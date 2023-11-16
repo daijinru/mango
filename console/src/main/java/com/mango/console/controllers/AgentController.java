@@ -21,12 +21,12 @@ public class AgentController {
         return new WrapResponsesData(agentService.agent(id)).success();
     }
 
-    @GetMapping("{id}/status")
-    public Object status(@PathVariable Long id) throws Exception {
+    @PostMapping("{id}/status")
+    public Object status(@PathVariable String id) throws Exception {
         if (Objects.isNull(id)) {
             throw new Exception("No empty id");
         }
-        return new WrapResponsesData(agentService.status(id)).success();
+        return new WrapResponsesData(agentService.status(Long.parseLong(id))).success();
     }
 
     @GetMapping("/all")
