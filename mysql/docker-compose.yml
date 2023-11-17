@@ -9,9 +9,9 @@ services:
       TZ: Asia/Shanghai
     ports:
       - 3306:3306
-    volumes:
-      - /root/mysql/data:/var/lib/mysql
-      - /root/mysql/config/my.cnf:/etc/mysql/my.cnf
+    # volumes:
+    #   - /root/mysql/data:/var/lib/mysql
+    #   - /root/mysql/config/my.cnf:/etc/mysql/my.cnf
     command:
       --max_connections=1000
       --character-set-server=utf8mb4

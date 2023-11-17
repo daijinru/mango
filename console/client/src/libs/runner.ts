@@ -66,14 +66,20 @@ function post<T extends RequestArgs, K/** response.data */>(option: RequestOptio
     )
     .then(res => res.json())
     .then((res: ResponseWrapper<K>) => {
+      // console.info(res)
+      const data = res.data as DataDefault
       if (!res.status) {
         message.warning('no status from the response: status, data, message')
         return null
       }
-      if ((res.data as DataDefault) && (res.data as DataDefault).status === 'fail') {
+      if (data && data.status === 'fail') {
         message.warning((res.data as DataDefault).message)
       }
       if (res.status === HttpStatus.OK) {
+        if (data.status && data.status === '400') {
+          message.warning(data.message)
+          reject(data)
+        } 
         resolve(res)
       }
     })

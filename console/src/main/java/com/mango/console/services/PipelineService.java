@@ -48,13 +48,14 @@ public class PipelineService {
             Agent agent = Optional.ofNullable(
                     agentRepo.findById(project.getAgentId())
             ).get().orElseGet(() -> new Agent());
-
+            System.out.println("agent: " + agent);
             RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
                     .method("POST")
                     .baseUrl(agent.getBaseUrl())
                     .tag(name)
                     .path(path);
             RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_CREATE, paramsBuilder);
+            System.out.println("reply: " + reply);
             Pipeline pipeline = new Pipeline();
             if (Objects.nonNull(reply) && reply.getStatus().equalsIgnoreCase("success")) {
                 pipeline.setProjectId(pid);

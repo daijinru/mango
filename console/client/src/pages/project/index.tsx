@@ -48,6 +48,8 @@ export default () => {
               messageApi.destroy()
               pipelinesRef.current && pipelinesRef.current.reload()
             }
+          }).catch(error => {
+            messageApi.destroy()
           })
         }
       })

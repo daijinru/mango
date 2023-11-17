@@ -20,7 +20,7 @@ export default () => {
           title: item.name,
           data: item,
           subTitle: <Tag color="#5BD8A6">{item.path}</Tag>,
-          actions: [<a key="run">Run</a>, <a key="delete">Remove</a>],
+          // actions: [<a key="run">Run</a>, <a key="delete">Remove</a>],
           avatar:
             'https://gw.alipayobjects.com/zos/antfincdn/UCSiy1j6jx/xingzhuang.svg',
           content: (
