@@ -4,6 +4,7 @@ import { Badge, Descriptions, Tag } from 'antd';
 import { Project, Agent } from '../../../libs/runner.types';
 import runner from '../../../libs/runner';
 import { useLoader } from '../../../components/Loader/Loader';
+import moment from 'moment';
 
 interface Props {
   project: Project
@@ -41,9 +42,9 @@ const App: React.FC<Props> = (props) => {
           {agentStatus && <Badge status="processing" text={agentStatus} />}
         </Descriptions.Item>
         <Descriptions.Item label="Info" span={3}>
-          Created At: {props.project.createdAt}
+          created At: {moment(props.project.createdAt).format('MM-DD-YYYY hh:mm')}
           <br />
-          Updated At: {props.project.updatedAt}
+          updated At: {moment(props.project.updatedAt).format('MM-DD-YYYY hh:mm')}
         </Descriptions.Item>
       </Descriptions>
     </>

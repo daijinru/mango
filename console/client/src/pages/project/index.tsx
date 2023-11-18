@@ -87,18 +87,6 @@ export default () => {
           header={{
             title: project.name,
             ghost: true,
-            breadcrumb: {
-              items: [
-                {
-                  path: '',
-                  title: 'Projects',
-                },
-                {
-                  path: '',
-                  title: project.name,
-                },
-              ],
-            },
             extra: [
               // <Button key="1" size='small'>Deploy</Button>,
               // <Button key="2"></Button>,

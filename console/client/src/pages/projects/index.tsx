@@ -2,10 +2,11 @@ import React from 'react'
 import {
   ProList,
 } from '@ant-design/pro-components'
-import { Progress, Tag } from 'antd'
-import runner  from '../../../libs/runner'
-import { Project, RequestArgs } from '../../../libs/runner.types'
+import { Tag } from 'antd'
+import runner from '../../libs/runner'
+import { Project, RequestArgs } from '../../libs/runner.types'
 import { useNavigate } from 'react-router-dom'
+import moment from 'moment'
 
 export default () => {
   const [dataSource, setDataSource] = React.useState<any>()
@@ -31,11 +32,13 @@ export default () => {
             >
               <div
                 style={{
-                  width: 200,
+                  width: '100%',
                 }}
               >
-                <div>Developing</div>
-                <Progress percent={80} />
+                <div>
+                  created at: {moment(item.createdAt).format('MM-DD-YYYY hh:mm')} <br />
+                  updated at: {item.updatedAt && moment(item.updatedAt).format('MM-DD-YYYY hh:mm')}
+                </div>
               </div>
             </div>
           ),

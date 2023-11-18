@@ -5,14 +5,16 @@ import './App.css';
 import Project from './pages/project'
 import Pipeline from './pages/pipeline'
 import Home from './pages/home'
-import Agent from './pages/agent'
+import Agents from './pages/agents'
+import Projects from './pages/projects'
 
 const menuConfig = [
   {path: '/', title: 'home', active: 'home', component: Home},
-  {path: '/pipelines', tilte: 'pipelines', active: 'pipelines', component: Pipeline},
+  // {path: '/pipelines', tilte: 'pipelines', active: 'pipelines', component: Pipeline},
   {path: '/project', title: 'projects', active: 'project', component: Project},
   {path: '/pipeline', title: 'pipeline', active: 'pipeline', component: Pipeline},
-  {path: '/agents', title: 'agents', active: 'agents', component: Agent}
+  {path: '/agents', title: 'agents', active: 'agents', component: Agents},
+  {path: '/projects', title: 'projects', active: 'projects', component: Projects},
 ]
 
 export default () => {
@@ -30,9 +32,9 @@ export default () => {
             <li className="nav-item">
               <a className="nav-link" href="#"><Link to={'/'}>Home</Link></a>
             </li>
-            {/* <li className="nav-item">
-              <a className="nav-link" href="#"><Link to={'/pipelines'}>Pipelines</Link></a>
-            </li> */}
+            <li className="nav-item">
+              <a className="nav-link" href="#"><Link to={'/projects'}>Projects</Link></a>
+            </li>
             <li className="nav-item">
               <a className="nav-link" href="#"><Link to={'/agents'}>Agents</Link></a>
             </li>

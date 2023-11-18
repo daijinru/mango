@@ -64,22 +64,6 @@ export default () => {
           header={{
             title: pipeline.filename,
             ghost: true,
-            breadcrumb: {
-              items: [
-                {
-                  path: '',
-                  title: project.name,
-                },
-                {
-                  path: '',
-                  title: 'pipeline',
-                },
-                {
-                  path: '',
-                  title: pipeline.id,
-                },
-              ],
-            },
           }}
           tabBarExtraContent={pipeline.createdAt}
           tabList={[
