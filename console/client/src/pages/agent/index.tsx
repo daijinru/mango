@@ -1,44 +1,70 @@
 import React from 'react';
 
-import { PageContainer, ProCard } from '@ant-design/pro-components'
-import { message } from 'antd'
-import { Pipeline, Project } from '../../libs/runner.types';
-import { useLocation } from 'react-router-dom';
-import qs from 'query-string'
-import runner from '../../libs/runner';
+import { ProList } from '@ant-design/pro-components'
+import { Tag, } from 'antd'
+import { SyncOutlined, CheckCircleOutlined } from '@ant-design/icons'
+import { Agent } from '../../libs/runner.types';
+import runner, { HttpStatus } from '../../libs/runner';
 import { useLoader } from '../../components/Loader/Loader';
 
+const AgentStatus = ({ id }: any) => {
+  const [running, setRunning] = React.useState<boolean>(false)
+  React.useEffect(() => {
+    runner.HttpUtils.post<any, Agent>({
+      url: '/v1/agent/' + id + '/status'
+    }).then(res => {
+      if (res.data) {
+        setRunning(true)
+      }
+    })
+  }, [])
+  return (
+    <>
+      {
+        running ? <Tag icon={<CheckCircleOutlined />} color="success">running</Tag>
+        : <Tag icon={<SyncOutlined spin />} color="processing">status: in progress</Tag>
+      }
+    </>
+  )
+}
 export default () => {
-  const [tabKey, setTabKey] = React.useState<string>('overview')
-  const [pipeline, setPipeline] = React.useState<Pipeline>({} as Pipeline)
-  const [project, setProject] = React.useState<Project>({} as Project)
+  const [dataSource, setDataSource] = React.useState<any>()
   const [Loader, setLoaderOpen] = useLoader()
 
-  const location = useLocation()
-  const queries = qs.parse(location.search)
-  // const getPipeline = async () => {
-  //   setLoaderOpen(true)
-
-  //   if (!queries.pid) return message.warning('No empty pid for project')
-  //   const projectResp = await runner.HttpUtils.get<any, Project>({
-  //     url: '/v1/project/' + queries.pid
-  //   })
-  //   if (projectResp.data) {
-  //     setProject(projectResp.data)
-  //   } else {
-  //     return message.warning('No valid project info')
-  //   }
-  //   if (!queries.id) return message.warning('No empty id for pipeline')
-  //   const pipelineResp = await runner.HttpUtils.get<any, Pipeline>({
-  //     url: '/v1/pipeline/' + queries.id
-  //   })
-  //   if (pipelineResp.data) {
-  //     setPipeline(pipelineResp.data)
-  //   }
-  //   setLoaderOpen(false)
-  // }
+  const getAgents = async () => {
+    const resp = await runner.HttpUtils.get<any, Agent[]>({
+      url: '/v1/agent/all',
+    })
+    if (resp.status === HttpStatus.OK) {
+      setDataSource(resp.data.map(item => {
+        return {
+          title: item.id,
+          data: item,
+          subTitle: <Tag color="#5BD8A6">{item.baseUrl}</Tag>,
+          // actions: [<a key="run">Run</a>, <a key="delete">Remove</a>],
+          avatar:
+            'https://gw.alipayobjects.com/zos/antfincdn/UCSiy1j6jx/xingzhuang.svg',
+          content: (
+            <div
+              style={{
+                flex: 1,
+              }}
+            >
+              <div
+                style={{
+                  width: 200,
+                }}
+              >
+                <AgentStatus id={item.id} />
+              </div>
+            </div>
+          ),
+        }
+      }))
+    }
+  }
   React.useEffect(() => {
-    // getPipeline()
+    getAgents()
   }, [])
 
   return (
@@ -46,61 +72,32 @@ export default () => {
       <Loader />
       <div
         style={{
-          background: '#F5F7FA',
-          width: '100%',
-          height: '100%',
+          backgroundColor: 'transparent',
+          margin: -24,
+          padding: 24,
         }}
       >
-        <PageContainer
-          onTabChange={key => {
-            setTabKey(key)
-          }}
-          tabProps={{
-            size: 'small',
-
-          }}
-          header={{
-            title: pipeline.filename,
+        <ProList<any>
+          ghost={true}
+          itemCardProps={{
             ghost: true,
-            breadcrumb: {
-              items: [
-                {
-                  path: '',
-                  title: project.name,
-                },
-                {
-                  path: '',
-                  title: 'pipeline',
-                },
-                {
-                  path: '',
-                  title: pipeline.id,
-                },
-              ],
+          }}
+          showActions="hover"
+          grid={{ gutter: 16, column: 2 }}
+          metas={{
+            title: {},
+            subTitle: {},
+            type: {},
+            avatar: {},
+            content: {},
+            actions: {
+              cardActionProps: 'extra',
             },
           }}
-          tabBarExtraContent={pipeline.createdAt}
-          tabList={[
-            {
-              tab: 'Overview',
-              key: 'overview',
-              closable: false,
-            },
-            {
-              tab: 'Build Log',
-              key: 'build-log',
-              closable: false,
-            },
-          ]}
-        >
-          <ProCard direction="column" ghost gutter={[0, 16]}>
-            <ProCard style={{ height: '100%' }}>
-              {
-              }
-            </ProCard>
-          </ProCard>
-        </PageContainer>
-      </div>
+          headerTitle="Agents"
+          dataSource={dataSource}
+        />
+    </div>
     </>
   );
 }

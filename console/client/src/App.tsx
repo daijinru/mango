@@ -10,9 +10,9 @@ import Agent from './pages/agent'
 const menuConfig = [
   {path: '/', title: 'home', active: 'home', component: Home},
   {path: '/pipelines', tilte: 'pipelines', active: 'pipelines', component: Pipeline},
-  {path: '/project', title: 'Projects', active: 'project', component: Project},
-  {path: '/pipeline', title: 'Pipeline', active: 'pipeline', component: Pipeline},
-  {path: '/agents', title: 'Agents', active: 'agents', component: Agent}
+  {path: '/project', title: 'projects', active: 'project', component: Project},
+  {path: '/pipeline', title: 'pipeline', active: 'pipeline', component: Pipeline},
+  {path: '/agents', title: 'agents', active: 'agents', component: Agent}
 ]
 
 export default () => {
