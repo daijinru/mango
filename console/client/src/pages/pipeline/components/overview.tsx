@@ -9,6 +9,9 @@ interface Props {
   pipeline: Pipeline
 }
 const App: React.FC<Props> = (props) => {
+  const [running, setRunning] = React.useState<boolean>(false)
+  
+
   return (
     <>
       <Descriptions title="" bordered>

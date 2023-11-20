@@ -1,4 +1,4 @@
-Console for Mango.
+# Mango Console Service
 
 ## Build
 
@@ -6,12 +6,12 @@ Console for Mango.
 $ mvn clean package
 ```
 
-## Start
+## Development
 
 ```bash
-$ nohup java -jar target/mango_console.war &
+$ mvn spring-boot:run
 ```
 
-## Runner Service
+## Ref: Runner Service
 
 [Mango Runner](https://github.com/daijinru/mango-runner)
