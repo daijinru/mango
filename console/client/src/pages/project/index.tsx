@@ -125,8 +125,8 @@ export default () => {
               closable: false,
             },
             {
-              tab: 'Build Log',
-              key: 'build-log',
+              tab: 'Pipelines',
+              key: 'pipelines',
               closable: false,
             },
           ]}
@@ -138,7 +138,7 @@ export default () => {
                 && <Overview project={project}/>
               }
               {
-                tabKey === 'build-log'
+                tabKey === 'pipelines'
                 && <ListPipelines ref={pipelinesRef}/>
               }
             </ProCard>
