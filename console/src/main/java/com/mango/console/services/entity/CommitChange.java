@@ -6,9 +6,9 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "change")
+@Table(name = "commit_change")
 @Data
-public class Change {
+public class CommitChange {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,10 +18,10 @@ public class Change {
     private Long pipelineId;
     @Column(name = "branch_id")
     private Long branchId;
-    @Column(name = "commit")
-    private String commit;
-    @Column(name = "message")
-    private String message;
+    @Column(name = "commit_id")
+    private String commitId;
+    @Column(name = "msg_text")
+    private String msgText;
     @Column(name = "author")
     private String author;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
