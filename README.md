@@ -1,19 +1,23 @@
 # README
 
-To be a versatile, lightweight CI tool 😄.
+A lightweight CI tool for your webapp 😄.
 
 ![mango](./docs/static/mango.png)
 
-## Development Guider
+## User Guider
 
-Use MySql and create a database called mango.
+1st. create a database called mango
+
 [DB_MySQL](./mysql/README.md)
 
-use SpringBoot to develop console service, and UI with React+Ant.
+2nd. running the backend service and its ui
+
 [Console-Service](./console/README.md)
+
 [Console-UI](./console/client/README.md)
 
-Use go to develop service for the execution of machines.
+3rd. running at least one runner and checkin it to the service⬆
+
 [Mango-Runner](https://github.com/daijinru/mango-runner)
 
 
