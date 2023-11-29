@@ -20,6 +20,10 @@ public class Artifact {
     private Long agentId;
     @Column(name = "filename")
     private String filename;
+    @Column(name = "version")
+    private String version;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdAt;
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    private Date updatedAt;
 }
