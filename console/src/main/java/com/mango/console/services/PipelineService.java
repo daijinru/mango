@@ -117,6 +117,10 @@ public class PipelineService {
                 pipelineRepo.findById(id)
         ).get().orElseGet(() -> null);
     }
+
+    public Pipeline callback(String url) {
+        return null;
+    }
 }
 
 

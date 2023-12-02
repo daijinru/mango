@@ -49,4 +49,12 @@ public class PipelineController {
         Pipeline pipeline = pipelineService.pipeline(id);
         return new WrapResponsesData(pipeline).success();
     }
+
+    @GetMapping("/callback")
+    public Object callback(@RequestParam PipelineCallbackArgs args) throws Exception {
+        if (Objects.isNull(args)) {
+            throw new Exception("No empty callback args");
+        }
+        return null;
+    }
  }
