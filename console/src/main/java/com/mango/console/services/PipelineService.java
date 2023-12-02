@@ -56,7 +56,7 @@ public class PipelineService {
 
             String callbackURL = Utils.encodeURL(
                     baseURL,
-                    "pipeId=" + pipe.getId(), "status=" + pipe.getStatus()
+                    "pipeId=" + pipe.getId()
             );
 
             Agent agent = Optional.of(
@@ -137,11 +137,14 @@ public class PipelineService {
     }
 
     public Pipeline callback(Long pipeId, Short status, Timestamp endTime) {
-        Pipeline pipe = new Pipeline();
-        pipe.setId(pipeId);
-        pipe.setStatus(status);
-        pipe.setEndTime(endTime);
-        pipelineRepo.save(pipe);
+        Pipeline pipe = Optional.of(
+                pipelineRepo.findById(pipeId)
+        ).get().orElseGet(() -> null);
+        if (Objects.nonNull(pipe)) {
+            pipe.setStatus(status);
+            pipe.setEndTime(endTime);
+            pipelineRepo.save(pipe);
+        }
         return pipe;
     }
 }
