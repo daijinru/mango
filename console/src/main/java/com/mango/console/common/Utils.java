@@ -31,7 +31,7 @@ public class Utils {
         return query;
     }
 
-    public static String encodeURL(String baseURL, String... restParams) throws Exception {
+    public static String encodeURL(String baseURL, String... restParams) {
         try {
             StringBuilder urlBuilder = new StringBuilder(baseURL);
             if (restParams.length < 1) {
@@ -48,7 +48,8 @@ public class Utils {
             urlBuilder.append(String.join("&", encodedQueries));
             return urlBuilder.toString();
         } catch (Exception e) {
-            throw e;
+            e.printStackTrace();
+            return null;
         }
     }
 

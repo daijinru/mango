@@ -12,7 +12,7 @@ public class RunnerParamsBuilder {
     private String path;
     private String filename;
     private String baseUrl;
-    private String callback;
+    private String callbackUrl;
 
     public RunnerParamsBuilder() {
     }
@@ -42,12 +42,8 @@ public class RunnerParamsBuilder {
         return this;
     }
 
-    public RunnerParamsBuilder callback(String callbackUrl) throws UnsupportedEncodingException {
-        try {
-            this.callback = URLEncoder.encode(callbackUrl, "UTF-8");
-        } catch (Exception e) {
-            throw e;
-        }
+    public RunnerParamsBuilder callbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
         return this;
     }
 }

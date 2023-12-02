@@ -16,8 +16,8 @@ public class Pipeline {
     private Long projectId;
     @Column(name = "filename")
     private String filename;
-    @Column(name = "stages")
-    private String stages;
+    @Column(name = "callback_url")
+    private String callbackUrl;
     @Column(name = "status")
     private Short status;
     @Column(name = "start_time")

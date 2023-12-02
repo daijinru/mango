@@ -12,6 +12,7 @@ import com.mango.console.services.entity.Agent;
 import com.mango.console.services.entity.Pipeline;
 import com.mango.console.services.entity.Project;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,6 +30,9 @@ public class PipelineService {
     @Autowired
     private AgentRepo agentRepo;
 
+    @Value("${config.services.address}")
+    private String baseURL;
+
     public List<Pipeline> getPipelinesByProjectId(Long projectId) {
         Pipeline pipeline = new Pipeline();
         pipeline.setProjectId(projectId);
@@ -37,37 +41,50 @@ public class PipelineService {
 
     @Transactional
     public Object create(Long projectId) {
-        Project project = Optional.ofNullable(
+        Project project = Optional.of(
                 projectRepo.findById(projectId)
         ).get().orElseGet(() -> null);
 
         if (Objects.nonNull(project)) {
             Long pid = project.getId();
-            String name = project.getName();
-            String path = project.getPath();
 
-            Agent agent = Optional.ofNullable(
+            Pipeline pipe = new Pipeline();
+            pipe.setProjectId(pid);
+            pipe.setCreatedAt(Utils.getLocalDateTime());
+            pipe.setStatus((short)0);
+            pipelineRepo.save(pipe);
+
+            String callbackURL = Utils.encodeURL(
+                    baseURL,
+                    "pipeId=" + pipe.getId(), "status=" + pipe.getStatus()
+            );
+
+            Agent agent = Optional.of(
                     agentRepo.findById(project.getAgentId())
-            ).get().orElseGet(() -> new Agent());
+            ).get().orElseGet(() -> null);
+            if (Objects.isNull(agent)) {
+                return null;
+            }
+
             System.out.println("agent: " + agent);
             RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
                     .method("POST")
                     .baseUrl(agent.getBaseUrl())
-                    .tag(name)
-                    .path(path);
+                    .tag(project.getName())
+                    .path(project.getPath())
+                    .callbackUrl(callbackURL);
             RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_CREATE, paramsBuilder);
             System.out.println("reply: " + reply);
-            Pipeline pipeline = new Pipeline();
+
             if (Objects.nonNull(reply) && reply.getStatus().equalsIgnoreCase("success")) {
-                pipeline.setProjectId(pid);
-                pipeline.setCreatedAt(Utils.getLocalDateTime());
-                pipeline.setStatus((short)0);
-                pipeline.setFilename(reply.getMessage());
-                pipelineRepo.save(pipeline);
-                return pipeline;
+                pipe.setFilename(reply.getMessage());
+                pipe.setCallbackUrl(callbackURL);
+                pipelineRepo.save(pipe);
+                return pipe;
             } else {
                 return reply;
             }
+
         }
         return null;
     }

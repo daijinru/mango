@@ -41,6 +41,7 @@ public class RunnerHttp {
         String path = paramsBuilder.getPath();
         String filename = paramsBuilder.getFilename();
         String agentBaseUrl = paramsBuilder.getBaseUrl();
+        String callbackUrl = paramsBuilder.getCallbackUrl();
 
         RunnerReply reply = new RunnerReply();
         if (Objects.isNull(agentBaseUrl)) {
@@ -60,6 +61,7 @@ public class RunnerHttp {
             params.add(new BasicNameValuePair("tag", tag));
             params.add(new BasicNameValuePair("path", path));
             params.add(new BasicNameValuePair("filename", filename));
+            params.add(new BasicNameValuePair("callbackUrl", callbackUrl));
 
             try {
                 httpPost.setEntity(new UrlEncodedFormEntity(params));
