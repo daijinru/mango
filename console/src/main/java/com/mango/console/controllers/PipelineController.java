@@ -1,9 +1,7 @@
 package com.mango.console.controllers;
 
+import com.mango.console.common.Utils;
 import com.mango.console.common.WrapResponsesData;
-import com.mango.console.runner.RunnerHttp;
-import com.mango.console.runner.RunnerMethods;
-import com.mango.console.runner.RunnerParamsBuilder;
 import com.mango.console.runner.RunnerReply;
 
 import com.mango.console.services.PipelineService;
@@ -51,10 +49,18 @@ public class PipelineController {
     }
 
     @GetMapping("/callback")
-    public Object callback(@RequestParam PipelineCallbackArgs args) throws Exception {
-        if (Objects.isNull(args)) {
-            throw new Exception("No empty callback args");
+    public Object callback(
+            @RequestParam("pipeId") String pipeId,
+            @RequestParam("status") String status,
+            @RequestParam("endTime") String endTime) throws Exception {
+        if (Objects.isNull(pipeId) || Objects.isNull(status) || Objects.isNull(endTime)) {
+            throw new Exception("No empty callback args: pipeId, status, endTime");
         }
-        return null;
+        Pipeline pipe = pipelineService.callback(
+                Long.valueOf(pipeId),
+                Short.valueOf(status),
+                Utils.convertToTimestamp(endTime, "")
+        );
+        return new WrapResponsesData(pipe).success();
     }
  }
