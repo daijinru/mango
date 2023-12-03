@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -136,13 +137,20 @@ public class PipelineService {
         ).get().orElseGet(() -> null);
     }
 
-    public Pipeline callback(Long pipeId, Short status, Timestamp endTime) {
+    public Pipeline callback(Map<String, String> args) throws Exception {
         Pipeline pipe = Optional.of(
-                pipelineRepo.findById(pipeId)
+                pipelineRepo.findById(Long.valueOf(args.get("pipeId")))
         ).get().orElseGet(() -> null);
         if (Objects.nonNull(pipe)) {
-            pipe.setStatus(status);
-            pipe.setEndTime(endTime);
+            if (args.get("startTime") != null) {
+                pipe.setStartTime(Utils.convertToTimestamp(args.get("startTime"), ""));
+            }
+            if (args.get("endTime") != null) {
+                pipe.setEndTime(Utils.convertToTimestamp(args.get("endTime"), ""));
+            }
+            if (args.get("status") != null) {
+                pipe.setStatus(Short.valueOf(args.get("status")));
+            }
             pipelineRepo.save(pipe);
         }
         return pipe;

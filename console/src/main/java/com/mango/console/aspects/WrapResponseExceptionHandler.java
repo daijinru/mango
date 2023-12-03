@@ -22,6 +22,7 @@ public class WrapResponseExceptionHandler {
     @ResponseBody
     public WrapResponsesData handleException(Exception ex) {
         WrapResponsesData wrappedResponse = new WrapResponsesData(null).fail(ex);
+        System.out.println(wrappedResponse.getMessage());
         return wrappedResponse;
     }
 }

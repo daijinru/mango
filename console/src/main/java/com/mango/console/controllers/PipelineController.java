@@ -9,6 +9,8 @@ import com.mango.console.services.entity.Pipeline;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.channels.Pipe;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -50,17 +52,12 @@ public class PipelineController {
 
     @GetMapping("/callback")
     public Object callback(
-            @RequestParam("pipeId") String pipeId,
-            @RequestParam("status") String status,
-            @RequestParam("endTime") String endTime) throws Exception {
-        if (Objects.isNull(pipeId) || Objects.isNull(status) || Objects.isNull(endTime)) {
-            throw new Exception("No empty callback args: pipeId, status, endTime");
+            @RequestParam Map<String, String> args
+    ) throws Exception {
+        if (Objects.isNull(args.get("pipeId"))) {
+            throw new Exception("No empty callback args: pipeId");
         }
-        Pipeline pipe = pipelineService.callback(
-                Long.valueOf(pipeId),
-                Short.valueOf(status),
-                Utils.convertToTimestamp(endTime, "")
-        );
+        Pipeline pipe = pipelineService.callback(args);
         return new WrapResponsesData(pipe).success();
     }
  }

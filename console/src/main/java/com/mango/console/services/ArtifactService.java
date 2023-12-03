@@ -23,7 +23,6 @@ public class ArtifactService {
     @Transactional
     public Artifact create(ArtifactArgs args) {
         Artifact artifact = new Artifact();
-        artifact.setFilename(args.getFilename());
         artifactRepo.save(artifact);
         return artifact;
     }
