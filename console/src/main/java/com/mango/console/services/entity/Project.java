@@ -18,6 +18,11 @@ public class Project {
     private Long agentId;
     @Column(name = "path")
     private String path;
+    /**
+     * default rule for publishing artifact
+     */
+    @Column(name = "artifact_rule")
+    private String artifactRule;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdAt;
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")

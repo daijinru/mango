@@ -20,13 +20,15 @@ public class Pipeline {
     private String callbackUrl;
     @Column(name = "status")
     private Short status;
+    /**
+     * if nonNull it means the pipe related to an artifact published
+     */
+    @Column(name = "artifact_id")
+    private Long artifactId;
     @Column(name = "start_time")
     private Timestamp startTime;
     @Column(name = "end_time")
     private Timestamp endTime;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
-    @Lob
-    @Column(name = "stdout")
-    private String stdout;
 }
