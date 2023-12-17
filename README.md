@@ -2,7 +2,7 @@
 
 A lightweight CI tool for your webapp 😄.
 
-![mango](./docs/static/mango.png)
+![mango_flow](./docs/static/mango_flow.png)
 
 ## User Guider
 
