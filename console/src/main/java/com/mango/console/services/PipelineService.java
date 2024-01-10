@@ -85,28 +85,6 @@ public class PipelineService {
             } else {
                 return reply;
             }
-
-        }
-        return null;
-    }
-
-    public RunnerReply running(Long projectId) {
-        Project project = Optional.ofNullable(
-                projectRepo.findById(projectId)
-        ).get().orElseGet(() -> null);
-        if (Objects.nonNull(project)) {
-            String name = project.getName();
-            String path = project.getPath();
-            Agent agent = Optional.ofNullable(
-                    agentRepo.findById(project.getAgentId())
-            ).get().orElseGet(() -> new Agent());
-            RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
-                    .method("POST")
-                    .tag(name)
-                    .baseUrl(agent.getBaseUrl())
-                    .path(path);
-            RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STATUS, paramsBuilder);
-            return reply;
         }
         return null;
     }
