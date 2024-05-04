@@ -14,8 +14,6 @@ public class Agent {
     private Long id;
     @Column(name = "base_url")
     private String baseUrl;
-    @Column(name = "token")
-    private String token;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
 }

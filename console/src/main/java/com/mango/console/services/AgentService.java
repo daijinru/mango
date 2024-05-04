@@ -31,7 +31,6 @@ public class AgentService {
     @Transactional
     public Agent create(AgentArgs args) {
         Agent agent = new Agent();
-        agent.setToken(args.getToken());
         agent.setBaseUrl(args.getBaseUrl());
         agent.setCreatedAt(Utils.getLocalDateTime());
         agentRepo.save(agent);
