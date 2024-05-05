@@ -1,26 +1,27 @@
 package com.mango.console.services;
 
-import com.mango.console.controllers.WorkspaceArgs;
-import com.mango.console.services.dao.WorkspaceRepo;
-import com.mango.console.services.entity.Workspace;
+import com.mango.console.controllers.WorkgroupArgs;
+import com.mango.console.services.dao.WorkgroupRepo;
+import com.mango.console.services.entity.Workgroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class WorkspaceService {
+public class WorkgroupService {
     @Autowired
-    private WorkspaceRepo repo;
+    private WorkgroupRepo repo;
 
-    public Workspace group(Long id) {
+    public Workgroup group(Long id) {
         return Optional.ofNullable(
                 repo.findById(id)
         ).get().orElseGet(() -> null);
     }
 
-    public Workspace create(WorkspaceArgs args) {
-        Workspace group = new Workspace();
+    public Workgroup create(WorkgroupArgs args) {
+        Workgroup group = new Workgroup();
         group.setName(args.getName());
         group.setHost(args.getHost());
         group.setAgentHost(args.getAgentHost());
@@ -30,5 +31,9 @@ public class WorkspaceService {
 
     public void delete(Long id) {
         repo.deleteById(id);
+    }
+
+    public List<Workgroup> listGroups() {
+        return repo.findAll();
     }
 }
