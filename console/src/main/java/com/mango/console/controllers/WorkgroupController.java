@@ -20,7 +20,7 @@ public class WorkgroupController {
         if (Objects.isNull(id)) {
             throw new Exception("no empty id");
         }
-        Workgroup group = service.group(id);
+        Workgroup group = service.get(id);
         return new WrapResponsesData(group).success();
     }
 
