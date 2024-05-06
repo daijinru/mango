@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class ProjectArgs {
+    private Long id;
     private String name;
-    private String path;
-    private Long agentId;
+    private String repository;
+    private Long groupId;
 }
