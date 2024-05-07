@@ -7,5 +7,5 @@ public class WorkgroupArgs {
     private Long id;
     private String name;
     private String host;
-    private String agentHost;
+    private Long agentId;
 }

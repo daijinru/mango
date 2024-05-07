@@ -2,7 +2,6 @@ package com.mango.console.services;
 
 import com.mango.console.controllers.WorkgroupArgs;
 import com.mango.console.services.dao.WorkgroupRepo;
-import com.mango.console.services.entity.Project;
 import com.mango.console.services.entity.Workgroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class WorkgroupService {
         Workgroup group = new Workgroup();
         group.setName(args.getName());
         group.setHost(args.getHost());
-        group.setAgentHost(args.getAgentHost());
+        group.setAgentId(args.getAgentId());
         repo.save(group);
         return group;
     }
@@ -35,7 +34,7 @@ public class WorkgroupService {
                 .orElseThrow(() -> new IllegalArgumentException("group not found"));
         Optional.ofNullable(args.getName()).ifPresent(group::setName);
         Optional.ofNullable(args.getHost()).ifPresent(group::setHost);
-        Optional.ofNullable(args.getAgentHost()).ifPresent(group::setAgentHost);
+        Optional.ofNullable(args.getAgentId()).ifPresent(group::setAgentId);
         return repo.save(group);
     }
 
