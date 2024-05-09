@@ -13,13 +13,11 @@ import com.mango.console.services.entity.Agent;
 import com.mango.console.services.entity.Pipeline;
 import com.mango.console.services.entity.Project;
 import com.mango.console.services.entity.Workgroup;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,22 +46,21 @@ public class PipelineService {
         Project project = Optional.of(
                 projectRepo.findById(projectId)
         ).get().orElseGet(() -> null);
-
         if (Objects.isNull(project)) return null;
-
-        Long pid = project.getId();
-        Pipeline pipe = new Pipeline();
-        // pipelines must belong to a project
-        pipe.setProjectId(pid);
-        pipe.setCreatedAt(Utils.getLocalDateTime());
-        pipe.setStatus((short)0);
-        pipelineRepo.save(pipe);
-
         // common configuration of the workgroup
         Workgroup workgroup = Optional.ofNullable(
             workgroupRepo.findById(project.getId())
         ).get().orElseGet(() -> null);
         if (Objects.isNull(workgroup)) return null;
+
+        Long pid = project.getId();
+        Pipeline pipe = new Pipeline();
+        // pipelines should be belonged to a project
+        pipe.setProjectId(pid);
+        pipe.setCreatedAt(Utils.getLocalDateTime());
+        pipe.setStatus((short)0);
+        pipe.setAgentId(workgroup.getAgentId());
+        pipelineRepo.save(pipe);
 
         Agent agent = Optional.of(
                 agentRepo.findById(workgroup.getAgentId())
@@ -94,25 +91,23 @@ public class PipelineService {
         }
     }
 
-//    public RunnerReply stdout(Long projectId, String filename) {
-//        Project project = Optional.ofNullable(
-//                projectRepo.findById(projectId)
-//        ).get().orElseGet(() -> null);
-//        if (Objects.nonNull(project)) {
-//            String path = project.getPath();
-//            Agent agent = Optional.ofNullable(
-//                    agentRepo.findById(project.getAgentId())
-//            ).get().orElseGet(() -> new Agent());
-//            RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
-//                    .method("POST")
-//                    .path(path)
-//                    .baseUrl(agent.getBaseUrl())
-//                    .filename(filename + ".txt");
-//            RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STDOUT, paramsBuilder);
-//            return reply;
-//        }
-//        return null;
-//    }
+    public RunnerReply stdout(Long pipelineId, Number start) {
+        Pipeline pipe = Optional.ofNullable(
+                pipelineRepo.findById(pipelineId)
+        ).get().orElseGet(() -> null);
+        if (Objects.isNull(pipe)) return null;
+        Agent agent = Optional.ofNullable(
+                agentRepo.findById(pipe.getAgentId())
+        ).get().orElseGet(() -> null);
+        if (Objects.isNull(agent)) return null;
+        RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+                .method("POST")
+                .filename(pipe.getFilename())
+                .baseUrl(agent.getBaseUrl());
+        RunnerReply reply = RunnerHttp.send(RunnerMethods.PIPELINE_STDOUT, paramsBuilder);
+        if (Objects.nonNull(reply)) return reply;
+        return null;
+    }
 
     public Pipeline pipeline(Long id) {
         return Optional.ofNullable(

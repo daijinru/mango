@@ -20,6 +20,8 @@ public class Pipeline {
     private String callbackUrl;
     @Column(name = "status")
     private Short status;
+    @Column(name = "agent_id")
+    private Long agentId;
     /**
      * if nonNull it means the pipe related to an artifact published
      */
