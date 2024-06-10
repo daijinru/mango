@@ -15,33 +15,36 @@ import java.util.Optional;
 @Service
 public class ProjectService {
     @Autowired
-    private ProjectRepo projectRepo;
+    private ProjectRepo repo;
 
-    @Transactional
-    public Project insertProject(ProjectArgs args) {
+    public Project get(Long id) {
+        return Optional.ofNullable(
+                repo.findById(id)
+        ).get().orElseGet(() -> null);
+    }
+
+    public Project create(ProjectArgs args) {
         Project project = new Project();
         project.setName(args.getName());
-        project.setPath(args.getPath());
-        if (Objects.nonNull(args.getAgentId())) {
-            project.setAgentId(args.getAgentId());
-        }
-        project.setCreatedAt(Utils.getLocalDateTime());
-        projectRepo.save(project);
-        return project;
+        project.setRepository(args.getRepository());
+        project.setGroupId(args.getGroupId());
+        return repo.save(project);
     }
 
-    @Transactional
-    public void deleteProject(Long id) {
-        projectRepo.deleteById(id);
+    public Project update(ProjectArgs args) {
+        Project project = repo.findById(args.getId())
+                .orElseThrow(() -> new IllegalArgumentException("project not found"));
+        Optional.ofNullable(args.getName()).ifPresent(project::setName);
+        Optional.ofNullable(args.getRepository()).ifPresent(project::setRepository);
+        Optional.ofNullable(args.getGroupId()).ifPresent(project::setGroupId);
+        return repo.save(project);
     }
 
-    public List<Project> listProjects() {
-        return projectRepo.findAll();
+    public void delete(Long id) {
+        repo.deleteById(id);
     }
 
-    public Project project(Long id) {
-        return Optional.ofNullable(
-                projectRepo.findById(id)
-        ).get().orElseGet(() -> null);
+    public List<Project> listProjectByGroupId(Long id) {
+        return repo.findByGroupId(id);
     }
 }

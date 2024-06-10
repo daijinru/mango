@@ -6,25 +6,20 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "workspaces")
+@Table(name = "workgroup")
 @Data
-public class Workspace {
+public class Workgroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "ws_name")
+    @Column(name = "group_name")
     private String name;
-    /**
-     * 本分组的服务器地址
-     */
     @Column(name = "server_host")
     private String host;
-    /**
-     * 每个分组对应一个代理执行器，
-     * 这里是执行器所在的服务器地址
-     */
-    @Column(name = "agent_host")
-    private String agentHost;
+    @Column(name = "agent_id")
+    private Long agentId;
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdAt;
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    private Timestamp updatedAt;
 }
