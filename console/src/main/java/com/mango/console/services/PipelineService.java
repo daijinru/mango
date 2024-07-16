@@ -3,7 +3,6 @@ package com.mango.console.services;
 import com.mango.console.common.Utils;
 import com.mango.console.runner.RunnerHttp;
 import com.mango.console.runner.RunnerMethods;
-import com.mango.console.runner.RunnerParamsBuilder;
 import com.mango.console.runner.RunnerReply;
 import com.mango.console.services.dao.AgentRepo;
 import com.mango.console.services.dao.PipelineRepo;
@@ -72,7 +71,7 @@ public class PipelineService {
                 baseURL,
                 "pipeId=" + pipe.getId()
         );
-        RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+        RunnerPipelineParams paramsBuilder = new RunnerPipelineParams()
                 .method("POST")
                 .baseUrl(agent.getBaseUrl())
                 .tag(project.getName())
@@ -100,7 +99,7 @@ public class PipelineService {
                 agentRepo.findById(pipe.getAgentId())
         ).get().orElseGet(() -> null);
         if (Objects.isNull(agent)) return null;
-        RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+        RunnerPipelineParams paramsBuilder = new RunnerPipelineParams()
                 .method("POST")
                 .filename(pipe.getFilename())
                 .baseUrl(agent.getBaseUrl());

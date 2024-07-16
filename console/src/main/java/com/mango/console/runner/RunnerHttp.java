@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mango.console.runner.params.ParamsStrategy;
+import com.mango.console.runner.params.RunnerBaseParams;
+import com.mango.console.runner.params.RunnerGitParams;
 import com.mango.console.services.AgentService;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,56 +38,35 @@ public class RunnerHttp {
         RunnerHttp.agentService = agentService;
     }
 
-    public static RunnerReply send(RunnerMethods endpoint, RunnerParamsBuilder paramsBuilder) {
-        String method = paramsBuilder.getMethod();
-        String tag = paramsBuilder.getTag();
-        String path = paramsBuilder.getPath();
-        String filename = paramsBuilder.getFilename();
-        String agentBaseUrl = paramsBuilder.getBaseUrl();
-        String callbackUrl = paramsBuilder.getCallbackUrl();
-
+    public static <T extends RunnerBaseParams & ParamsStrategy> RunnerReply send(RunnerMethods endpoint, T passingParams) {
+        List<NameValuePair> params = passingParams.returnParams();
         RunnerReply reply = new RunnerReply();
-        if (Objects.isNull(agentBaseUrl)) {
-            reply.setStatus("fail");
-            reply.setMessage("there are no agent available");
-            return reply;
-        }
-
-        String url = agentBaseUrl + endpoint.getEndpoint();
-
         HttpClient httpClient = HttpClientBuilder.create().build();
+        // TODO get (dynamic) agent url as BaseUrl here
+        String url = "http://localhost:1234" + endpoint.getEndpoint();
+        HttpPost httpPost = new HttpPost(url);
 
-        if (method.equalsIgnoreCase("POST")) {
-            HttpPost httpPost = new HttpPost(url);
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(params));
 
-            List<NameValuePair> params = new ArrayList<>();
-            params.add(new BasicNameValuePair("tag", tag));
-            params.add(new BasicNameValuePair("path", path));
-            params.add(new BasicNameValuePair("filename", filename));
-            params.add(new BasicNameValuePair("callbackUrl", callbackUrl));
+            HttpResponse response = httpClient.execute(httpPost);
 
-            try {
-                httpPost.setEntity(new UrlEncodedFormEntity(params));
-
-                HttpResponse response = httpClient.execute(httpPost);
-
-                int statusCode = response.getStatusLine().getStatusCode();
-                HttpEntity entity = response.getEntity();
-                String content = EntityUtils.toString(entity);
-                if (statusCode == HttpStatus.SC_OK) {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    reply = objectMapper.readValue(content, RunnerReply.class);
-                } else {
-                    /**
-                     * if returned incorrect, return the status code and message from runner.
-                     */
-                    reply.setStatus(Integer.toString(statusCode));
-                    reply.setMessage(content);
-                }
-                return reply;
-            } catch (IOException e) {
-                e.printStackTrace();
+            int statusCode = response.getStatusLine().getStatusCode();
+            HttpEntity entity = response.getEntity();
+            String content = EntityUtils.toString(entity);
+            if (statusCode == HttpStatus.SC_OK) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                reply = objectMapper.readValue(content, RunnerReply.class);
+            } else {
+                /**
+                 * if returned incorrect, return the status code and message from runner.
+                 */
+                reply.setStatus(Integer.toString(statusCode));
+                reply.setMessage(content);
             }
+            return reply;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return null;

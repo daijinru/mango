@@ -4,7 +4,6 @@ import com.mango.console.common.Utils;
 import com.mango.console.controllers.AgentArgs;
 import com.mango.console.runner.RunnerHttp;
 import com.mango.console.runner.RunnerMethods;
-import com.mango.console.runner.RunnerParamsBuilder;
 import com.mango.console.runner.RunnerReply;
 import com.mango.console.services.dao.AgentRepo;
 import com.mango.console.services.entity.Agent;
@@ -50,7 +49,7 @@ public class AgentService {
             return false;
         }
         System.out.println(agent);
-        RunnerParamsBuilder paramsBuilder = new RunnerParamsBuilder()
+        RunnerPipelineParams paramsBuilder = new RunnerPipelineParams()
                 .method("POST")
                 .baseUrl(agent.getBaseUrl());
         RunnerReply reply = RunnerHttp.send(RunnerMethods.SERVICE_STATUS, paramsBuilder);
