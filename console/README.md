@@ -2,8 +2,9 @@
 
 ## TODO
 
-- [ ] 071601 refactor RunnerHttp
+- [x] 071601 refactor RunnerHttp
 - [ ] 071602 refactor PipelineService
+- [ ] 071801 PipelineService add GitClone 
 
 ## Build
 

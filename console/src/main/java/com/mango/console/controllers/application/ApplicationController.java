@@ -1,12 +1,14 @@
 package com.mango.console.controllers.application;
 
-import com.mango.console.common.WrapResponsesData;
+import com.mango.console.common.WrapResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/application")
@@ -15,10 +17,9 @@ public class ApplicationController {
     private ApplicationService service;
 
     @GetMapping("/all")
-    public Object getAll() throws Exception {
+    public ResponseEntity getAll() throws Exception {
         List<ApplicationEntity> entities = service.getAll();
         List<ApplicationVO> out = new ArrayList<>();
-
         for (ApplicationEntity entity : entities) {
             ApplicationVO app = ApplicationVO.builder()
                     .id(entity.getId())
@@ -30,18 +31,28 @@ public class ApplicationController {
                     .build();
             out.add(app);
         }
-
-        return new WrapResponsesData(out).success();
+        WrapResponse<List<ApplicationVO>> wrapResponse = new WrapResponse<>(out);
+        return ResponseEntity.ok(wrapResponse.success());
     }
 
-    @PostMapping("/put/{id}")
-    public Object put(@PathVariable Long id, @RequestBody ApplicationVO app) throws Exception {
+    @GetMapping("/{id}")
+    public ResponseEntity getById(@PathVariable Long id) throws Exception {
+        if (Objects.isNull(id)) {
+            throw new Exception("id should not null");
+        }
+        ApplicationEntity application = service.get(id);
+        WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(application);
+        return ResponseEntity.ok(wrapResponse.success());
+    }
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity update(@PathVariable Long id, @RequestBody ApplicationVO app) throws Exception {
         if (Objects.isNull(id)) {
             throw new Exception(("id should not null"));
         }
-        ApplicationEntity entity;
+        ApplicationEntity application;
         try {
-            entity = ApplicationEntity.builder()
+            application = ApplicationEntity.builder()
                     .id(app.getId())
                     .name(app.getName())
                     .gitRepository(app.getGitRepository())
@@ -52,14 +63,16 @@ public class ApplicationController {
         } catch (NullPointerException e) {
             throw new Exception("missing params", e);
         }
-        return new WrapResponsesData(service.put(id, entity)).success();
+        service.put(id, application);
+        WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(application);
+        return ResponseEntity.ok(wrapResponse.success());
     }
 
     @PostMapping("/save")
-    public Object save(@RequestBody ApplicationVO app) throws Exception {
-        ApplicationEntity entity;
+    public ResponseEntity save(@RequestBody ApplicationVO app) throws Exception {
+        ApplicationEntity application;
         try {
-            entity = ApplicationEntity.builder()
+            application = ApplicationEntity.builder()
                     .name(app.getName())
                     .gitRepository(app.getGitRepository())
                     .gitBranchName(app.getGitBranchName())
@@ -69,6 +82,8 @@ public class ApplicationController {
         } catch (NullPointerException e) {
             throw new Exception("missing params", e);
         }
-        return new WrapResponsesData(service.save(entity)).success();
+        service.save(application);
+        WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(application);
+        return ResponseEntity.ok(wrapResponse.success());
     }
 }

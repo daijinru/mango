@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ApplicationService {
@@ -24,5 +25,11 @@ public class ApplicationService {
 
     public ApplicationEntity save(ApplicationEntity entity) {
         return dao.save(entity);
+    }
+
+    public ApplicationEntity get(Long id) {
+        return Optional.of(
+                dao.findById(id)
+        ).get().orElseGet(() -> null);
     }
 }
