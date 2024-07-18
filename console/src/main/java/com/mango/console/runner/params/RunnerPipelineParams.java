@@ -20,6 +20,7 @@ public class RunnerPipelineParams extends RunnerBaseParams implements ParamsStra
      * a text to store console print, which creating after pipeline executed by each application
      */
     private String filename;
+    private String callbackUrl;
     public List returnParams() {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("name", name));

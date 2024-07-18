@@ -1,6 +1,5 @@
 package com.mango.console.controllers.application;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -33,7 +32,4 @@ public class ApplicationEntity {
     private Date createdAt;
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Date updatedAt;
-
-    public ApplicationEntity() {
-    }
 }
