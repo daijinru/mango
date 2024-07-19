@@ -25,9 +25,12 @@ public class PipelineController {
         return ResponseEntity.ok(wrapResponse.success());
     }
 
-    @GetMapping("/all")
-    public ResponseEntity getAll() throws Exception {
-        List<PipelineEntity> pipelines = service.getAll();
+    @GetMapping("/{applicationId}/all")
+    public ResponseEntity getAll(@PathVariable Long id) throws Exception {
+        if (Objects.isNull(id)) {
+            throw new Exception("id should not null");
+        }
+        List<PipelineEntity> pipelines = service.getAll(id);
         return ResponseEntity.ok(new WrapResponse<>(pipelines).success());
     }
 
@@ -39,7 +42,11 @@ public class PipelineController {
 
     @PostMapping("/{pipelineId}/stdout")
     public ResponseEntity getStdout(@PathVariable Long id) throws Exception {
-        return null;
+        if (Objects.isNull(id)) {
+            throw new Exception("id should not null");
+        }
+        PipelineEntity pipeline = service.getStdout(id);
+        return ResponseEntity.ok(new WrapResponse<>(pipeline).success());
     }
 
     @PostMapping("/callback")

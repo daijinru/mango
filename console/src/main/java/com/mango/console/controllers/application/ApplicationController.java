@@ -18,21 +18,8 @@ public class ApplicationController {
 
     @GetMapping("/all")
     public ResponseEntity getAll() throws Exception {
-        List<ApplicationEntity> entities = service.getAll();
-        List<ApplicationVO> out = new ArrayList<>();
-        for (ApplicationEntity entity : entities) {
-            ApplicationVO app = ApplicationVO.builder()
-                    .id(entity.getId())
-                    .name(entity.getName())
-                    .gitRepository(entity.getGitRepository())
-                    .gitBranchName(entity.getGitBranchName())
-                    .agentHost(entity.getAgentHost())
-                    .artifactRule(entity.getArtifactRule())
-                    .build();
-            out.add(app);
-        }
-        WrapResponse<List<ApplicationVO>> wrapResponse = new WrapResponse<>(out);
-        return ResponseEntity.ok(wrapResponse.success());
+        List<ApplicationEntity> applications = service.getAll();
+        return ResponseEntity.ok(new WrapResponse<>(applications).success());
     }
 
     @GetMapping("/{id}")

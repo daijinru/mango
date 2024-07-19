@@ -27,8 +27,8 @@ public class PipelineService {
     @Value("${config.agent.callback}")
     private String callbackBaseURL;
 
-    public List<PipelineEntity> getAll() {
-        return pipelineDAO.findAll();
+    public List<PipelineEntity> getAll(Long appId) {
+        return pipelineDAO.findByApplicationId(appId);
     }
 
     public PipelineEntity create(Long appId, String commands) {
@@ -71,6 +71,27 @@ public class PipelineService {
             pipeline.setCreatedAt(Utils.getLocalDateTime());
             pipelineDAO.save(pipeline);
         }
+        pipeline.setStdout(reply.getMessage());
+        return pipeline;
+    }
+
+    public PipelineEntity getStdout(Long id) {
+        PipelineEntity pipeline = Optional.ofNullable(
+                pipelineDAO.findById(id)
+        ).get().orElseGet(() -> null);
+        if (Objects.isNull(pipeline)) return null;
+        ApplicationEntity application = Optional.ofNullable(
+                applicationDAO.findById(pipeline.getApplicationId())
+        ).get().orElseGet(() -> null);
+        if (Objects.isNull(application)) return null;
+        RunnerEndpoint endpoint = new RunnerEndpoint(application.getAgentHost(), RunnerCalling.PIPELINE_STDOUT);
+        RunnerPipelineParams rpParams = RunnerPipelineParams
+                .builder()
+                .name(application.getName())
+                .filename(pipeline.getFilename())
+                .build();
+        RunnerReply reply = RunnerHttp.send(endpoint, rpParams);
+        System.out.println("reply: " + reply);
         pipeline.setStdout(reply.getMessage());
         return pipeline;
     }
