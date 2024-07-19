@@ -1,8 +1,6 @@
 package com.mango.console.controllers.application;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -11,8 +9,9 @@ import java.util.Date;
 @Table(name = "applications")
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ApplicationEntity {
-    @NonNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

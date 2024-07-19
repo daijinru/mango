@@ -1,6 +1,9 @@
 package com.mango.console.controllers.pipeline;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -9,6 +12,9 @@ import java.util.Date;
 @Entity
 @Table(name = "pipelines")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PipelineEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -57,18 +57,13 @@ public class ApplicationController {
 
     @PostMapping("/save")
     public ResponseEntity save(@RequestBody ApplicationVO app) throws Exception {
-        ApplicationEntity application;
-        try {
-            application = ApplicationEntity.builder()
-                    .name(app.getName())
-                    .gitRepository(app.getGitRepository())
-                    .gitBranchName(app.getGitBranchName())
-                    .agentHost(app.getAgentHost())
-                    .artifactRule(app.getArtifactRule())
-                    .build();
-        } catch (NullPointerException e) {
-            throw new Exception("missing params", e);
-        }
+        ApplicationEntity application = ApplicationEntity.builder()
+                .name(app.getName())
+                .gitRepository(app.getGitRepository())
+                .gitBranchName(app.getGitBranchName())
+                .agentHost(app.getAgentHost())
+                .artifactRule(app.getArtifactRule())
+                .build();
         service.save(application);
         WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(application);
         return ResponseEntity.ok(wrapResponse.success());
