@@ -9,8 +9,9 @@ import java.sql.Timestamp;
 @Builder
 public class PipelineVO {
     private Long id;
-    private Short status;
-    private Long artifactId;
-    private Timestamp startTime;
-    private String stdout;
+    /**
+     * ID of its owner: Application
+     */
+    private Long appId;
+    private String commands;
 }

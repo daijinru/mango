@@ -28,6 +28,8 @@ public class PipelineEntity {
     private Long artifactId;
     @Column(name = "start_time")
     private Timestamp startTime;
+    @Column(name = "end_time")
+    private Timestamp endTime;
     /**
      * the serialized print characters, default to File system, rarely to here
      */

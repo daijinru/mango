@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,8 +45,6 @@ public class PipelineService {
         pipeline.setStatus((short)0);
         pipeline.setApplicationId(appId);
         pipeline.setCommands(commands);
-        pipeline.setCreatedAt(Utils.getLocalDateTime());
-        pipelineDAO.save(pipeline);
         /**
          * the callbackUrl is used to callback after the execution of the pipeline.
          */
@@ -62,8 +61,40 @@ public class PipelineService {
                 .build();
         RunnerReply reply = RunnerHttp.send(endpoint, rpParams);
         System.out.println("reply: " + reply);
+        /**
+         * Agent will return filename as message if created successfully,
+         * if not return as usual. Error message can still be written to stdout,
+         * but will not be persisted.
+         */
         if (Objects.nonNull(reply) && reply.getStatus().equalsIgnoreCase("success")) {
             pipeline.setFilename(reply.getMessage());
+            pipeline.setCreatedAt(Utils.getLocalDateTime());
+            pipelineDAO.save(pipeline);
+        }
+        pipeline.setStdout(reply.getMessage());
+        return pipeline;
+    }
+
+    public PipelineEntity get(Long id) {
+        return Optional.of(
+                pipelineDAO.findById(id)
+        ).get().orElseGet(() -> null);
+    }
+
+    public PipelineEntity callback(Map<String, String> args) throws Exception {
+        PipelineEntity pipeline = Optional.of(
+                pipelineDAO.findById(Long.valueOf(args.get("pipeId")))
+        ).get().orElseGet(() -> null);
+        if (Objects.nonNull(pipeline)) {
+            if (args.get("startTime") != null) {
+                pipeline.setStartTime(Utils.convertToTimestamp(args.get("startTime"), ""));
+            }
+            if (args.get("endTime") != null) {
+                pipeline.setEndTime(Utils.convertToTimestamp(args.get("endTime"), ""));
+            }
+            if (args.get("status") != null) {
+                pipeline.setStatus(Short.valueOf(args.get("status")));
+            }
             pipelineDAO.save(pipeline);
         }
         return pipeline;
