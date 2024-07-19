@@ -2,9 +2,11 @@
 
 ## TODO
 
-- [x] 071601 refactor RunnerHttp
-- [ ] 071602 refactor PipelineService
-- [ ] 071801 PipelineService add GitClone 
+- [x] 071601 refactor Runner Http Request
+- [ ] 071602 refactor Pipeline API
+- [ ] 071801 add Git Clone in Pipeline API
+- [ ] 071901 add FSM for params validate
+- [ ] 071902 remove Useless files
 
 ## Build
 
