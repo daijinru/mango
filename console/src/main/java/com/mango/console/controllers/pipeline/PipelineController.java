@@ -1,6 +1,7 @@
 package com.mango.console.controllers.pipeline;
 
 import com.mango.console.common.WrapResponse;
+import com.mango.console.controllers.task.TaskVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/pipeline")
@@ -36,7 +38,9 @@ public class PipelineController {
 
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody PipelineVO args) throws Exception {
-        PipelineEntity pipeline = service.create(args.getAppId(), args.getCommands());
+        List<TaskVO> tasks = args.getTasks();
+        List<String> commands = tasks.stream().map(TaskVO::getCommand).collect(Collectors.toList());
+        PipelineEntity pipeline = service.create(args.getAppId(), commands);
         return ResponseEntity.ok(new WrapResponse<>(pipeline).success());
     }
 

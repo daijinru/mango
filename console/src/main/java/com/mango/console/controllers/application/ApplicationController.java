@@ -37,20 +37,15 @@ public class ApplicationController {
         if (Objects.isNull(id)) {
             throw new Exception(("id should not null"));
         }
-        ApplicationEntity application;
-        try {
-            application = ApplicationEntity.builder()
-                    .id(app.getId())
-                    .name(app.getName())
-                    .gitRepository(app.getGitRepository())
-                    .gitBranchName(app.getGitBranchName())
-                    .agentHost(app.getAgentHost())
-                    .artifactRule(app.getArtifactRule())
-                    .build();
-        } catch (NullPointerException e) {
-            throw new Exception("missing params", e);
-        }
-        service.put(id, application);
+        ApplicationEntity application = ApplicationEntity.builder()
+                .id(id)
+                .name(app.getName())
+                .gitRepository(app.getGitRepository())
+                .gitBranchName(app.getGitBranchName())
+                .agentHost(app.getAgentHost())
+                .artifactRule(app.getArtifactRule())
+                .build();
+        service.update(id, application);
         WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(application);
         return ResponseEntity.ok(wrapResponse.success());
     }

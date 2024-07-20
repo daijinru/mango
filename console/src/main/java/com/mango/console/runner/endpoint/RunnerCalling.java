@@ -1,7 +1,7 @@
 package com.mango.console.runner.endpoint;
 
 public enum RunnerCalling {
-  CLONE_PROJECT("/git/clone"),
+  GIT_CLONE("/git/clone"),
   PIPELINE_CREATE("/pipeline/create"),
   PIPELINE_STDOUT("/pipeline/stdout"),
   PIPELINE_LIST("/pipeline/list"),

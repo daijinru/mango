@@ -7,6 +7,7 @@ import com.mango.console.runner.RunnerHttp;
 import com.mango.console.runner.RunnerReply;
 import com.mango.console.runner.endpoint.RunnerCalling;
 import com.mango.console.runner.endpoint.RunnerEndpoint;
+import com.mango.console.runner.params.RunnerGitParams;
 import com.mango.console.runner.params.RunnerPipelineParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,11 +32,21 @@ public class PipelineService {
         return pipelineDAO.findByApplicationId(appId);
     }
 
-    public PipelineEntity create(Long appId, String commands) {
-        ApplicationEntity application = Optional.of(
-                applicationDAO.findById(appId)
-        ).get().orElseGet(() -> null);
-        if (Objects.isNull(application)) return null;
+    public Boolean gitClone(ApplicationEntity application) {
+        RunnerEndpoint endpoint = new RunnerEndpoint(application.getAgentHost(), RunnerCalling.GIT_CLONE);
+        RunnerGitParams params = RunnerGitParams.builder()
+                .name(application.getName())
+                .repo(application.getGitRepository())
+                .branch(application.getGitBranchName())
+                .user(application.getUser())
+                .pwd(application.getPwd())
+                .build();
+        RunnerReply reply = RunnerHttp.send(endpoint, params);
+        System.out.println("reply: " + reply);
+        return true;
+    }
+
+    public PipelineEntity executeCommands(ApplicationEntity application, String commands) {
         /**
          * at 1st for create the Pipeline belong to Application.
          * And Now add the WAIT state for it.
@@ -75,12 +86,39 @@ public class PipelineService {
         return pipeline;
     }
 
+    public PipelineEntity create(Long appId, List<String> commands) {
+        ApplicationEntity application = Optional.of(
+                applicationDAO.findById(appId)
+        ).get().orElseGet(() -> null);
+        if (Objects.isNull(application)) return null;
+
+        boolean shouldRunGitClone = false;
+
+        StringBuilder sb = new StringBuilder();
+        for (String cmd : commands) {
+            if (cmd.equals(PipelineTaskFlag.GIT_CLONE.getFlag())) {
+                shouldRunGitClone = true;
+                continue;
+            }
+            if (sb.length() > 0 && !cmd.equals(PipelineTaskFlag.GIT_CLONE.getFlag())) {
+                sb.append(" && ");
+            }
+            sb.append(cmd);
+        }
+
+        if (shouldRunGitClone) {
+            gitClone(application);
+        }
+
+        return executeCommands(application, sb.toString());
+    }
+
     public PipelineEntity getStdout(Long id) {
-        PipelineEntity pipeline = Optional.ofNullable(
+        PipelineEntity pipeline = Optional.of(
                 pipelineDAO.findById(id)
         ).get().orElseGet(() -> null);
         if (Objects.isNull(pipeline)) return null;
-        ApplicationEntity application = Optional.ofNullable(
+        ApplicationEntity application = Optional.of(
                 applicationDAO.findById(pipeline.getApplicationId())
         ).get().orElseGet(() -> null);
         if (Objects.isNull(application)) return null;

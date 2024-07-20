@@ -26,6 +26,10 @@ public class ApplicationEntity {
     private String agentHost;
     @Column(name = "artifact_rule")
     private String artifactRule;
+    @Column(name = "user")
+    private String user;
+    @Column(name = "pwd")
+    private String pwd;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdAt;
