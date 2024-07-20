@@ -7,6 +7,7 @@
 - [ ] 071801 add Git Clone in Pipeline API
 - [ ] 071901 add FSM for params validate
 - [ ] 071902 remove Useless files
+- [x] 072001 add dynamic tasks
 
 ## Build
 
