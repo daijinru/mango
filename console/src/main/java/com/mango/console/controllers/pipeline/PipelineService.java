@@ -54,7 +54,7 @@ public class PipelineService {
          */
         PipelineEntity pipeline = new PipelineEntity();
         pipeline.setStatus((short)0);
-        pipeline.setApplicationId(appId);
+        pipeline.setApplicationId(application.getId());
         pipeline.setCommands(commands);
         /**
          * the callbackUrl is used to callback after the execution of the pipeline.
@@ -98,14 +98,17 @@ public class PipelineService {
         for (String cmd : commands) {
             if (cmd.equals(PipelineTaskFlag.GIT_CLONE.getFlag())) {
                 shouldRunGitClone = true;
-                continue;
+            } else {
+                if (sb.length() > 0) {
+                    sb.append(" && ");
+                }
+                sb.append(cmd);
             }
-            if (sb.length() > 0 && !cmd.equals(PipelineTaskFlag.GIT_CLONE.getFlag())) {
-                sb.append(" && ");
-            }
-            sb.append(cmd);
         }
-
+        /**
+         * A build-in identifier, will trigger a Git Clone in the Tasks,
+         * for permissions, its data required comes from the Application.
+         */
         if (shouldRunGitClone) {
             gitClone(application);
         }

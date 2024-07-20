@@ -32,21 +32,12 @@ public class ApplicationController {
         return ResponseEntity.ok(wrapResponse.success());
     }
 
-    @PostMapping("/update/{id}")
-    public ResponseEntity update(@PathVariable Long id, @RequestBody ApplicationVO app) throws Exception {
-        if (Objects.isNull(id)) {
+    @PostMapping("/update")
+    public ResponseEntity update(@RequestBody ApplicationVO vo) throws Exception {
+        if (Objects.isNull(vo.getId())) {
             throw new Exception(("id should not null"));
         }
-        ApplicationEntity application = ApplicationEntity.builder()
-                .id(id)
-                .name(app.getName())
-                .gitRepository(app.getGitRepository())
-                .gitBranchName(app.getGitBranchName())
-                .agentHost(app.getAgentHost())
-                .artifactRule(app.getArtifactRule())
-                .build();
-        service.update(id, application);
-        WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(application);
+        WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(service.update(vo));
         return ResponseEntity.ok(wrapResponse.success());
     }
 
@@ -58,6 +49,8 @@ public class ApplicationController {
                 .gitBranchName(app.getGitBranchName())
                 .agentHost(app.getAgentHost())
                 .artifactRule(app.getArtifactRule())
+                .user(app.getUser())
+                .pwd(app.getPwd())
                 .build();
         service.save(application);
         WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(application);

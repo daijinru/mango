@@ -8,8 +8,12 @@ import lombok.Data;
 public class ApplicationVO {
     private Long id;
     private String name;
+
     private String gitRepository;
     private String gitBranchName;
     private String agentHost;
     private String artifactRule;
+
+    private String user;
+    private String pwd;
 }

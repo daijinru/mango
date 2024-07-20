@@ -1,6 +1,7 @@
 package com.mango.console.controllers.application;
 
 import com.mango.console.common.Utils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,20 +17,15 @@ public class ApplicationService {
         return dao.findAll();
     }
 
-    public ApplicationEntity update(Long id, ApplicationEntity entity) {
-        ApplicationEntity result = dao
-                .findById(id)
+    public ApplicationEntity update(ApplicationVO vo) {
+        ApplicationEntity entity = dao
+                .findById(vo.getId())
                 .orElseThrow(() -> new RuntimeException("application service: application not found"));
-        result.setId(id);
-        result.setName(entity.getName());
-        result.setAgentHost(entity.getAgentHost());
-        result.setArtifactRule(entity.getArtifactRule());
-        result.setGitRepository(entity.getGitRepository());
-        result.setGitBranchName(entity.getGitBranchName());
-        result.setName(entity.getName());
-        result.setPwd(entity.getPwd());
-        result.setUpdatedAt(Utils.getLocalDateTime());
-        return dao.save(result);
+        System.out.println(vo);
+        BeanUtils.copyProperties(vo, entity);
+        entity.setUpdatedAt(Utils.getLocalDateTime());
+        System.out.println(entity);
+        return dao.save(entity);
     }
 
     public ApplicationEntity save(ApplicationEntity entity) {

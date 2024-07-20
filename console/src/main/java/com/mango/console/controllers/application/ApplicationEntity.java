@@ -16,7 +16,6 @@ public class ApplicationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "name")
-    @NonNull
     private String name;
     @Column(name = "git_repository")
     private String gitRepository;
