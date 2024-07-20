@@ -26,6 +26,7 @@ public class RunnerPipelineParams extends RunnerBaseParams implements ParamsStra
         params.add(new BasicNameValuePair("name", name));
         params.add(new BasicNameValuePair("command", command));
         params.add(new BasicNameValuePair("filename", filename));
+        params.add(new BasicNameValuePair("callbackUrl", callbackUrl));
         return params;
     }
 }

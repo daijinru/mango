@@ -51,17 +51,20 @@ public class PipelineService {
          * at 1st for create the Pipeline belong to Application.
          * And Now add the WAIT state for it.
          * so it allows we to observe the state of the Pipeline after its creation.
+         * it will be persisted, however.
          */
         PipelineEntity pipeline = new PipelineEntity();
         pipeline.setStatus((short)0);
         pipeline.setApplicationId(application.getId());
         pipeline.setCommands(commands);
+        pipeline.setCreatedAt(Utils.getLocalDateTime());
+        PipelineEntity saving = pipelineDAO.save(pipeline);
         /**
          * the callbackUrl is used to callback after the execution of the pipeline.
          */
         String callbackUrl = Utils.encodeURL(
-                callbackBaseURL,
-                "pipeId=" + pipeline.getId()
+                callbackBaseURL + "/" + saving.getId(),
+                ""
         );
         RunnerEndpoint endpoint = new RunnerEndpoint(application.getAgentHost(), RunnerCalling.PIPELINE_CREATE);
         RunnerPipelineParams rpParams = RunnerPipelineParams
@@ -75,15 +78,9 @@ public class PipelineService {
         /**
          * Agent will return filename as message if created successfully,
          * if not return as usual. Error message can still be written to stdout,
-         * but will not be persisted.
          */
-        if (Objects.nonNull(reply) && reply.getStatus().equalsIgnoreCase("success")) {
-            pipeline.setFilename(reply.getMessage());
-            pipeline.setCreatedAt(Utils.getLocalDateTime());
-            pipelineDAO.save(pipeline);
-        }
-        pipeline.setStdout(reply.getMessage());
-        return pipeline;
+        saving.setStdout(reply.getMessage());
+        return saving;
     }
 
     public PipelineEntity create(Long appId, List<String> commands) {
@@ -147,22 +144,23 @@ public class PipelineService {
         ).get().orElseGet(() -> null);
     }
 
-    public PipelineEntity callback(Map<String, String> args) throws Exception {
-        PipelineEntity pipeline = Optional.of(
-                pipelineDAO.findById(Long.valueOf(args.get("pipeId")))
+    public PipelineEntity callback(Long id, Map<String, String> args) throws Exception {
+        PipelineEntity entity = Optional.of(
+                pipelineDAO.findById(id)
         ).get().orElseGet(() -> null);
-        if (Objects.nonNull(pipeline)) {
-            if (args.get("startTime") != null) {
-                pipeline.setStartTime(Utils.convertToTimestamp(args.get("startTime"), ""));
-            }
-            if (args.get("endTime") != null) {
-                pipeline.setEndTime(Utils.convertToTimestamp(args.get("endTime"), ""));
-            }
-            if (args.get("status") != null) {
-                pipeline.setStatus(Short.valueOf(args.get("status")));
-            }
-            pipelineDAO.save(pipeline);
+        if (Objects.isNull(entity)) return null;
+        if (args.get("startTime") != null) {
+            entity.setStartTime(Utils.convertToTimestamp(args.get("startTime"), ""));
         }
-        return pipeline;
+        if (args.get("filename") != null) {
+            entity.setFilename(args.get("filename"));
+        }
+        if (args.get("endTime") != null) {
+            entity.setEndTime(Utils.convertToTimestamp(args.get("endTime"), ""));
+        }
+        entity.setStatus(Short.valueOf("2"));
+        entity.setUpdatedAt(Utils.getLocalDateTime());
+        System.out.println(entity);
+        return pipelineDAO.save(entity);
     }
 }

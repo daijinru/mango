@@ -53,12 +53,12 @@ public class PipelineController {
         return ResponseEntity.ok(new WrapResponse<>(pipeline).success());
     }
 
-    @PostMapping("/callback")
-    public ResponseEntity callback(@RequestParam Map<String, String> args) throws Exception {
-        if (Objects.isNull(args.get("pipeId"))) {
+    @GetMapping("/callback/{id}")
+    public ResponseEntity callback(@PathVariable Long id, @RequestParam Map<String, String> args) throws Exception {
+        if (Objects.isNull(id)) {
             throw new Exception(("No empty callback args: pipeId"));
         }
-        PipelineEntity pipeline = service.callback(args);
+        PipelineEntity pipeline = service.callback(id, args);
         return ResponseEntity.ok(new WrapResponse<>(pipeline).success());
     }
 }
