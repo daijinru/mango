@@ -1,5 +1,10 @@
 package com.mango.console.common;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
+
+import java.beans.FeatureDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Utils {
     public static Timestamp getLocalDateTime() {
@@ -66,13 +73,16 @@ public class Utils {
         }
     }
 
-    public static <T> T pickRandomEntity(List<T> entityList) {
-        if (entityList == null || entityList.isEmpty()) {
-            return null;
+    public static void copyNonNullProperties(Object dest, Object orig) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        Set<String> propertyNames = Stream.of(PropertyUtils.getPropertyDescriptors(orig))
+                .map(FeatureDescriptor::getName)
+                .filter(name -> !"class".equals(name))
+                .collect(Collectors.toSet());
+        for (String propertyName : propertyNames) {
+            Object value = PropertyUtils.getProperty(orig, propertyName);
+            if (value != null) {
+                BeanUtils.copyProperty(dest, propertyName, value);
+            }
         }
-
-        Random random = new Random();
-        int randomIndex = random.nextInt(entityList.size());
-        return entityList.get(randomIndex);
     }
 }

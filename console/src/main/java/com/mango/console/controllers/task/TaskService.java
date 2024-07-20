@@ -1,6 +1,7 @@
 package com.mango.console.controllers.task;
 
 import com.mango.console.common.Utils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,17 +25,17 @@ public class TaskService {
 
     public TaskEntity save(TaskEntity task) {
         task.setCreatedAt(Utils.getLocalDateTime());
-        taskDAO.save(task);
-        return task;
+        return taskDAO.save(task);
     }
 
-    public TaskEntity update(Long id, TaskEntity task) {
-        TaskEntity result = taskDAO
-                .findById(id)
+    public TaskEntity update(TaskVO task) throws Exception {
+        TaskEntity entity = taskDAO
+                .findById(task.getId())
                 .orElseThrow(() -> new RuntimeException("task service: task not found"));
-        result.setId(id);
-        result.setUpdatedAt(Utils.getLocalDateTime());
-        return taskDAO.save(result);
+        Utils.copyNonNullProperties(entity, task);
+        System.out.println(entity);
+        entity.setUpdatedAt(Utils.getLocalDateTime());
+        return taskDAO.save(entity);
     }
 
     public void delete(Long id) {

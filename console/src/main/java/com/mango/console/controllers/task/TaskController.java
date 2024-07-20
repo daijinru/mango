@@ -29,7 +29,7 @@ public class TaskController {
         return ResponseEntity.ok(new WrapResponse<>(task).success());
     }
 
-    @PostMapping("/save")
+    @PostMapping("/create")
     public ResponseEntity save(@RequestBody TaskVO task) throws Exception {
         TaskEntity entity = TaskEntity.builder()
                 .name(task.getName())
@@ -40,18 +40,11 @@ public class TaskController {
         return ResponseEntity.ok(new WrapResponse<>(task).success());
     }
 
-    @PostMapping("/update/{id}")
-    public ResponseEntity update(@PathVariable Long id, @RequestBody TaskVO task) throws Exception {
-        if (Objects.isNull(id)) {
+    @PostMapping("/update")
+    public ResponseEntity update(@RequestBody TaskVO task) throws Exception {
+        if (Objects.isNull(task.getId())) {
             throw new Exception("id should not null");
         }
-        TaskEntity entity = TaskEntity.builder()
-                .id(id)
-                .name(task.getName())
-                .command(task.getCommand())
-                .sourceType(task.getSourceType())
-                .build();
-        service.update(id, entity);
-        return ResponseEntity.ok(new WrapResponse<>(entity).success());
+        return ResponseEntity.ok(new WrapResponse<>(service.update(task)).success());
     }
 }

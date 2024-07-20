@@ -17,12 +17,12 @@ public class ApplicationService {
         return dao.findAll();
     }
 
-    public ApplicationEntity update(ApplicationVO vo) {
+    public ApplicationEntity update(ApplicationVO vo) throws Exception {
         ApplicationEntity entity = dao
                 .findById(vo.getId())
                 .orElseThrow(() -> new RuntimeException("application service: application not found"));
         System.out.println(vo);
-        BeanUtils.copyProperties(vo, entity);
+        Utils.copyNonNullProperties(entity, vo);
         entity.setUpdatedAt(Utils.getLocalDateTime());
         System.out.println(entity);
         return dao.save(entity);
