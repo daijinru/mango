@@ -21,10 +21,8 @@ public class ApplicationService {
         ApplicationEntity entity = dao
                 .findById(vo.getId())
                 .orElseThrow(() -> new RuntimeException("application service: application not found"));
-        System.out.println(vo);
         Utils.copyNonNullProperties(entity, vo);
         entity.setUpdatedAt(Utils.getLocalDateTime());
-        System.out.println(entity);
         return dao.save(entity);
     }
 

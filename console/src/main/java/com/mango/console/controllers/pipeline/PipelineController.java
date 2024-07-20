@@ -27,7 +27,7 @@ public class PipelineController {
         return ResponseEntity.ok(wrapResponse.success());
     }
 
-    @GetMapping("/{applicationId}/all")
+    @GetMapping("/application/{id}/all")
     public ResponseEntity getAll(@PathVariable Long id) throws Exception {
         if (Objects.isNull(id)) {
             throw new Exception("id should not null");
@@ -44,7 +44,7 @@ public class PipelineController {
         return ResponseEntity.ok(new WrapResponse<>(pipeline).success());
     }
 
-    @PostMapping("/{pipelineId}/stdout")
+    @GetMapping("/{id}/stdout")
     public ResponseEntity getStdout(@PathVariable Long id) throws Exception {
         if (Objects.isNull(id)) {
             throw new Exception("id should not null");

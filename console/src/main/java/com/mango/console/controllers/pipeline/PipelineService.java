@@ -113,6 +113,10 @@ public class PipelineService {
             gitClone(application);
         }
 
+        String commandStr = sb.toString();
+        if (commandStr.isEmpty()) {
+            return PipelineEntity.builder().stdout("no next Task, because no extra commands").build();
+        }
         return executeCommands(application, sb.toString());
     }
 
