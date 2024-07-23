@@ -9,6 +9,8 @@
 - [x] 071902 remove Useless files
 - [x] 072001 add dynamic tasks
 - [x] 072002 refactor Application
+- [x] 072301 add Agent API
+- [ ] 072302 add Artifact API
 
 ## Build
 
