@@ -25,6 +25,12 @@ public class ApplicationEntity {
     private String agentHost;
     @Column(name = "artifact_rule")
     private String artifactRule;
+    /**
+     * Get the Application Artifact ID,
+     * it is not available if empty.
+     */
+    @Column(name = "artifact_version")
+    private String artifactVersion;
     @Column(name = "user")
     private String user;
     @Column(name = "pwd")
