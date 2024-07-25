@@ -1,7 +1,7 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom'
 import ApplicationCreate from './components/Modals/ApplicaitonCreate'
-import Modals, { ModalConfig, ModalsRef } from './components/Modals/index'
+import ApplicationList from './components/Modals/ApplicationList';
+import Modals, { ModalRegisterConfig, ModalRootRef } from './components/Modals/index'
 
 import './App.css';
 // import Project from './pages/project'
@@ -20,12 +20,16 @@ import './App.css';
 // ]
 
 export default () => {
-  const modalsRef = React.useRef<ModalsRef>(null)
-  const modals: ModalConfig[] = [
-    { name: ApplicationCreate.NAME, component: ApplicationCreate.component }
+  const modalsRef = React.useRef<ModalRootRef>(null)
+  const modals: ModalRegisterConfig[] = [
+    { name: ApplicationCreate.NAME, component: ApplicationCreate.component },
+    { name: ApplicationList.NAME, component: ApplicationList.component }
   ]
   const openApplicationCreateModal = () => {
     modalsRef.current?.open(ApplicationCreate.NAME, {})
+  }
+  const openApplicationListModal = () => {
+    modalsRef.current?.open(ApplicationList.NAME, {})
   }
 
   return (
@@ -45,7 +49,7 @@ export default () => {
                 </a>
                 <div className="dropdown-menu sm-menu">
                   <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationCreateModal()}>create application</a>
-                  {/* <a className="dropdown-item" href="https://github.com/daijinru/mango-runner" target='_blank'>mango-runner</a> */}
+                  <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationListModal()} >applications</a>
                 </div>
               </li>
               <li className="nav-item">
