@@ -1,10 +1,11 @@
 import React from 'react'
 import { ModalRootConfig } from './index'
 import { Button, message, Modal, Space, Table, Tag } from 'antd'
-import type { Application } from '../../libs/runner/runner.types';
-import { APPLICATION } from '../../libs/runner/services';
+import type { Application } from '../../libs/runner/runner.types'
+import { APPLICATION } from '../../libs/runner/services'
+import NewApplication from '../Modals/NewApplication'
 
-const App: React.FC<ModalRootConfig> = ({ args, NAME, }) => {
+const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close }) => {
   const columns = [
     {
       title: 'Name',
@@ -13,19 +14,24 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, }) => {
       // render: (text) => <a>{text}</a>,
     },
     {
-      title: 'Repository',
+      title: 'Git Repository',
       dataIndex: 'gitRepository',
       key: 'gitRepository',
     },
     {
-      title: 'Branch Name',
+      title: 'Git Branch Name',
       dataIndex: 'gitBranchName',
       key: 'gitBranchName',
     },
     {
-      title: 'Version',
+      title: 'Artifact Version',
       key: 'artifactVersion',
       dataIndex: 'artifactVersion',
+    },
+    {
+      title: 'Agent Host',
+      key: 'agentHost',
+      dataIndex: 'agentHost',
     },
     {
       title: 'Action',
@@ -33,7 +39,7 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, }) => {
       render: (text: any, record: Application) => (
         <Space size="middle">
           <Button size='small'>Pipelines</Button>
-          <Button size='small'>Edit</Button>
+          <Button size='small' onClick={() => onEdit(record.id)}>Edit</Button>
           <Button size='small' onClick={() => onDel(record.id)}>Delete</Button>
         </Space>
       ),
@@ -49,7 +55,10 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, }) => {
         })
       }
     })
-
+  }
+  const onEdit = (id: number) => {
+    open(NewApplication.NAME, {id})
+    // close(NAME)
   }
   
   const [data, setData] = React.useState<Application[]>([])

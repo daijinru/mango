@@ -94,7 +94,6 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
           if (!target) return null
           const zIndex = zIndices.findIndex(zIn => zIn.name === name) + 1
           const isActive = zIndex === zIndices.length
-          console.info(zIndex, zIndices.length)
           return (
             <>
               <Draggable

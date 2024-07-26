@@ -6,7 +6,7 @@ const getApplicationAll = () => {
 }
 
 const getApplicationById = (id: number) => {
-    return get<any, Application>({url: '/v1/applicaiton/' + id})
+    return get<any, Application>({url: '/v1/application/' + id})
 }
 
 const updateApplication = (args: ApplicationArgs) => {

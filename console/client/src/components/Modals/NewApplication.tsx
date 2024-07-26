@@ -9,7 +9,6 @@ import { APPLICATION } from '../../libs/runner/services'
 const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
   const [form] = Form.useForm()
   const onFinish: FormProps<Application>['onFinish'] = (values) => {
-    console.info(values)
     APPLICATION.save(values as ApplicationArgs).then(res => {
       if (res.status === 200) {
         open(ApplicationExplorer.NAME, {position: {x: 200, y: 200}})
@@ -19,6 +18,16 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
       message.warning(error)
     })
   }
+
+  React.useEffect(() => {
+    // replay data by App id
+      APPLICATION.getById(args.id).then(res => {
+        if (res.status === 200) {
+          form.setFieldsValue(res.data)
+        }
+      })
+  }, [args.id])
+
   return (
     <>
       <div style={{width: '320px'}}>
@@ -34,7 +43,7 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
           <Form.Item label="Git Repository" name="gitRepository">
             <Input></Input>
           </Form.Item>
-          <Form.Item label="Git BranchName" name="gitBranchName">
+          <Form.Item label="Git Branch Name" name="gitBranchName">
             <Input></Input>
           </Form.Item>
           <Form.Item label="Agent Host" name="agentHost" rules={[{required: true}]}>
