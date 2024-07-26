@@ -4,7 +4,7 @@ import { Button, message, Modal, Space, Table, Tag } from 'antd'
 import type { Application } from '../../libs/runner/runner.types';
 import { APPLICATION } from '../../libs/runner/services';
 
-const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ args, NAME, }) => {
+const App: React.FC<ModalRootConfig> = ({ args, NAME, }) => {
   const columns = [
     {
       title: 'Name',
@@ -60,7 +60,7 @@ const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ args, NAME, }
   }
   React.useEffect(() => {
     reload()
-  }, [])
+  }, [args])
   
   return (
     <>

@@ -6,7 +6,7 @@ import type { Application, ApplicationArgs } from '../../libs/runner/runner.type
 import ApplicationExplorer from './ApplicationsExplorer'
 import { APPLICATION } from '../../libs/runner/services'
 
-const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ args, NAME, open, close,  }) => {
+const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
   const [form] = Form.useForm()
   const onFinish: FormProps<Application>['onFinish'] = (values) => {
     console.info(values)
