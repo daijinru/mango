@@ -1,22 +1,24 @@
 import React from 'react';
-import ApplicationCreate from './components/Modals/NewApplication'
-import ApplicationList from './components/Modals/ApplicationsExplorer';
+import NewApplication from './components/Modals/NewApplication'
+import ApplicationExplorer from './components/Modals/ApplicationsExplorer'
+import NewAgent from './components/Modals/NewAgent'
 import Modals, { ModalRegisterConfig, ModalRootRef } from './components/Modals/index'
 
 import './App.css';
 
 const modals: ModalRegisterConfig[] = [
-  { name: ApplicationCreate.NAME, component: ApplicationCreate.component },
-  { name: ApplicationList.NAME, component: ApplicationList.component }
+  { name: NewApplication.NAME, component: NewApplication.component },
+  { name: ApplicationExplorer.NAME, component: ApplicationExplorer.component },
+  { name: NewAgent.NAME, component: NewAgent.component },
 ]
 
 export default () => {
   const modalsRef = React.useRef<ModalRootRef>(null)
   const openApplicationCreateModal = () => {
-    modalsRef.current?.open(ApplicationCreate.NAME, {})
+    modalsRef.current?.open(NewApplication.NAME, {})
   }
   const openApplicationListModal = () => {
-    modalsRef.current?.open(ApplicationList.NAME, {position: {x: 200, y: 200}})
+    modalsRef.current?.open(ApplicationExplorer.NAME, {position: {x: 200, y: 200}})
   }
 
   return (
@@ -55,7 +57,7 @@ export default () => {
                   Agent
                 </a>
                 <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
-                  <a className="dropdown-item" href="#" onClick={() => openApplicationCreateModal()}>New Agent</a>
+                  <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(NewAgent.NAME, {})}>New Agent</a>
                   <a className="dropdown-item" href="#" onClick={() => openApplicationListModal()} >Show Agents</a>
                 </div>
               </li>

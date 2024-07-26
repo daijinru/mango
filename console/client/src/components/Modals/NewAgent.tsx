@@ -2,17 +2,16 @@ import React from 'react'
 import { ModalRootConfig } from './index'
 import { Button, Form, Input, message } from 'antd'
 import type { FormProps } from 'antd/lib'
-import type { Application, ApplicationArgs } from '../../libs/runner/runner.types'
-import ApplicationExplorer from './ApplicationsExplorer'
-import { APPLICATION } from '../../libs/runner/services'
+import type { Agent, AgentArgs } from '../../libs/runner/runner.types'
+import { AGENT } from '../../libs/runner/services'
 
 const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
   const [form] = Form.useForm()
-  const onFinish: FormProps<Application>['onFinish'] = (values) => {
-    APPLICATION.save(values as ApplicationArgs).then(res => {
+  const onFinish: FormProps<Agent>['onFinish'] = (values) => {
+    AGENT.save(values as AgentArgs).then(res => {
       if (res.status === 200) {
-        open(ApplicationExplorer.NAME, {position: {x: 200, y: 200}})
-        close(NAME)
+        // open(ApplicationExplorer.NAME, {position: {x: 200, y: 200}})
+        // close(NAME)
       }
     }).catch(error => {
       message.warning(error)
@@ -22,7 +21,7 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
   React.useEffect(() => {
     // replay data by App id
     if (!args.id) return
-    APPLICATION.getById(args.id).then(res => {
+    AGENT.getById(args.id).then(res => {
       if (res.status === 200) {
         form.setFieldsValue(res.data)
       }
@@ -41,24 +40,10 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
           <Form.Item label="Name" name="name" rules={[{required: true}]}>
             <Input></Input>
           </Form.Item>
-          <Form.Item label="Git Repository" name="gitRepository">
-            <Input></Input>
-          </Form.Item>
-          <Form.Item label="Git Branch Name" name="gitBranchName">
-            <Input></Input>
-          </Form.Item>
           <Form.Item label="Agent Host" name="agentHost" rules={[{required: true}]}>
             <Input></Input>
           </Form.Item>
-          <Form.Item label="Artifact Rule" name="artifactRule">
-            <Input></Input>
-          </Form.Item>
-          <Form.Item label="Username" name="user">
-            <Input></Input>
-          </Form.Item>
-          <Form.Item label="Password" name="pwd">
-            <Input></Input>
-          </Form.Item>
+
           <Form.Item>
             <Button type='primary' htmlType='submit'>Submit</Button>
           </Form.Item>
@@ -69,6 +54,6 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
 }
 
 export default {
-  NAME: 'New Application',
+  NAME: 'New Agent',
   component: App,
 }

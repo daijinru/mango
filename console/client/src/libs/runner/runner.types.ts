@@ -9,8 +9,8 @@ export interface ProjectArgs extends RequestArgs {
   agentId: string;
 }
 export interface AgentArgs extends RequestArgs {
-  baseUrl: string
-  token?: string
+  name: string
+  agentHost: string
 }
 
 export interface Entity {
@@ -50,7 +50,8 @@ export interface Application extends Entity {
   updatedAt: string
 }
 export interface Agent extends Entity {
-  baseUrl: string
-  token?: string
+  name: string
+  agentHost: string
   createdAt: string
+  updatedAt: string
 }
