@@ -1,6 +1,9 @@
 import React from 'react'
 import Draggable from 'react-draggable'
 
+/**
+ * Props can be deconstructed by a child Modal.
+ */
 export interface ModalRootConfig {
   NAME: string
   args: Record<string, any>
@@ -8,7 +11,7 @@ export interface ModalRootConfig {
   open: (name: string, args: Record<string, any>) => void
 }
 /**
- * the methods exposed of the Modal Ref
+ * The methods exposed of the Modal Root Ref.
  */
 export interface ModalRootRef {
   open: (name: string, args: Record<string, any>) => void;
@@ -90,6 +93,8 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
           const target = zIndices.find(zIn => zIn.name === name)
           if (!target) return null
           const zIndex = zIndices.findIndex(zIn => zIn.name === name) + 1
+          const isActive = zIndex === zIndices.length
+          console.info(zIndex, zIndices.length)
           return (
             <>
               <Draggable
@@ -99,8 +104,8 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
                 onStop={updatePosition(name)}
               >
                 <div className='draggable-modal' style={{ position: 'fixed', zIndex }} onClick={() => updateZIndex(name)}>
-                  <div className="card">
-                    <div className='card-header d-flex justify-content-between align-items-center'>
+                  <div className={`card ${isActive ? 'shadow' : ''}`}>
+                    <div style={{backgroundColor: isActive ? 'var(--bs-info-bg-subtle)' : ''}} className='card-header d-flex justify-content-between align-items-center'>
                       <h6 className='mb-0'>{name}</h6>
                       <button type="button" className="btn-close" aria-label="Close" onClick={() => closeModal(name)}>
                         {/* <span aria-hidden="true">&times;</span> */}

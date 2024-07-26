@@ -25,14 +25,11 @@ export default () => {
       <div>
         <nav className="navbar navbar-expand-sm bg-light" style={{ borderBottom: '1px solid #d9d9d9' }}>
             <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
-              <li className="nav-item dropdown dmenu">
-                <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-bs-toggle="dropdown">
-                  About
-                </a>
-                <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
-                  <a className="dropdown-item" href="https://github.com/daijinru/mango" target='_blank'>Mango</a>
-                  <a className="dropdown-item" href="https://github.com/daijinru/mango-runner" target='_blank'>Mango Runner</a>
-                </div>
+              <li className="nav-item">
+                <a className="nav-link" href="#"><img style={{width: '28px'}} src="/mango.png" alt="logo"/></a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="https://github.com/daijinru/mango" target="_blank">About</a>
               </li>
               <li className="nav-item dropdown dmenu">
                 <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-bs-toggle="dropdown">
