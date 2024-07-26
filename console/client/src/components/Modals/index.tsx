@@ -4,6 +4,8 @@ import Draggable from 'react-draggable'
 export interface ModalRootConfig {
   NAME: string
   args: Record<string, any>
+  close: (name: string) => void
+  [propName: string]: any
 }
 /**
  * the methods exposed of the Modal Ref
@@ -40,6 +42,7 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
         [name]: React.createElement(modalConfig.component, {
           NAME: name,
           args,
+          close: closeModal,
         })
       }))
       setZIndices(prevZIndices => [
@@ -105,7 +108,7 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
                     </div>
                     <div className="card-body">
                       {
-                        React.cloneElement(modal, { zIndex })
+                        React.cloneElement(modal, { open: openModal })
                       }
                     </div>
                   </div>

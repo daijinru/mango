@@ -1,18 +1,51 @@
 import React from 'react'
 import { ModalRootConfig } from './index'
+import { Button, Form, Input } from 'antd'
+import type { FormProps } from 'antd/lib'
+import type { Application } from '../../libs/runner/runner.types'
+import ApplicationExplorer from './ApplicationsExplorer'
 
-const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ args, NAME }) => {
+const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ args, NAME, open, close,  }) => {
+  const [form] = Form.useForm()
+  const onFinish: FormProps<Application>['onFinish'] = (values) => {
+    console.info(values)
+    open(ApplicationExplorer.NAME, {position: {x: 200, y: 200}})
+    close(NAME)
+  }
   return (
     <>
       <div style={{width: '320px'}}>
-      <div className="mb-3">
-        <label htmlFor="exampleFormControlInput1" className="form-label">Email address</label>
-        <input type="email" className="form-control" id="exampleFormControlInput1" placeholder="name@example.com" />
-      </div>
-      <div className="mb-3">
-        <label htmlFor={'exampleFormControlTextarea1'} className="form-label">Example textarea</label>
-        <textarea className="form-control" id="exampleFormControlTextarea1" rows={3}></textarea>
-      </div>
+        <Form
+          size='small'
+          layout={'vertical'}
+          form={form}
+          onFinish={onFinish}
+        >
+          <Form.Item label="Name" name="name" rules={[{required: true}]}>
+            <Input></Input>
+          </Form.Item>
+          <Form.Item label="Git Repository" name="gitRepository">
+            <Input></Input>
+          </Form.Item>
+          <Form.Item label="Git BranchName" name="gitBranchName">
+            <Input></Input>
+          </Form.Item>
+          <Form.Item label="Agent Host" name="agentHost" rules={[{required: true}]}>
+            <Input></Input>
+          </Form.Item>
+          <Form.Item label="Artifact Rule" name="artifactRule">
+            <Input></Input>
+          </Form.Item>
+          <Form.Item label="Username" name="user" rules={[{required: true}]}>
+            <Input></Input>
+          </Form.Item>
+          <Form.Item label="Password" name="pwd" rules={[{required: true}]}>
+            <Input></Input>
+          </Form.Item>
+          <Form.Item>
+            <Button type='primary' htmlType='submit'>Submit</Button>
+          </Form.Item>
+        </Form>
       </div>
     </>
   )

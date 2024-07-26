@@ -1,12 +1,9 @@
 import { message } from "antd";
-import { RequestArgs } from "./runner.types";
-import { Entity } from "./runner.types";
+import { RequestArgs, Entity } from "./runner.types";
 
 export enum HttpMethod {
   GET='get',
   POST='post',
-  PUT='put',
-  DELETE='delete'
 }
 export type ResponseWrapper<T> = {
   status: number
@@ -16,7 +13,7 @@ export type ResponseWrapper<T> = {
 export enum HttpStatus {
   OK=200,
   BAD=400,
-  unAuth=401,
+  unAuth=401,number
 }
 export type RequestOption<T extends RequestArgs> = {
   method?: HttpMethod
@@ -26,7 +23,7 @@ export type RequestOption<T extends RequestArgs> = {
   },
 }
 
-export type DataDefault = { message: string, status: string }
+// export type DataDefault = { message: string, status: string }
 export const BASE_URL = window.location.protocol + '//' + window.location.host
 function get<T extends RequestArgs, K/** response.data */>(option: RequestOption<T>): Promise<ResponseWrapper<K>> {
   option = Object.assign({}, option)
@@ -34,13 +31,6 @@ function get<T extends RequestArgs, K/** response.data */>(option: RequestOption
     window.fetch(BASE_URL + option.url)
       .then(res => res.json())
       .then((res: ResponseWrapper<K>) => {
-        if (!res.status) {
-          message.warning('no status from the response: status, data, message')
-          return null
-        }
-        if ((res.data as DataDefault) && (res.data as DataDefault).status === 'fail') {
-          message.warning((res.data as DataDefault).message)
-        }
         if (res.status === HttpStatus.OK) {
           resolve(res)
         }
@@ -67,19 +57,7 @@ function post<T extends RequestArgs, K/** response.data */>(option: RequestOptio
     .then(res => res.json())
     .then((res: ResponseWrapper<K>) => {
       // console.info(res)
-      const data = res.data as DataDefault
-      if (!res.status) {
-        message.warning('no status from the response: status, data, message')
-        return null
-      }
-      if (data && data.status === 'fail') {
-        message.warning((res.data as DataDefault).message)
-      }
       if (res.status === HttpStatus.OK) {
-        if (data.status && data.status === '400') {
-          message.warning(data.message)
-          reject(data)
-        } 
         resolve(res)
       }
     })
@@ -90,9 +68,7 @@ function post<T extends RequestArgs, K/** response.data */>(option: RequestOptio
   })
 }
 
-export default {
-  HttpUtils: {
-    get,
-    post
-  }
+export {
+  get,
+  post,
 }

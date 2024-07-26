@@ -13,9 +13,10 @@ export interface AgentArgs extends RequestArgs {
   token?: string
 }
 
-export interface Entity {}
+export interface Entity {
+  id?: string
+}
 export interface Pipeline extends Entity {
-  id?: number
   projectId: number
   filename: string
   stages: string
@@ -25,16 +26,30 @@ export interface Pipeline extends Entity {
   createdAt: number
   stdout: string
 }
-export interface Project extends Entity {
-  id?: number
+
+export interface ApplicationArgs extends RequestArgs {
+  id: string
   name: string
-  path: string
+  gitRepository: string
+  gitBranchName: string
+  agentHost: string
+  artifactRule: string
+  user: string
+  pwd: string
+} 
+export interface Application extends Entity {
+  name: string
+  gitRepository: string
+  gitBranchName: string
+  agentHost: string
+  artifactRule: string
+  artifactVersion: string
+  user: string
+  pwd: string
   createdAt: string
   updatedAt: string
-  agentId: number;
 }
 export interface Agent extends Entity {
-  id?: number
   baseUrl: string
   token?: string
   createdAt: string
