@@ -29,7 +29,7 @@ export default () => {
     modalsRef.current?.open(ApplicationCreate.NAME, {})
   }
   const openApplicationListModal = () => {
-    modalsRef.current?.open(ApplicationList.NAME, {})
+    modalsRef.current?.open(ApplicationList.NAME, {position: {x: 200, y: 200}})
   }
 
   return (

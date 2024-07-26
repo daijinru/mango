@@ -20,15 +20,20 @@ export interface ModalRegisterConfig {
   component: React.ComponentType<any>;
 }
 
+interface ZIndices {
+  position: {x: number, y: number}
+  name: string
+}
 interface ModalRootProps {
   modals: ModalRegisterConfig[]
 }
 const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
   const [modal, setModal] = React.useState<Record<string, React.ReactElement>>({})
-  const [zIndices, setZIndices] = React.useState<string[]>([])
+  const [zIndices, setZIndices] = React.useState<ZIndices[]>([])
 
   const openModal = (name: string, args: Record<string, any>) => {
     const modalConfig = props.modals.find(modal => modal.name === name)
+    const position = args.position || { x: 100, y: 100 }
     if (modalConfig) {
       setModal(prevState => ({
         ...prevState,
@@ -37,7 +42,13 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
           args,
         })
       }))
-      setZIndices(prevZIndices => [...prevZIndices, name])
+      setZIndices(prevZIndices => [
+        ...prevZIndices,
+        {
+          name,
+          position,
+        }
+      ])
     }
   }
   const closeModal = (name: string) => {
@@ -45,13 +56,23 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
       const { [name]: _, ...rest } = prevState
       return rest
     });
-    setZIndices(prevZIndices => prevZIndices.filter(zIndexName => zIndexName !== name))
+    setZIndices(prevZIndices => prevZIndices.filter(zIn => zIn.name !== name))
   }
   const updateZIndex = (name: string) => {
     setZIndices(prevZIndices => {
-      const filteredZIndices = prevZIndices.filter(zIndexName => zIndexName !== name)
-      return [...filteredZIndices, name]
+      const target = prevZIndices.find(zIn => zIn.name === name)
+      if (target) {
+        const filteredZIndices = prevZIndices.filter(zIn => zIn.name !== name)
+        return [...filteredZIndices, target]
+      }
+      return prevZIndices
     })
+  }
+  const updatePosition = (name: string) => (event: any, data: any) => {
+    const index = zIndices.findIndex(zIn => zIn.name === name)
+    if (index > -1) {
+      zIndices[index].position = {x: data.x, y: data.y}
+    }
   }
 
   React.useImperativeHandle(ref, () => ({
@@ -63,12 +84,16 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
     <>
       {Object.entries(modal).map(([name, modal]) => {
         if (modal) {
-          const zIndex = zIndices.indexOf(name) + 1
+          const target = zIndices.find(zIn => zIn.name === name)
+          if (!target) return null
+          const zIndex = zIndices.findIndex(zIn => zIn.name === name) + 1
           return (
             <>
               <Draggable
+                key={name}
                 handle='.card-header'
-                defaultPosition={{ x: 100, y: 100 }}
+                defaultPosition={{ x: target.position.x, y: target.position.y }}
+                onStop={updatePosition(name)}
               >
                 <div className='draggable-modal' style={{ position: 'fixed', zIndex }} onClick={() => updateZIndex(name)}>
                   <div className="card">
