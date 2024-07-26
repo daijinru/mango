@@ -1,6 +1,7 @@
 import React from 'react'
 import { ModalRootConfig } from './index'
 import Draggable from 'react-draggable'
+import ModalsHeader from './ModalsHeader'
 
 const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ isOpen, close, args, NAME, position, zIndex, focus }) => {
   const origTit = args.title || NAME
@@ -15,12 +16,7 @@ const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ isOpen, close
         >
           <div className='draggable-modal' style={{position: 'fixed', zIndex}} onClick={() => focus()}>
             <div className="card" style={{width: '320px'}}>
-              <div className='card-header'>
-                {title}
-                <button type="button" className="close" aria-label="Close" onClick={() => close()}>
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
+              <ModalsHeader title={title} close={close} />
               <div className="card-body">
                 {/* <h5 className="card-title">{title}</h5> */}
                 <h6 className="card-subtitle mb-2 text-muted">Card subtitle</h6>
@@ -37,6 +33,6 @@ const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ isOpen, close
 }
 
 export default {
-  NAME: 'application_create',
+  NAME: 'New Application',
   component: App,
 }

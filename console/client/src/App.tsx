@@ -36,46 +36,54 @@ export default () => {
     <>
       <Modals ref={modalsRef} modals={modals}></Modals>
       <div>
-        <nav className="navbar navbar-expand-sm navbar-light bg-light" style={{ borderBottom: '1px solid #d9d9d9' }}>
-          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
-          <div className="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <nav className="navbar navbar-expand-sm bg-light" style={{ borderBottom: '1px solid #d9d9d9' }}>
             <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
               <li className="nav-item dropdown dmenu">
-                <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                <a className="nav-link dropdown-toggle" href="javascript:;" id="navbardrop" data-bs-toggle="dropdown">
                   About
                 </a>
-                <div className="dropdown-menu sm-menu">
+                <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
                   <a className="dropdown-item" href="https://github.com/daijinru/mango" target='_blank'>Mango</a>
                   <a className="dropdown-item" href="https://github.com/daijinru/mango-runner" target='_blank'>Mango Runner</a>
                 </div>
               </li>
               <li className="nav-item dropdown dmenu">
-                <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                  Application
+                <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-bs-toggle="dropdown">
+                  New
                 </a>
-                <div className="dropdown-menu sm-menu">
+                <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
                   <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationCreateModal()}>New Application</a>
                   <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationCreateModal()}>New Task</a>
                   <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationCreateModal()}>New Pipeline</a>
-                  <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationListModal()} >Applications Explorer</a>
-                  <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationListModal()} >Tasks Explorer</a>
-                  <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationListModal()} >Show Artifacts</a>
                 </div>
               </li>
               <li className="nav-item dropdown dmenu">
-                <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-bs-toggle="dropdown">
+                  Explorer
+                </a>
+                <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
+                  <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationListModal()} >Applications Explorer</a>
+                  <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationListModal()} >Tasks Explorer</a>
+                </div>
+              </li>
+              <li className="nav-item dropdown dmenu">
+                <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-bs-toggle="dropdown">
                   Agent
                 </a>
-                <div className="dropdown-menu sm-menu">
+                <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
                   <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationCreateModal()}>New Agent</a>
                   <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationListModal()} >Show Agents</a>
                 </div>
               </li>
+              <li className="nav-item dropdown dmenu">
+                <a className="nav-link dropdown-toggle" href="#" id="navbardrop" data-bs-toggle="dropdown">
+                  Artifact
+                </a>
+                <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
+                  <a className="dropdown-item" href="javascript:void(0)" onClick={() => openApplicationListModal()} >Show Artifacts</a>
+                </div>
+              </li>
             </ul>
-          </div>
         </nav>
       </div>
       <div style={{ padding: '16px' }}>
