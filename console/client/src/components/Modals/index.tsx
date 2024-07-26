@@ -1,15 +1,9 @@
 import React from 'react'
+import Draggable from 'react-draggable'
 
 export interface ModalRootConfig {
   NAME: string
-
-  isOpen: boolean
-  close: () => void
-
   args: Record<string, any>
-  position: {x: number, y: number}
-  zIndex: number
-  focus: () => void
 }
 /**
  * the methods exposed of the Modal Ref
@@ -40,12 +34,7 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
         ...prevState,
         [name]: React.createElement(modalConfig.component, {
           NAME: name,
-          isOpen: true,
           args,
-          position: args.positon || {x: 100, y: 100},
-          // zIndex: zIndices.length + 1,
-          close: () => closeModal(name),
-          focus: () => updateZIndex(name),
         })
       }))
       setZIndices(prevZIndices => [...prevZIndices, name])
@@ -53,7 +42,7 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
   }
   const closeModal = (name: string) => {
     setModal(prevState => {
-      const {[name]: _, ...rest } = prevState
+      const { [name]: _, ...rest } = prevState
       return rest
     });
     setZIndices(prevZIndices => prevZIndices.filter(zIndexName => zIndexName !== name))
@@ -75,9 +64,30 @@ const Modals = React.forwardRef<ModalRootRef, ModalRootProps>((props, ref) => {
       {Object.entries(modal).map(([name, modal]) => {
         if (modal) {
           const zIndex = zIndices.indexOf(name) + 1
-          return React.cloneElement(modal, {
-            zIndex,
-          })
+          return (
+            <>
+              <Draggable
+                handle='.card-header'
+                defaultPosition={{ x: 100, y: 100 }}
+              >
+                <div className='draggable-modal' style={{ position: 'fixed', zIndex }} onClick={() => updateZIndex(name)}>
+                  <div className="card">
+                    <div className='card-header d-flex justify-content-between align-items-center'>
+                      <h6 className='mb-0'>{name}</h6>
+                      <button type="button" className="btn-close" aria-label="Close" onClick={() => closeModal(name)}>
+                        {/* <span aria-hidden="true">&times;</span> */}
+                      </button>
+                    </div>
+                    <div className="card-body">
+                      {
+                        React.cloneElement(modal, { zIndex })
+                      }
+                    </div>
+                  </div>
+                </div>
+              </Draggable>
+            </>
+          )
         }
         return null
       })}
