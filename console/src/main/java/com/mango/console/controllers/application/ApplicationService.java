@@ -36,4 +36,8 @@ public class ApplicationService {
                 dao.findById(id)
         ).get().orElseGet(() -> null);
     }
+
+    public void delete(Long id) {
+        dao.deleteById(id);
+    }
 }

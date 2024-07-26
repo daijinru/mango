@@ -2,7 +2,7 @@ import {get, post} from './runner'
 import { Application, ApplicationArgs } from './runner.types'
 
 const getApplicationAll = () => {
-    return get<any, Application>({url: '/v1/application/all'})
+    return get<any, Application[]>({url: '/v1/application/all'})
 }
 
 const getApplicationById = (id: number) => {
@@ -23,10 +23,17 @@ const saveApplication = (args: ApplicationArgs) => {
     })
 }
 
+const deleteApplication = (id: number) => {
+    return get<any, number>({
+        url: `/v1/application/${id}/delete`,
+    })
+}
+
 export const APPLICATION = {
     getAll: getApplicationAll,
     getById: getApplicationById,
     update: updateApplication,
     save: saveApplication,
+    deleteById: deleteApplication,
 }
 

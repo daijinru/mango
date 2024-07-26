@@ -6,7 +6,7 @@ export interface PipelineArgs extends RequestArgs {
 export interface ProjectArgs extends RequestArgs {
   name: string
   path: string
-  agentId: number;
+  agentId: string;
 }
 export interface AgentArgs extends RequestArgs {
   baseUrl: string
@@ -14,7 +14,7 @@ export interface AgentArgs extends RequestArgs {
 }
 
 export interface Entity {
-  id?: string
+  id: number
 }
 export interface Pipeline extends Entity {
   projectId: number
@@ -28,7 +28,7 @@ export interface Pipeline extends Entity {
 }
 
 export interface ApplicationArgs extends RequestArgs {
-  id: string
+  id: number
   name: string
   gitRepository: string
   gitBranchName: string

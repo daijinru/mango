@@ -54,4 +54,13 @@ public class ApplicationController {
         WrapResponse<ApplicationEntity> wrapResponse = new WrapResponse<>(application);
         return ResponseEntity.ok(wrapResponse.success());
     }
+
+    @GetMapping("/{id}/delete")
+    public ResponseEntity delete(@PathVariable Long id) throws Exception {
+        if (Objects.isNull(id)) {
+            throw new Exception("id should not null");
+        }
+        service.delete(id);
+        return ResponseEntity.ok(new WrapResponse<>(id).success());
+    }
 }

@@ -5,7 +5,7 @@ export interface ModalRootConfig {
   NAME: string
   args: Record<string, any>
   close: (name: string) => void
-  [propName: string]: any
+  open: (name: string, args: Record<string, any>) => void
 }
 /**
  * the methods exposed of the Modal Ref

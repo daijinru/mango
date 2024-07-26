@@ -1,16 +1,23 @@
 import React from 'react'
 import { ModalRootConfig } from './index'
-import { Button, Form, Input } from 'antd'
+import { Button, Form, Input, message } from 'antd'
 import type { FormProps } from 'antd/lib'
-import type { Application } from '../../libs/runner/runner.types'
+import type { Application, ApplicationArgs } from '../../libs/runner/runner.types'
 import ApplicationExplorer from './ApplicationsExplorer'
+import { APPLICATION } from '../../libs/runner/services'
 
 const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ args, NAME, open, close,  }) => {
   const [form] = Form.useForm()
   const onFinish: FormProps<Application>['onFinish'] = (values) => {
     console.info(values)
-    open(ApplicationExplorer.NAME, {position: {x: 200, y: 200}})
-    close(NAME)
+    APPLICATION.save(values as ApplicationArgs).then(res => {
+      if (res.status === 200) {
+        open(ApplicationExplorer.NAME, {position: {x: 200, y: 200}})
+        close(NAME)
+      }
+    }).catch(error => {
+      message.warning(error)
+    })
   }
   return (
     <>
@@ -36,10 +43,10 @@ const App: React.FC<React.PropsWithChildren<ModalRootConfig>> = ({ args, NAME, o
           <Form.Item label="Artifact Rule" name="artifactRule">
             <Input></Input>
           </Form.Item>
-          <Form.Item label="Username" name="user" rules={[{required: true}]}>
+          <Form.Item label="Username" name="user">
             <Input></Input>
           </Form.Item>
-          <Form.Item label="Password" name="pwd" rules={[{required: true}]}>
+          <Form.Item label="Password" name="pwd">
             <Input></Input>
           </Form.Item>
           <Form.Item>
