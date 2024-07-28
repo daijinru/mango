@@ -2,6 +2,7 @@ import React from 'react';
 import NewApplication from './components/Modals/NewApplication'
 import ApplicationExplorer from './components/Modals/ApplicationsExplorer'
 import NewAgent from './components/Modals/NewAgent'
+import AgentsMonitor from "./components/Modals/AgentsMonitor";
 import Modals, { ModalRegisterConfig, ModalRootRef } from './components/Modals/index'
 
 import './App.css';
@@ -10,6 +11,7 @@ const modals: ModalRegisterConfig[] = [
   { name: NewApplication.NAME, component: NewApplication.component },
   { name: ApplicationExplorer.NAME, component: ApplicationExplorer.component },
   { name: NewAgent.NAME, component: NewAgent.component },
+  { name: AgentsMonitor.NAME, component: AgentsMonitor.component },
 ]
 
 export default () => {
@@ -58,7 +60,7 @@ export default () => {
                 </a>
                 <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
                   <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(NewAgent.NAME, {})}>New Agent</a>
-                  <a className="dropdown-item" href="#" onClick={() => openApplicationListModal()} >Show Agents</a>
+                  <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(AgentsMonitor.NAME, {})} >Show Agents</a>
                 </div>
               </li>
               <li className="nav-item dropdown dmenu">

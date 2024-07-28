@@ -50,8 +50,22 @@ const getAgentById = (id: number) => {
     })
 }
 
+const getAgentAll = () => {
+    return get<any, Agent[]>({
+        url: '/v1/agent/all',
+    })
+}
+
+const getAgentMonitor = (id: number) => {
+    return get<number, any>({
+        url: `/v1/agent/${id}/monitor`
+    })
+}
+
 export const AGENT = {
     save: saveAgent,
     getById: getAgentById,
+    getAll: getAgentAll,
+    getMonitor: getAgentMonitor,
 }
 

@@ -54,4 +54,6 @@ export interface Agent extends Entity {
   agentHost: string
   createdAt: string
   updatedAt: string
+
+  monitor: Record<string, string>
 }
