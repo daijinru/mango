@@ -42,6 +42,10 @@ public class AgentService {
         return agentDAO.save(entity);
     }
 
+    public void delete(Long id) {
+        agentDAO.deleteById(id);
+    }
+
     public String getMonitor(Long id, String wait) {
         AgentEntity agent = agentDAO.findById(id).orElseGet(() -> null);
         if (Objects.isNull(agent)) return null;

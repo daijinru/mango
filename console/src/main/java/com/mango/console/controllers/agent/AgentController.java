@@ -14,8 +14,8 @@ public class AgentController {
     @Autowired
     private AgentService service;
 
-    @GetMapping("{id}")
-    public ResponseEntity getById(Long id) throws Exception {
+    @GetMapping("/{id}")
+    public ResponseEntity getById(@PathVariable Long id) throws Exception {
         if (Objects.isNull(id)) {
             throw new Exception("id should not null");
         }
@@ -55,5 +55,14 @@ public class AgentController {
         }
         String reply = service.getMonitor(id, "5");
         return ResponseEntity.ok(new WrapResponse<>(reply).success());
+    }
+
+    @GetMapping("/{id}/delete")
+    public ResponseEntity deleteById(@PathVariable Long id) throws Exception {
+        if (Objects.isNull(id)) {
+            throw new Error("id should not null");
+        }
+        service.delete(id);
+        return ResponseEntity.ok(new WrapResponse<>(id).success());
     }
 }
