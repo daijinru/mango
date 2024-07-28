@@ -79,7 +79,7 @@ public class PipelineService {
          * Agent will return filename as message if created successfully,
          * if not return as usual. Error message can still be written to stdout,
          */
-        saving.setStdout(reply.getMessage());
+        saving.setStdout(reply.getData().toString());
         return saving;
     }
 
@@ -134,7 +134,7 @@ public class PipelineService {
                 .build();
         RunnerReply reply = RunnerHttp.send(endpoint, rpParams);
         System.out.println("reply: " + reply);
-        pipeline.setStdout(reply.getMessage());
+        pipeline.setStdout(reply.getData().toString());
         return pipeline;
     }
 

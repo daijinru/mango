@@ -30,8 +30,8 @@ public class AgentController {
         return ResponseEntity.ok(new WrapResponse<>(agents).success());
     }
 
-    @PostMapping("/create")
-    public ResponseEntity create(@RequestBody AgentVO vo) throws Exception {
+    @PostMapping("/save")
+    public ResponseEntity save(@RequestBody AgentVO vo) throws Exception {
         AgentEntity agent = AgentEntity.builder()
                 .agentHost(vo.getAgentHost())
                 .name(vo.getName())
@@ -48,4 +48,12 @@ public class AgentController {
         return ResponseEntity.ok(new WrapResponse<>(entity).success());
     }
 
+    @GetMapping("/{id}/monitor")
+    public ResponseEntity monitorById(@PathVariable Long id) throws Exception {
+        if (Objects.isNull(id)) {
+            throw new Error("id should not null");
+        }
+        String reply = service.getMonitor(id, "5");
+        return ResponseEntity.ok(new WrapResponse<>(reply).success());
+    }
 }

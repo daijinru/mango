@@ -5,7 +5,8 @@ public enum RunnerCalling {
   PIPELINE_CREATE("/pipeline/create"),
   PIPELINE_STDOUT("/pipeline/stdout"),
   PIPELINE_LIST("/pipeline/list"),
-  SERVICE_STATUS("/service/status");
+  SERVICE_STATUS("/service/status"),
+  SERVICE_MONITOR("/service/monitor");
 
   private final String calling;
 

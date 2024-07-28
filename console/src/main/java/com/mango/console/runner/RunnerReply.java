@@ -6,4 +6,5 @@ import lombok.Data;
 public class RunnerReply {
   private String status;
   private String message;
+  private Object data;
 }

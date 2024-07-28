@@ -1,10 +1,16 @@
 package com.mango.console.controllers.agent;
 
 import com.mango.console.common.Utils;
+import com.mango.console.runner.RunnerHttp;
+import com.mango.console.runner.RunnerReply;
+import com.mango.console.runner.endpoint.RunnerCalling;
+import com.mango.console.runner.endpoint.RunnerEndpoint;
+import com.mango.console.runner.params.RunnerAgentParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -34,5 +40,17 @@ public class AgentService {
         Utils.copyNonNullProperties(entity, vo);
         entity.setUpdatedAt(Utils.getLocalDateTime());
         return agentDAO.save(entity);
+    }
+
+    public String getMonitor(Long id, String wait) {
+        AgentEntity agent = agentDAO.findById(id).orElseGet(() -> null);
+        if (Objects.isNull(agent)) return null;
+        String agentHost = agent.getAgentHost();
+        RunnerEndpoint endpoint = new RunnerEndpoint(agentHost, RunnerCalling.SERVICE_MONITOR);
+        RunnerAgentParams params = RunnerAgentParams.builder()
+                .wait(wait)
+                .build();
+        RunnerReply reply = RunnerHttp.send(endpoint, params);
+        return reply.getData().toString();
     }
 }
