@@ -62,10 +62,17 @@ const getAgentMonitor = (id: number) => {
     })
 }
 
+const deleteAgent = (id: number) => {
+    return get<number, any>({
+        url: `/v1/agent/${id}/delete`
+    })
+}
+
 export const AGENT = {
     save: saveAgent,
     getById: getAgentById,
     getAll: getAgentAll,
     getMonitor: getAgentMonitor,
+    deleteById: deleteAgent,
 }
 
