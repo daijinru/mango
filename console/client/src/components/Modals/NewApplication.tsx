@@ -1,10 +1,10 @@
 import React from 'react'
 import { ModalRootConfig } from './index'
-import { Button, Form, Input, message } from 'antd'
+import { Button, Form, Input, message, Select } from 'antd'
 import type { FormProps } from 'antd/lib'
-import type { Application, ApplicationArgs } from '../../libs/runner/runner.types'
+import type { Application, ApplicationArgs, Agent } from '../../libs/runner/runner.types'
 import ApplicationExplorer from './ApplicationsExplorer'
-import { APPLICATION } from '../../libs/runner/services'
+import { APPLICATION, AGENT } from '../../libs/runner/services'
 
 const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
   const [form] = Form.useForm()
@@ -17,6 +17,18 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
     }).catch(error => {
       message.warning(error)
     })
+  }
+
+  const [agents, setAgents] = React.useState<Agent[]>([])
+  React.useEffect(() => {
+    AGENT.getAll().then(res => {
+      if (res.status !== 200) return
+      setAgents(res.data)
+    })
+  }, [])
+
+  const onAgentHostChange = (value: string) => {
+    console.info(value)
   }
 
   React.useEffect(() => {
@@ -48,7 +60,15 @@ const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
             <Input></Input>
           </Form.Item>
           <Form.Item label="Agent Host" name="agentHost" rules={[{required: true}]}>
-            <Input></Input>
+            <Select
+              placeholder="Select a Agent Host"
+              onChange={onAgentHostChange}
+              allowClear
+            >
+              {
+                agents.map(agent => <Select.Option value={agent.agentHost}>{agent.name}</Select.Option>)
+              }
+            </Select>
           </Form.Item>
           <Form.Item label="Artifact Rule" name="artifactRule">
             <Input></Input>
