@@ -1,4 +1,6 @@
-export interface RequestArgs {}
+export interface RequestArgs {
+  id?: number
+}
 export interface PipelineArgs extends RequestArgs {
   pid: number | string
   filename?: string
@@ -12,9 +14,25 @@ export interface AgentArgs extends RequestArgs {
   name: string
   agentHost: string
 }
+export interface TaskArgs extends RequestArgs {
+  name: string
+  command: string
+  sourceType?: string
+}
+export interface ApplicationArgs extends RequestArgs {
+  name: string
+  gitRepository: string
+  gitBranchName: string
+  agentHost: string
+  artifactRule: string
+  user: string
+  pwd: string
+}
 
 export interface Entity {
   id: number
+  createdAt: number
+  updatedAt: string
 }
 export interface Pipeline extends Entity {
   projectId: number
@@ -23,20 +41,8 @@ export interface Pipeline extends Entity {
   status: number
   startTime: number
   endTime: number
-  createdAt: number
   stdout: string
 }
-
-export interface ApplicationArgs extends RequestArgs {
-  id: number
-  name: string
-  gitRepository: string
-  gitBranchName: string
-  agentHost: string
-  artifactRule: string
-  user: string
-  pwd: string
-} 
 export interface Application extends Entity {
   name: string
   gitRepository: string
@@ -46,14 +52,14 @@ export interface Application extends Entity {
   artifactVersion: string
   user: string
   pwd: string
-  createdAt: string
-  updatedAt: string
 }
 export interface Agent extends Entity {
   name: string
   agentHost: string
-  createdAt: string
-  updatedAt: string
-
   monitor: Record<string, string>
+}
+export interface Task extends Entity {
+  name: string
+  command: string
+  sourceType: string
 }

@@ -2,7 +2,8 @@ import React from 'react';
 import NewApplication from './components/Modals/NewApplication'
 import ApplicationExplorer from './components/Modals/ApplicationsExplorer'
 import NewAgent from './components/Modals/NewAgent'
-import AgentsMonitor from "./components/Modals/AgentsMonitor";
+import AgentsMonitor from "./components/Modals/AgentsMonitor"
+import NewTask from './components/Modals/NewTask'
 import Modals, { ModalRegisterConfig, ModalRootRef } from './components/Modals/index'
 
 import './App.css';
@@ -12,6 +13,7 @@ const modals: ModalRegisterConfig[] = [
   { name: ApplicationExplorer.NAME, component: ApplicationExplorer.component },
   { name: NewAgent.NAME, component: NewAgent.component },
   { name: AgentsMonitor.NAME, component: AgentsMonitor.component },
+  { name: NewTask.NAME, component: NewTask.component },
 ]
 
 export default () => {
@@ -41,7 +43,7 @@ export default () => {
                 </a>
                 <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
                   <a className="dropdown-item" href="#" onClick={() => openApplicationCreateModal()}>New Application</a>
-                  <a className="dropdown-item" href="#" onClick={() => openApplicationCreateModal()}>New Task</a>
+                  <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(NewTask.NAME, {})}>New Task</a>
                   <a className="dropdown-item" href="#" onClick={() => openApplicationCreateModal()}>New Pipeline</a>
                 </div>
               </li>
@@ -51,7 +53,7 @@ export default () => {
                 </a>
                 <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
                   <a className="dropdown-item" href="#" onClick={() => openApplicationListModal()} >Applications Explorer</a>
-                  <a className="dropdown-item" href="#" onClick={() => openApplicationListModal()} >Tasks Explorer</a>
+                  <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(NewTask.NAME, {})} >Tasks Explorer</a>
                 </div>
               </li>
               <li className="nav-item dropdown dmenu">

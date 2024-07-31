@@ -29,7 +29,7 @@ public class TaskController {
         return ResponseEntity.ok(new WrapResponse<>(task).success());
     }
 
-    @PostMapping("/create")
+    @PostMapping("/save")
     public ResponseEntity save(@RequestBody TaskVO task) throws Exception {
         TaskEntity entity = TaskEntity.builder()
                 .name(task.getName())
