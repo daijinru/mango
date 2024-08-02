@@ -14,6 +14,6 @@ public class PipelineVO {
     /**
      * ID of its owner: Application
      */
-    private Long appId;
+    private Long applicationId;
     private List<TaskVO> tasks;
 }

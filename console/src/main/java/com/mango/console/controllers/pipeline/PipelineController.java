@@ -40,7 +40,7 @@ public class PipelineController {
     public ResponseEntity create(@RequestBody PipelineVO args) throws Exception {
         List<TaskVO> tasks = args.getTasks();
         List<String> commands = tasks.stream().map(TaskVO::getCommand).collect(Collectors.toList());
-        PipelineEntity pipeline = service.create(args.getAppId(), commands);
+        PipelineEntity pipeline = service.create(args.getApplicationId(), commands);
         return ResponseEntity.ok(new WrapResponse<>(pipeline).success());
     }
 

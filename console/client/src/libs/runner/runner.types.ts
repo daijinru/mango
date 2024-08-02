@@ -1,14 +1,10 @@
 export interface RequestArgs {
   id?: number
 }
+
 export interface PipelineArgs extends RequestArgs {
-  pid: number | string
-  filename?: string
-}
-export interface ProjectArgs extends RequestArgs {
-  name: string
-  path: string
-  agentId: string;
+  applicationId: number
+  tasks: TaskArgs[]
 }
 export interface AgentArgs extends RequestArgs {
   name: string
@@ -34,15 +30,6 @@ export interface Entity {
   createdAt: string
   updatedAt: string
 }
-export interface Pipeline extends Entity {
-  projectId: number
-  filename: string
-  stages: string
-  status: number
-  startTime: number
-  endTime: number
-  stdout: string
-}
 export interface Application extends Entity {
   name: string
   gitRepository: string
@@ -62,4 +49,14 @@ export interface Task extends Entity {
   name: string
   command: string
   sourceType: string
+}
+export interface Pipeline extends Entity {
+  commands: string
+  status: number
+  applicationId: number
+  artifactId: number
+  startTime: string
+  endTime: string
+  stdout: string
+  filename: string
 }

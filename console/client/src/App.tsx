@@ -4,7 +4,9 @@ import ApplicationExplorer from './components/Modals/ApplicationsExplorer'
 import NewAgent from './components/Modals/NewAgent'
 import AgentsMonitor from "./components/Modals/AgentsMonitor"
 import NewTask from './components/Modals/NewTask'
-import TasksExplorer from "./components/Modals/TasksExplorer";
+import TasksExplorer from "./components/Modals/TasksExplorer"
+import NewPipeline from "./components/Modals/NewPipeline"
+import PipelineConsole from './components/Modals/PipelineConsole'
 import Modals, { ModalRegisterConfig, ModalRootRef } from './components/Modals/index'
 
 import './App.css';
@@ -16,6 +18,8 @@ const modals: ModalRegisterConfig[] = [
   { name: AgentsMonitor.NAME, component: AgentsMonitor.component },
   { name: NewTask.NAME, component: NewTask.component },
   { name: TasksExplorer.NAME, component: TasksExplorer.component },
+  { name: NewPipeline.NAME, component: NewPipeline.component },
+  { name: PipelineConsole.NAME, component: PipelineConsole.component },
 ]
 
 export default () => {
@@ -46,7 +50,7 @@ export default () => {
                 <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
                   <a className="dropdown-item" href="#" onClick={() => openApplicationCreateModal()}>New Application</a>
                   <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(NewTask.NAME, {})}>New Task</a>
-                  <a className="dropdown-item" href="#" onClick={() => openApplicationCreateModal()}>New Pipeline</a>
+                  <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(NewPipeline.NAME, {})}>New Pipeline</a>
                 </div>
               </li>
               <li className="nav-item dropdown dmenu">

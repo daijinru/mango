@@ -1,5 +1,5 @@
 import {get, post} from './runner'
-import {AgentArgs, Application, ApplicationArgs, Agent, TaskArgs, Task} from './runner.types'
+import {AgentArgs, Application, ApplicationArgs, Agent, TaskArgs, Task, PipelineArgs, Pipeline} from './runner.types'
 
 const getApplicationAll = () => {
     return get<any, Application[]>({url: '/v1/application/all'})
@@ -118,5 +118,16 @@ export const TASK = {
     getById: getTaskById,
     getAll: getTaskAll,
     deleteById: deleteTask,
+}
+
+export const createPipeline = (args: PipelineArgs) => {
+    return post<PipelineArgs, Pipeline>({
+        url: `/v1/pipeline/create`,
+        data: args,
+    })
+}
+
+export const PIPELINE = {
+    create: createPipeline,
 }
 
