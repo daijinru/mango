@@ -47,4 +47,13 @@ public class TaskController {
         }
         return ResponseEntity.ok(new WrapResponse<>(service.update(task)).success());
     }
+
+    @GetMapping("/{id}/delete")
+    public ResponseEntity delete(@PathVariable Long id) throws Exception {
+        if (Objects.isNull(id)) {
+            throw new Exception("id should not null");
+        }
+        service.delete(id);
+        return ResponseEntity.ok(new WrapResponse<>(id).success());
+    }
 }
