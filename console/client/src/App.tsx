@@ -4,6 +4,7 @@ import ApplicationExplorer from './components/Modals/ApplicationsExplorer'
 import NewAgent from './components/Modals/NewAgent'
 import AgentsMonitor from "./components/Modals/AgentsMonitor"
 import NewTask from './components/Modals/NewTask'
+import TasksExplorer from "./components/Modals/TasksExplorer";
 import Modals, { ModalRegisterConfig, ModalRootRef } from './components/Modals/index'
 
 import './App.css';
@@ -14,6 +15,7 @@ const modals: ModalRegisterConfig[] = [
   { name: NewAgent.NAME, component: NewAgent.component },
   { name: AgentsMonitor.NAME, component: AgentsMonitor.component },
   { name: NewTask.NAME, component: NewTask.component },
+  { name: TasksExplorer.NAME, component: TasksExplorer.component },
 ]
 
 export default () => {
@@ -53,7 +55,7 @@ export default () => {
                 </a>
                 <div className="dropdown-menu sm-menu" aria-labelledby="navbardrop">
                   <a className="dropdown-item" href="#" onClick={() => openApplicationListModal()} >Applications Explorer</a>
-                  <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(NewTask.NAME, {})} >Tasks Explorer</a>
+                  <a className="dropdown-item" href="#" onClick={() => modalsRef.current?.open(TasksExplorer.NAME, {})} >Tasks Explorer</a>
                 </div>
               </li>
               <li className="nav-item dropdown dmenu">

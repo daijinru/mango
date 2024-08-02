@@ -31,7 +31,7 @@ export interface ApplicationArgs extends RequestArgs {
 
 export interface Entity {
   id: number
-  createdAt: number
+  createdAt: string
   updatedAt: string
 }
 export interface Pipeline extends Entity {

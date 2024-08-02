@@ -100,9 +100,23 @@ const getTaskById = (id: number) => {
     })
 }
 
+const getTaskAll = () => {
+    return get<any, Task[]>({
+        url: '/v1/task/all'
+    })
+}
+
+const deleteTask = (id: number) => {
+    return get<{id: number}, number>({
+        url: `/v1/task/${id}/delete`
+    })
+}
+
 export const TASK = {
     save: saveTask,
     update: updateTask,
     getById: getTaskById,
+    getAll: getTaskAll,
+    deleteById: deleteTask,
 }
 

@@ -4,13 +4,14 @@ import { Button, Form, Input, message } from 'antd'
 import type { FormProps } from 'antd/lib'
 import type { Task, TaskArgs } from '../../libs/runner/runner.types'
 import { TASK } from '../../libs/runner/services'
+import TasksExplorer from "./TasksExplorer";
 
 const App: React.FC<ModalRootConfig> = ({ args, NAME, open, close,  }) => {
   const [form] = Form.useForm()
   const onFinish: FormProps<Task>['onFinish'] = (values) => {
     TASK.save(values as TaskArgs).then(res => {
       if (res.status === 200) {
-        // open(.NAME, {})
+        open(TasksExplorer.NAME, {})
         close(NAME)
       }
     }).catch(error => {
