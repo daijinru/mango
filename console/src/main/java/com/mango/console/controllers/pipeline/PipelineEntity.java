@@ -28,6 +28,8 @@ public class PipelineEntity {
      */
     @Column(name = "status")
     private Short status;
+    @Column(name = "schedule_id")
+    private Long scheduleId;
     @Column(name = "application_id")
     private Long applicationId;
     @Column(name = "artifact_id")
