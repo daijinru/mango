@@ -49,7 +49,12 @@ public class Utils {
             List<String> encodedQueries = new ArrayList<>();
 
             for (String param: restParams) {
-                encodedQueries.add(URLEncoder.encode(param, StandardCharsets.UTF_8.toString()));
+                int index = param.indexOf("=");
+                if (index > 0) {
+                    String encodedKey = URLEncoder.encode(param.substring(0, index), StandardCharsets.UTF_8.toString());
+                    String encodedVal = URLEncoder.encode(param.substring(index + 1), StandardCharsets.UTF_8.toString());
+                    encodedQueries.add(encodedKey + "=" + encodedVal);
+                }
             }
 
             urlBuilder.append(String.join("&", encodedQueries));
