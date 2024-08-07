@@ -1,8 +1,10 @@
 package com.mango.console.controllers.pipeline;
 
 import com.mango.console.common.Utils;
+import com.mango.console.controllers.agent.AgentService;
 import com.mango.console.controllers.application.ApplicationDAO;
 import com.mango.console.controllers.application.ApplicationEntity;
+import com.mango.console.controllers.task.TaskEntity;
 import com.mango.console.runner.RunnerHttp;
 import com.mango.console.runner.RunnerReply;
 import com.mango.console.runner.endpoint.RunnerCalling;
@@ -24,6 +26,8 @@ public class PipelineService {
     private PipelineDAO pipelineDAO;
     @Autowired
     private ApplicationDAO applicationDAO;
+    @Autowired
+    private AgentService agentService;
 
     @Value("${config.agent.callback}")
     private String callbackBaseURL;
@@ -83,11 +87,16 @@ public class PipelineService {
         return saving;
     }
 
-    public PipelineEntity create(Long appId, List<String> commands) {
+    public PipelineEntity create(Long appId, List<TaskEntity> tasks) {
         ApplicationEntity application = Optional.of(
                 applicationDAO.findById(appId)
         ).get().orElseGet(() -> null);
         if (Objects.isNull(application)) return null;
+
+        boolean isAgentServiceRunning = agentService.getStatus(appId);
+        if (!isAgentServiceRunning) {
+            return PipelineEntity.builder().stdout("agent service not running with the application").build();
+        }
 
         boolean shouldRunGitClone = false;
 

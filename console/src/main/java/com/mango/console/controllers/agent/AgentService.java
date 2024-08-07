@@ -6,6 +6,7 @@ import com.mango.console.runner.RunnerReply;
 import com.mango.console.runner.endpoint.RunnerCalling;
 import com.mango.console.runner.endpoint.RunnerEndpoint;
 import com.mango.console.runner.params.RunnerAgentParams;
+import com.mango.console.runner.params.RunnerServiceParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,5 +57,15 @@ public class AgentService {
                 .build();
         RunnerReply reply = RunnerHttp.send(endpoint, params);
         return reply.getData().toString();
+    }
+
+    public Boolean getStatus(Long id) {
+        AgentEntity agent = agentDAO.findById(id).orElseGet(() -> null);
+        if (Objects.isNull(agent)) return false;
+        String agentHost = agent.getAgentHost();
+        RunnerEndpoint endpoint = new RunnerEndpoint(agentHost, RunnerCalling.SERVICE_STATUS);
+        RunnerServiceParams params = new RunnerServiceParams();
+        RunnerReply reply = RunnerHttp.send(endpoint, params);
+        return reply.getMessage().equals("success");
     }
 }
