@@ -4,6 +4,8 @@ import com.mango.console.common.Utils;
 import com.mango.console.controllers.agent.AgentService;
 import com.mango.console.controllers.application.ApplicationDAO;
 import com.mango.console.controllers.application.ApplicationEntity;
+import com.mango.console.controllers.schedule.ScheduleEntity;
+import com.mango.console.controllers.schedule.ScheduleService;
 import com.mango.console.controllers.task.TaskEntity;
 import com.mango.console.runner.RunnerHttp;
 import com.mango.console.runner.RunnerReply;
@@ -28,6 +30,8 @@ public class PipelineService {
     private ApplicationDAO applicationDAO;
     @Autowired
     private AgentService agentService;
+    @Autowired
+    private ScheduleService scheduleService;
 
     @Value("${config.agent.callback}")
     private String callbackBaseURL;
@@ -36,7 +40,10 @@ public class PipelineService {
         return pipelineDAO.findByApplicationId(appId);
     }
 
-    public Boolean gitClone(ApplicationEntity application) {
+    private Boolean INTERNAL_git_clone(Long applicationId) {
+        ApplicationEntity application = Optional.of(applicationDAO.findById(applicationId)).get().orElseGet(() -> null);
+        if (Objects.isNull(application)) return null;
+
         RunnerEndpoint endpoint = new RunnerEndpoint(application.getAgentHost(), RunnerCalling.GIT_CLONE);
         RunnerGitParams params = RunnerGitParams.builder()
                 .name(application.getName())
@@ -87,7 +94,21 @@ public class PipelineService {
         return saving;
     }
 
-    public PipelineEntity create(Long appId, List<TaskEntity> tasks) {
+    public PipelineEntity dispatchNextTaskToService(PipelineEntity pipeline) throws Exception {
+        Long scheduleId = pipeline.getScheduleId();
+        TaskEntity task = scheduleService.getNextTaskById(scheduleId);
+        if (Objects.isNull(task)) return null;
+        String command = task.getCommand();
+        if (command.equals(PipelineTaskFlag.GIT_CLONE.getFlag())) {
+            INTERNAL_git_clone(pipeline.getApplicationId());
+        }
+        Integer currentTaskIndex = scheduleService.getCurrentIndex(scheduleId);
+        currentTaskIndex++;
+        scheduleService.updateCurrentIndex(scheduleId, currentTaskIndex);
+        return pipeline;
+    }
+
+    public PipelineEntity create(Long appId, List<TaskEntity> tasks) throws Exception {
         ApplicationEntity application = Optional.of(
                 applicationDAO.findById(appId)
         ).get().orElseGet(() -> null);
@@ -98,32 +119,29 @@ public class PipelineService {
             return PipelineEntity.builder().stdout("agent service not running with the application").build();
         }
 
-        boolean shouldRunGitClone = false;
-
-        StringBuilder sb = new StringBuilder();
-        for (String cmd : commands) {
-            if (cmd.equals(PipelineTaskFlag.GIT_CLONE.getFlag())) {
-                shouldRunGitClone = true;
-            } else {
-                if (sb.length() > 0) {
-                    sb.append(" && ");
-                }
-                sb.append(cmd);
-            }
-        }
         /**
-         * A build-in identifier, will trigger a Git Clone in the Tasks,
-         * for permissions, its data required comes from the Application.
+         * at 1st for creating the Pipeline belong to Application.
+         * And Now add the WAIT state for it.
+         * so it allows we to observe the state of the Pipeline after its creation.
+         * it will be persisted, however.
          */
-        if (shouldRunGitClone) {
-            gitClone(application);
-        }
-
-        String commandStr = sb.toString();
-        if (commandStr.isEmpty()) {
-            return PipelineEntity.builder().stdout("no next Task, because no extra commands").build();
-        }
-        return executeCommands(application, sb.toString());
+        ScheduleEntity schedule = scheduleService.createWithTasks(tasks);
+        PipelineEntity pipeline = PipelineEntity.builder()
+                .status((short)0)
+                .applicationId(application.getId())
+                .createdAt(Utils.getLocalDateTime())
+                .scheduleId(schedule.getId())
+                .build();
+        PipelineEntity saved = pipelineDAO.save(pipeline);
+        /**
+         * TODO
+         */
+        dispatchNextTaskToService(saved);
+        pipeline.setStdout("tasks created successfully for the pipeline");
+        pipeline.setStatus((short)1);
+        pipeline.setUpdatedAt(Utils.getLocalDateTime());
+        pipelineDAO.save(pipeline);
+        return pipeline;
     }
 
     public PipelineEntity getStdout(Long id) {

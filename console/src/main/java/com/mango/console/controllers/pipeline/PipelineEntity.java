@@ -19,6 +19,9 @@ public class PipelineEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    /**
+     * TODO: remove -> Schedule ID
+     */
     @Column(name = "commands")
     private String commands;
     /**
