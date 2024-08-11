@@ -13,11 +13,11 @@ import com.mango.console.runner.endpoint.RunnerCalling;
 import com.mango.console.runner.endpoint.RunnerEndpoint;
 import com.mango.console.runner.params.RunnerGitParams;
 import com.mango.console.runner.params.RunnerPipelineParams;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,7 +60,6 @@ public class PipelineService {
         return true;
     }
 
-    @Transactional
     public PipelineEntity TASK_send_to_agent(Integer taskIndex, ApplicationEntity application, PipelineEntity savedPipeline, TaskEntity task) {
         String callbackUrl = Utils.encodeURL(
                 callbackBaseURL + "/" + savedPipeline.getId(),
@@ -83,22 +82,12 @@ public class PipelineService {
          * Agent will return filename as message if created successfully,
          * if not return as usual. Error message can still be written to stdout,
          */
-        String existedStdout = savedPipeline.getStdout();
-        if (Objects.isNull(existedStdout)) {
-            existedStdout = "";
-        } else {
-            existedStdout += System.lineSeparator();
+        if (Integer.parseInt(reply.getStatus()) != HttpStatus.SC_OK) {
+            savedPipeline.setStdout(reply.getMessage());
         }
-        if (Objects.isNull(reply.getData())) {
-            savedPipeline.setStdout(existedStdout += reply.getMessage());
-        } else {
-            savedPipeline.setStdout(existedStdout += reply.getData().toString());
-        }
-        savedPipeline.setUpdatedAt(Utils.getLocalDateTime());
         return savedPipeline;
     }
 
-    @Transactional
     public PipelineEntity dispatchNextTaskToService( ApplicationEntity application, PipelineEntity pipeline) throws Exception {
         Long scheduleId = pipeline.getScheduleId();
         TaskEntity task = scheduleService.getNextTaskById(scheduleId);
