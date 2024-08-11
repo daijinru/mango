@@ -60,6 +60,7 @@ public class PipelineService {
         return true;
     }
 
+    @Transactional
     public PipelineEntity TASK_send_to_agent(Integer taskIndex, ApplicationEntity application, PipelineEntity savedPipeline, TaskEntity task) {
         String callbackUrl = Utils.encodeURL(
                 callbackBaseURL + "/" + savedPipeline.getId(),
@@ -68,7 +69,7 @@ public class PipelineService {
         /**
          * ID of Stdout File by combination of Application_Name-Pipeline_ID-Task_ID
          */
-        String STDOUT_NAME = application.getName() + "-" + savedPipeline.getId() + "-" + task.getName();
+        String STDOUT_NAME = application.getName() + "-" + savedPipeline.getId() + "-" + taskIndex;
         RunnerEndpoint endpoint = new RunnerEndpoint(application.getAgentHost(), RunnerCalling.PIPELINE_CREATE);
         RunnerPipelineParams rpParams = RunnerPipelineParams
                 .builder()
@@ -82,7 +83,17 @@ public class PipelineService {
          * Agent will return filename as message if created successfully,
          * if not return as usual. Error message can still be written to stdout,
          */
-        savedPipeline.setStdout(reply.getData().toString());
+        String existedStdout = savedPipeline.getStdout();
+        if (Objects.isNull(existedStdout)) {
+            existedStdout = "";
+        } else {
+            existedStdout += System.lineSeparator();
+        }
+        if (Objects.isNull(reply.getData())) {
+            savedPipeline.setStdout(existedStdout += reply.getMessage());
+        } else {
+            savedPipeline.setStdout(existedStdout += reply.getData().toString());
+        }
         savedPipeline.setUpdatedAt(Utils.getLocalDateTime());
         return savedPipeline;
     }
@@ -132,7 +143,7 @@ public class PipelineService {
 
         dispatchNextTaskToService(application, saved);
 
-        pipeline.setStdout("tasks created successfully for the pipeline");
+        pipeline.setStdout("Tasks created successfully for the pipeline");
         pipeline.setStatus((short)1);
         pipeline.setUpdatedAt(Utils.getLocalDateTime());
         pipelineDAO.save(pipeline);

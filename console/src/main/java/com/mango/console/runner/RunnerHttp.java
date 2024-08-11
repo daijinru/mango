@@ -43,6 +43,7 @@ public class RunnerHttp {
                  */
                 reply.setStatus(Integer.toString(statusCode));
                 reply.setMessage(content);
+                reply.setData(null);
             }
             return reply;
         } catch (IOException e) {

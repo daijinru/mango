@@ -1,8 +1,8 @@
 package com.mango.console.controllers.schedule;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.mango.console.common.Utils;
 import com.mango.console.controllers.task.TaskEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +26,7 @@ public class ScheduleService {
          * So convert their instances into JSON char for the Schedule.
          */
         ObjectMapper mapper = new ObjectMapper();
-        Map<Long, TaskEntity> idToTaskMap = new HashMap<>();
-        for (TaskEntity task : tasks) {
-            idToTaskMap.put(task.getId(), task);
-        }
-        ObjectNode tasksJson = mapper.convertValue(idToTaskMap, ObjectNode.class);
+        ArrayNode tasksJson = mapper.valueToTree(tasks);
         String tasksString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tasksJson);
 
         ScheduleEntity entity = ScheduleEntity.builder()
@@ -47,23 +43,15 @@ public class ScheduleService {
     public TaskEntity getNextTaskById(Long id) throws Exception {
         ScheduleEntity schedule = Optional.of(dao.findById(id)).get().orElseGet(() -> null);
         if (Objects.isNull(schedule)) return null;
+
         String tasks = schedule.getTasks();
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = mapper.readTree(tasks);
-        Map<Long, TaskEntity> idToTaskMap = new HashMap<>();
-        for (JsonNode entryNode : jsonNode) {
-            Long taskId = entryNode.get("id").asLong();
-            String name = entryNode.get("name").asText();
-            String command = entryNode.get("command").asText();
-            TaskEntity task = TaskEntity.builder()
-                    .id(taskId)
-                    .name(name)
-                    .command(command)
-                    .build();
-            idToTaskMap.put(id, task);
-        }
+        List<TaskEntity> taskEntities = mapper.readValue(tasks, new TypeReference<List<TaskEntity>>() {});
         Integer currentIndex = schedule.getCurrentTaskIndex();
-        return idToTaskMap.get(currentIndex);
+        if (currentIndex >= schedule.getTaskCount()) {
+            return null;
+        }
+        return taskEntities.get(currentIndex);
     }
 
     @Transactional

@@ -20,7 +20,12 @@ public class WrapResponseExceptionHandler {
     @ResponseBody
     public WrapResponse handleException(Exception ex) {
         WrapResponse wrappedResponse = new WrapResponse(null).fail(ex);
-        System.out.println(wrappedResponse.getMessage());
+        ex.printStackTrace();
+        StackTraceElement[] stackTraceElements = ex.getStackTrace();
+        if (stackTraceElements.length > 0) {
+            StackTraceElement firstElement = stackTraceElements[0];
+            System.out.println("Error occurred at: " + firstElement);
+        }
         return wrappedResponse;
     }
 }
