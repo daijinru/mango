@@ -1,15 +1,17 @@
 package com.mango.console.controllers.pipeline;
 
+import com.mango.console.common.Utils;
 import com.mango.console.common.WrapResponse;
+import com.mango.console.controllers.task.TaskEntity;
 import com.mango.console.controllers.task.TaskVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/pipeline")
@@ -38,9 +40,14 @@ public class PipelineController {
 
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody PipelineVO args) throws Exception {
-        List<TaskVO> tasks = args.getTasks();
-        List<String> commands = tasks.stream().map(TaskVO::getCommand).collect(Collectors.toList());
-        PipelineEntity pipeline = service.create(args.getApplicationId(), commands);
+        if (args.getTasks() == null) return ResponseEntity.ok(new WrapResponse<>(null).error("tasks should not null"));
+        List<TaskEntity> tasks = new ArrayList<>();
+        for (TaskVO taskVO : args.getTasks()) {
+            TaskEntity task = new TaskEntity();
+            Utils.copyNonNullProperties(task, taskVO);
+            tasks.add(task);
+        }
+        PipelineEntity pipeline = service.create(args.getApplicationId(), tasks);
         return ResponseEntity.ok(new WrapResponse<>(pipeline).success());
     }
 

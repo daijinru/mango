@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,10 +41,11 @@ public class PipelineService {
         return pipelineDAO.findByApplicationId(appId);
     }
 
-    private Boolean INTERNAL_git_clone(Long applicationId) {
-        ApplicationEntity application = Optional.of(applicationDAO.findById(applicationId)).get().orElseGet(() -> null);
-        if (Objects.isNull(application)) return null;
-
+    private Boolean TASK_INTERNAL_git_clone(Integer taskIndex, ApplicationEntity application, PipelineEntity pipeline) {
+        String callbackUrl = Utils.encodeURL(
+                callbackBaseURL + "/" + pipeline.getId(),
+                "status=" + taskIndex
+        );
         RunnerEndpoint endpoint = new RunnerEndpoint(application.getAgentHost(), RunnerCalling.GIT_CLONE);
         RunnerGitParams params = RunnerGitParams.builder()
                 .name(application.getName())
@@ -51,37 +53,27 @@ public class PipelineService {
                 .branch(application.getGitBranchName())
                 .user(application.getUser())
                 .pwd(application.getPwd())
+                .callbackUrl(callbackUrl)
                 .build();
         RunnerReply reply = RunnerHttp.send(endpoint, params);
         System.out.println("reply: " + reply);
         return true;
     }
 
-    public PipelineEntity executeCommands(ApplicationEntity application, String commands) {
-        /**
-         * at 1st for create the Pipeline belong to Application.
-         * And Now add the WAIT state for it.
-         * so it allows we to observe the state of the Pipeline after its creation.
-         * it will be persisted, however.
-         */
-        PipelineEntity pipeline = new PipelineEntity();
-        pipeline.setStatus((short)0);
-        pipeline.setApplicationId(application.getId());
-        pipeline.setCommands(commands);
-        pipeline.setCreatedAt(Utils.getLocalDateTime());
-        PipelineEntity saving = pipelineDAO.save(pipeline);
-        /**
-         * the callbackUrl is used to callback after the execution of the pipeline.
-         */
+    public PipelineEntity TASK_send_to_agent(Integer taskIndex, ApplicationEntity application, PipelineEntity savedPipeline, TaskEntity task) {
         String callbackUrl = Utils.encodeURL(
-                callbackBaseURL + "/" + saving.getId(),
-                ""
+                callbackBaseURL + "/" + savedPipeline.getId(),
+                "status=" + taskIndex
         );
+        /**
+         * ID of Stdout File by combination of Application_Name-Pipeline_ID-Task_ID
+         */
+        String STDOUT_NAME = application.getName() + "-" + savedPipeline.getId() + "-" + task.getName();
         RunnerEndpoint endpoint = new RunnerEndpoint(application.getAgentHost(), RunnerCalling.PIPELINE_CREATE);
         RunnerPipelineParams rpParams = RunnerPipelineParams
                 .builder()
-                .name(application.getName())
-                .command(commands)
+                .name(STDOUT_NAME)
+                .command(task.getCommand())
                 .callbackUrl(callbackUrl)
                 .build();
         RunnerReply reply = RunnerHttp.send(endpoint, rpParams);
@@ -90,19 +82,23 @@ public class PipelineService {
          * Agent will return filename as message if created successfully,
          * if not return as usual. Error message can still be written to stdout,
          */
-        saving.setStdout(reply.getData().toString());
-        return saving;
+        savedPipeline.setStdout(reply.getData().toString());
+        savedPipeline.setUpdatedAt(Utils.getLocalDateTime());
+        return savedPipeline;
     }
 
-    public PipelineEntity dispatchNextTaskToService(PipelineEntity pipeline) throws Exception {
+    @Transactional
+    public PipelineEntity dispatchNextTaskToService( ApplicationEntity application, PipelineEntity pipeline) throws Exception {
         Long scheduleId = pipeline.getScheduleId();
         TaskEntity task = scheduleService.getNextTaskById(scheduleId);
+        Integer currentTaskIndex = scheduleService.getCurrentIndex(scheduleId);
         if (Objects.isNull(task)) return null;
         String command = task.getCommand();
         if (command.equals(PipelineTaskFlag.GIT_CLONE.getFlag())) {
-            INTERNAL_git_clone(pipeline.getApplicationId());
+            TASK_INTERNAL_git_clone(currentTaskIndex, application, pipeline);
+        } else {
+            TASK_send_to_agent(currentTaskIndex, application, pipeline, task);
         }
-        Integer currentTaskIndex = scheduleService.getCurrentIndex(scheduleId);
         currentTaskIndex++;
         scheduleService.updateCurrentIndex(scheduleId, currentTaskIndex);
         return pipeline;
@@ -133,10 +129,9 @@ public class PipelineService {
                 .scheduleId(schedule.getId())
                 .build();
         PipelineEntity saved = pipelineDAO.save(pipeline);
-        /**
-         * TODO
-         */
-        dispatchNextTaskToService(saved);
+
+        dispatchNextTaskToService(application, saved);
+
         pipeline.setStdout("tasks created successfully for the pipeline");
         pipeline.setStatus((short)1);
         pipeline.setUpdatedAt(Utils.getLocalDateTime());
@@ -172,22 +167,33 @@ public class PipelineService {
     }
 
     public PipelineEntity callback(Long id, Map<String, String> args) throws Exception {
-        PipelineEntity entity = Optional.of(
+        PipelineEntity pipeline = Optional.of(
                 pipelineDAO.findById(id)
         ).get().orElseGet(() -> null);
-        if (Objects.isNull(entity)) return null;
-        if (args.get("startTime") != null) {
-            entity.setStartTime(Utils.convertToTimestamp(args.get("startTime"), ""));
+        if (Objects.isNull(pipeline)) return null;
+        /**
+         * startTime comes of the execution after the first send to agent,
+         * so record it once enough.
+         */
+        if (Objects.isNull(pipeline.getStartTime())) {
+            pipeline.setStartTime(Utils.convertToTimestamp(args.get("startTime"), ""));
         }
-        if (args.get("filename") != null) {
-            entity.setFilename(args.get("filename"));
+        pipeline.setEndTime(Utils.convertToTimestamp(args.get("endTime"), ""));
+        /**
+         * status comes from the callback params.
+         */
+        pipeline.setStatus(Short.parseShort(args.get("status")));
+        pipeline.setUpdatedAt(Utils.getLocalDateTime());
+        /**
+         * checking if task next by each callback
+         */
+        ApplicationEntity application = Optional.of(
+                applicationDAO.findById(pipeline.getApplicationId())
+        ).get().orElseGet(() -> null);
+        if (Objects.nonNull(application)) {
+            dispatchNextTaskToService(application, pipeline);
         }
-        if (args.get("endTime") != null) {
-            entity.setEndTime(Utils.convertToTimestamp(args.get("endTime"), ""));
-        }
-        entity.setStatus(Short.valueOf("2"));
-        entity.setUpdatedAt(Utils.getLocalDateTime());
-        System.out.println(entity);
-        return pipelineDAO.save(entity);
+
+        return pipelineDAO.save(pipeline);
     }
 }

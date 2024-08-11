@@ -16,6 +16,7 @@ public class RunnerGitParams extends RunnerBaseParams implements ParamsStrategy 
     private String branch;
     private String user;
     private String pwd;
+    private String callbackUrl;
     public List returnParams() {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("repo", repo));
@@ -23,6 +24,7 @@ public class RunnerGitParams extends RunnerBaseParams implements ParamsStrategy 
         params.add(new BasicNameValuePair("branch", branch));
         params.add(new BasicNameValuePair("user", user));
         params.add(new BasicNameValuePair("pwd", pwd));
+        params.add(new BasicNameValuePair("callbackUrl", callbackUrl));
         return params;
     }
 }
